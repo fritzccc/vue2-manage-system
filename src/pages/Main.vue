@@ -46,32 +46,46 @@
                 <el-input v-model="reqData.queryFormTop.doc" placeholder="書類名"></el-input>
               </el-form-item>
             </el-col>
-            <el-col :sm="3" :md="3" :lg="3" :xl="3">
-              <el-form-item>
+            <el-col :sm="3" :md="3" :lg="5" :xl="5" style="margin-right:5px;">
+              <el-form-item class="top-query-free">
                 <el-input v-model="reqData.queryFormTop.free" placeholder="フリー"></el-input>
               </el-form-item>
             </el-col>
-            <el-col :sm="3" :md="3" :lg="3" :xl="3">
-              <el-form-item>
-                <el-input v-model="reqData.queryFormTop.uploader" placeholder="登録者"></el-input>
-              </el-form-item>
+            <el-col :sm="9" :md="9" :lg="7" :xl="7">
+              <el-row>
+                <el-col :span="8">
+                  <el-form-item>
+                    <el-input v-model="reqData.queryFormTop.uploader" placeholder="登録者"></el-input>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="8">
+                  <el-form-item>
+                    <el-input v-model="reqData.queryFormTop.salesman" placeholder="営業担当"></el-input>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="8">
+                  <el-form-item>
+                    <el-input v-model="reqData.queryFormTop.manager" placeholder="管理担当"></el-input>
+                  </el-form-item>
+                </el-col>
+              </el-row>
             </el-col>
-            <el-col :sm="3" :md="2" :lg="3" :xl="3">
+            <!-- <el-col :sm="3" :md="3" :lg="2" :xl="2">
               <el-form-item>
                 <el-input v-model="reqData.queryFormTop.salesman" placeholder="営業担当"></el-input>
               </el-form-item>
             </el-col>
-            <el-col :sm="3" :md="2" :lg="3" :xl="3">
+            <el-col :sm="3" :md="3" :lg="2" :xl="2">
               <el-form-item>
                 <el-input v-model="reqData.queryFormTop.manager" placeholder="管理担当"></el-input>
               </el-form-item>
-            </el-col>
-            <el-col :sm="3" :md="2" :lg="3" :xl="3">
+            </el-col> -->
+            <el-col :sm="3" :md="3" :lg="3" :xl="3">
               <el-form-item>
-                <el-input v-model="reqData.queryFormTop.comment" placeholder="注釈"></el-input>
+                <el-input v-model="reqData.queryFormTop.comment" placeholder="コメント"></el-input>
               </el-form-item>
             </el-col>
-            <el-col :sm="12" :md="8" :lg="6" :xl="4">
+            <el-col :sm="12" :md="6" :lg="5" :xl="4">
               <el-form-item>
                 <el-button type="primary" plain @click="submitQueryFormTop" style="margin-left:10px;">検索</el-button>
                 <el-button type="primary" plain style="margin-left:5px;">CSV出力</el-button>
@@ -87,13 +101,13 @@
         <div style="margin-left: 20px;">
           <el-form :inline="true" ref="queryFormAside" :model="reqData.queryFormAside">
             <el-row class="query-aside-input">
-                <el-input v-model="reqData.queryFormAside.owner" placeholder="オーナーCD、オーナー名"></el-input>
+              <el-input v-model="reqData.queryFormAside.owner" placeholder="オーナーCD、オーナー名"></el-input>
             </el-row>
             <el-row class="query-aside-input">
-                <el-input v-model="reqData.queryFormAside.property" placeholder="物件CD、物件名"></el-input>
+              <el-input v-model="reqData.queryFormAside.property" placeholder="物件CD、物件名"></el-input>
             </el-row>
             <el-row class="query-aside-input">
-                <el-input v-model="reqData.queryFormAside.guest" placeholder="テナントCD、入居者名"></el-input>
+              <el-input v-model="reqData.queryFormAside.guest" placeholder="テナントCD、入居者名"></el-input>
             </el-row>
             <el-row>
               <el-form-item>
@@ -120,12 +134,10 @@
           </span>
         </el-tree>
       </el-aside>
-      <label class="dragbar" 
-        :style="{
+      <label class="dragbar" :style="{
           height:(pageConfig.tableHeight+150)+'px',
           left:pageConfig.asideWidth+'px'
-          }"
-        @mousedown="mouseDown">
+          }" @mousedown="mouseDown">
       </label>
       <el-container :class="'bg-color'" style="margin-top: 0px;margin-bottom: 0px;margin-right:0px;">
         <el-main style="height: auto;">
@@ -158,25 +170,18 @@
             <el-radio-button label="downloadList">ダウンロードリスト</el-radio-button>
           </el-radio-group>
           <transition name="component-fade" mode="out-in">
-          <download-list v-if="pageConfig.currentTabName=='downloadList'" :download-list="respData.downloadList"></download-list>
-          <main-table v-else :table-data="respData.tableData" :table-height="pageConfig.tableHeight" :current-tab-name="pageConfig.currentTabName"
-            @preview="previewFile">
-          </main-table>
+            <download-list v-if="pageConfig.currentTabName=='downloadList'" :download-list="respData.downloadList"></download-list>
+            <main-table v-else :table-data="respData.tableData" :table-height="pageConfig.tableHeight" :current-tab-name="pageConfig.currentTabName"
+              @preview="previewFile">
+            </main-table>
           </transition>
         </el-main>
       </el-container>
     </el-container>
     <transition name="component-fade" mode="out-in">
-      <upload v-if="pageConfig.isUpload" 
-        :upload-form="reqData.uploadForm" 
-        @upload="uploadFile"
-        @close="close"
-        @reset="reset">
+      <upload v-if="pageConfig.isUpload" :upload-form="reqData.uploadForm" @upload="uploadFile" @close="close" @reset="reset">
       </upload>
-      <preview v-if="pageConfig.isPreview" 
-        :loginUser="pageConfig.loginUser" 
-        :preview-data="reqData.previewData" 
-        @comment="comment"
+      <preview v-if="pageConfig.isPreview" :loginUser="pageConfig.loginUser" :preview-data="reqData.previewData" @comment="comment"
         @close="close">
       </preview>
     </transition>
@@ -185,203 +190,215 @@
 </template>
 
 <style scoped>
-.component-fade-enter-active, .component-fade-leave-active {
-  transition: opacity .2s ease;
-}
-.component-fade-enter, .component-fade-leave-to{
-  opacity: 0;
-}
-.query-aside-input{
-  margin-bottom: 5px;
-  margin-right: 20px;
-}
+  .component-fade-enter-active,
+  .component-fade-leave-active {
+    transition: opacity .2s ease;
+  }
+
+  .component-fade-enter,
+  .component-fade-leave-to {
+    opacity: 0;
+  }
+
+  .query-aside-input {
+    margin-bottom: 5px;
+    margin-right: 20px;
+  }
+
+  .top-query-free{
+    width: 100%;
+  }
+
 </style>
 
 <script>
-import mainTable from '@/components/Table.vue'
-import downloadList from '@/components/DownloadList.vue'
-import upload from '@/components/Upload.vue'
-import preview from '@/components/Preview.vue'
-import moment from "moment";
-import { demo } from "../assets/demoData";
-export default {
-  name: "Main",
-  data() {
-    return demo;
-  },
-  components:{
+  import mainTable from '@/components/Table.vue'
+  import downloadList from '@/components/DownloadList.vue'
+  import upload from '@/components/Upload.vue'
+  import preview from '@/components/Preview.vue'
+  import moment from "moment";
+  import {
+    demo
+  } from "../assets/demoData";
+  export default {
+    name: "Main",
+    data() {
+      return demo;
+    },
+    components: {
       mainTable,
       downloadList,
       upload,
       preview,
-  },
-  // components: {
-  //   mainTable: resolve => {
-  //     require(["../components/Table.vue"], resolve);
-  //   },
-  //   downloadList: resolve => {
-  //     require(["../components/DownloadList.vue"], resolve);
-  //   },
-  //   preview: resolve => {
-  //     require(["../components/Preview.vue"], resolve);
-  //   },
-  //   upload: resolve => {
-  //     require(["../components/Upload.vue"], resolve);
-  //   }
-  // },
-  methods: {
-    mouseDown(e){
-      let that=this;
-      let x=e.clientX;
-      let pos= JSON.parse(JSON.stringify(that.pageConfig.asideWidth));
-      window.onmousemove=(evt)=>{
-        let xx=evt.clientX;
-        that.pageConfig.asideWidth=pos+xx-x;
-      };
-      window.onmouseup=(evt)=>{
-        window.onmousemove=null;
-        window.onmouseup=null;
-      };
-      if(e.preventDefault){
-        e.preventDefault();
-      }
-      return false;
     },
-    queryAside() {
-      let that = this;
-      let url =
-        "https://nyl0e196gg.execute-api.ap-northeast-1.amazonaws.com/isp/tree";
-      that.$http.post(url, {}).then(
-        resp => {
-          that.respData.treeData = JSON.parse(resp.bodyText).treeData;
-        },
-        err => {
-          console.log("err: ", err);
+    // components: {
+    //   mainTable: resolve => {
+    //     require(["../components/Table.vue"], resolve);
+    //   },
+    //   downloadList: resolve => {
+    //     require(["../components/DownloadList.vue"], resolve);
+    //   },
+    //   preview: resolve => {
+    //     require(["../components/Preview.vue"], resolve);
+    //   },
+    //   upload: resolve => {
+    //     require(["../components/Upload.vue"], resolve);
+    //   }
+    // },
+    methods: {
+      mouseDown(e) {
+        let that = this;
+        let x = e.clientX;
+        let pos = JSON.parse(JSON.stringify(that.pageConfig.asideWidth));
+        window.onmousemove = (evt) => {
+          let xx = evt.clientX;
+          that.pageConfig.asideWidth = pos + xx - x;
+        };
+        window.onmouseup = (evt) => {
+          window.onmousemove = null;
+          window.onmouseup = null;
+        };
+        if (e.preventDefault) {
+          e.preventDefault();
         }
-      );
-    },
-    submitQueryFormTop() {
-      console.log(this.searchForm);
-    },
-    switchTab(tabname) {
-      this.pageConfig.currentTabName = tabname;
-      this.pageConfig.tabs.forEach(function(tab) {
-        tab.isSelected = tab.name == tabname;
-      });
-      if (tabname == "downloadList") {
-        //AJAX Request
-      }
-    },
-    onDrag: function(e) {
-      e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);
-      e.preventDefault ? e.preventDefault() : (e.returnValue = false);
-      if (e.type != "dragenter" || e.fromElement != null) {
         return false;
-      }
-    },
-    onDrop(e) {
-      e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);
-      e.preventDefault ? e.preventDefault() : (e.returnValue = false);
-      let dt = e.dataTransfer;
-      if (dt.files.length < 1) return;
-      console.log("dt.files: ", dt.files);
-      if (dt.files.length > this.reqData.uploadForm.form.length) {
-        alert(
-          "cannot upload >" +
-            this.reqData.uploadForm.form.length +
-            " files a time!"
+      },
+      queryAside() {
+        let that = this;
+        let url =
+          "https://nyl0e196gg.execute-api.ap-northeast-1.amazonaws.com/isp/tree";
+        that.$http.post(url, {}).then(
+          resp => {
+            that.respData.treeData = JSON.parse(resp.bodyText).treeData;
+          },
+          err => {
+            console.log("err: ", err);
+          }
         );
-        return false;
-      }
-      this.reqData.uploadForm.files = dt.files;
-      for (let i = 0; i < dt.files.length; i++) {
-        if (dt.files[i].type == "") {
-          alert("cannot upload a folder or such type is not supported!");
+      },
+      submitQueryFormTop() {
+        console.log(this.searchForm);
+      },
+      switchTab(tabname) {
+        this.pageConfig.currentTabName = tabname;
+        this.pageConfig.tabs.forEach(function (tab) {
+          tab.isSelected = tab.name == tabname;
+        });
+        if (tabname == "downloadList") {
+          //AJAX Request
+        }
+      },
+      onDrag: function (e) {
+        e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);
+        e.preventDefault ? e.preventDefault() : (e.returnValue = false);
+        if (e.type != "dragenter" || e.fromElement != null) {
           return false;
         }
-        this.reqData.uploadForm.form[i].filename = dt.files[i].name;
-        let filesize=(dt.files[i].size / (1024*1024)).toFixed(1);
-        filesize=(filesize=='0.0') ? '<0.1MB' : (filesize+'MB');
-        this.reqData.uploadForm.form[i].filesize = filesize;
-      }
-      this.pageConfig.isUpload = true;
-    },
-    uploadFile() {
-      let that = this;
-      for (let i = 0; i < that.reqData.uploadForm.files.length; i++) {
-        if (
-          that.reqData.uploadForm.form[i].cmmt.length &&
-          that.reqData.uploadForm.form[i].cmmt[0].text != ""
-        ) {
-          that.reqData.uploadForm.form[i].cmmt[0].uploader =
-            that.pageConfig.loginUser;
-          that.reqData.uploadForm.form[i].cmmt[0].updateDate = moment().format(
-            "YYYY-MM-DD"
+      },
+      onDrop(e) {
+        e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);
+        e.preventDefault ? e.preventDefault() : (e.returnValue = false);
+        let dt = e.dataTransfer;
+        if (dt.files.length < 1) return;
+        console.log("dt.files: ", dt.files);
+        if (dt.files.length > this.reqData.uploadForm.form.length) {
+          alert(
+            "cannot upload >" +
+            this.reqData.uploadForm.form.length +
+            " files a time!"
           );
+          return false;
         }
-        let newData = JSON.parse(
-          JSON.stringify(that.reqData.uploadForm.form[i])
-        );
-        newData.isNew = true;
-        newData.uploadDate = moment().format("YYYY-MM-DD");
-        newData.filetype = newData.filename.split(".")[1];
-        newData.uploader = that.pageConfig.loginUser;
-        that.respData.tableData.unshift(newData);
-        that.reqData.uploadForm.form[i].cmmt = [
-          {
+        this.reqData.uploadForm.files = dt.files;
+        for (let i = 0; i < dt.files.length; i++) {
+          if (dt.files[i].type == "") {
+            alert("cannot upload a folder or such type is not supported!");
+            return false;
+          }
+          this.reqData.uploadForm.form[i].filename = dt.files[i].name;
+          let filesize = (dt.files[i].size / (1024 * 1024)).toFixed(1);
+          filesize = (filesize == '0.0') ? '<0.1MB' : (filesize + 'MB');
+          this.reqData.uploadForm.form[i].filesize = filesize;
+        }
+        this.pageConfig.isUpload = true;
+      },
+      uploadFile() {
+        let that = this;
+        for (let i = 0; i < that.reqData.uploadForm.files.length; i++) {
+          if (
+            that.reqData.uploadForm.form[i].cmmt.length &&
+            that.reqData.uploadForm.form[i].cmmt[0].text != ""
+          ) {
+            that.reqData.uploadForm.form[i].cmmt[0].uploader =
+              that.pageConfig.loginUser;
+            that.reqData.uploadForm.form[i].cmmt[0].updateDate = moment().format(
+              "YYYY-MM-DD"
+            );
+          }
+          let newData = JSON.parse(
+            JSON.stringify(that.reqData.uploadForm.form[i])
+          );
+          newData.isNew = true;
+          newData.uploadDate = moment().format("YYYY-MM-DD");
+          newData.filetype = newData.filename.split(".")[1];
+          newData.uploader = that.pageConfig.loginUser;
+          that.respData.tableData.unshift(newData);
+          that.reqData.uploadForm.form[i].cmmt = [{
             uploader: "",
             updateDate: "",
             text: ""
+          }];
+        }
+      },
+      previewFile(formData) {
+        let that = this;
+        that.reqData.previewData = formData;
+        that.pageConfig.isPreview = true;
+      },
+      comment(formData) {
+        let that = this;
+        formData.updateDate = moment().format("YYYY-MM-DD");
+        that.respData.tableData.forEach((data, idx) => {
+          if (data == that.reqData.previewData) {
+            if (formData.uploader != "") {
+              data.cmmt.forEach((c, index) => {
+                if (c.uploader == that.pageConfig.loginUser) {
+                  that.respData.tableData[idx].cmmt.splice(index, 1);
+                }
+              });
+            }
+            formData.uploader = that.pageConfig.loginUser;
+            that.respData.tableData[idx].cmmt.unshift(formData);
           }
-        ];
+        });
+        that.close();
+      },
+      close() {
+        this.pageConfig.isUpload = false;
+        this.pageConfig.isPreview = false;
+      },
+      reset(form) {
+        // console.log(this.reqData[form].form);
       }
     },
-    previewFile(formData) {
+    mounted() {
       let that = this;
-      that.reqData.previewData = formData;
-      that.pageConfig.isPreview = true;
-    },
-    comment(formData) {
-      let that = this;
-      formData.updateDate = moment().format("YYYY-MM-DD");
-      that.respData.tableData.forEach((data, idx) => {
-        if (data == that.reqData.previewData) {
-          if (formData.uploader != "") {
-            data.cmmt.forEach((c, index) => {
-              if (c.uploader == that.pageConfig.loginUser) {
-                that.respData.tableData[idx].cmmt.splice(index, 1);
-              }
-            });
-          }
-          formData.uploader = that.pageConfig.loginUser;
-          that.respData.tableData[idx].cmmt.unshift(formData);
-        }
-      });
-      that.close();
-    },
-    close() {
-      this.pageConfig.isUpload = false;
-      this.pageConfig.isPreview = false;
-    },
-    reset(form) {
-      // console.log(this.reqData[form].form);
+      window.addEventListener("dragenter", that.onDrag, false);
+      window.addEventListener("dragover", that.onDrag, false);
+      window.addEventListener("drop", that.onDrop, false);
+      that.respData.tableData.forEach(data => {
+        data.filetype = data.filename.split(".")[1];
+      }); //need to adjust later...should do when AJAX get the data,not in mounted
+      window.onresize = () => {
+        that.pageConfig.tableHeight = window.innerHeight - 290;
+      };
     }
-  },
-  mounted() {
-    let that = this;
-    window.addEventListener("dragenter", that.onDrag, false);
-    window.addEventListener("dragover", that.onDrag, false);
-    window.addEventListener("drop", that.onDrop, false);
-    that.respData.tableData.forEach(data => {
-      data.filetype = data.filename.split(".")[1];
-    }); //need to adjust later...should do when AJAX get the data,not in mounted
-    window.onresize = () => {
-      that.pageConfig.tableHeight = window.innerHeight - 290;
-    };
-  }
-};
+  };
+
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+
+
 </style>

@@ -71,9 +71,9 @@
             <el-form-item label="フリー" prop="free">
               <el-input v-model="uploadForm.form[index].free" placeholder="フリー"></el-input>
             </el-form-item>
-            <el-form-item label="注釈" prop="text">
+            <!-- <el-form-item label="注釈" prop="text">
               <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" placeholder="注釈" v-model="uploadForm.form[index].cmmt[0].text"></el-input>
-            </el-form-item>
+            </el-form-item> -->
             <el-form-item v-if="index==0 && uploadForm.files.length>1">
               <el-checkbox v-model="uploadForm.checked" label="2つ目以降も同じ内容をセット" name="type" @change="copySettings"></el-checkbox>
             </el-form-item>
@@ -99,7 +99,7 @@
             required: true,
             message: '業務区分未選択です',
             trigger: 'change'
-          }, ],
+          }],
           data: [{
             required: true,
             message: '書類名未選択です',
@@ -116,7 +116,7 @@
     },
     props: ['uploadForm'],
     mounted() {
-      this.uploadForm.form.forEach((form ,id)=> {
+      this.uploadForm.form.forEach((form, id) => {
         form.fileinfo = form.filename + ' (' + form.filesize + ')';
       })
     },

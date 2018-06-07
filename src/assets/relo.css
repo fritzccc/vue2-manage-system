@@ -224,9 +224,6 @@ ul {
 .el-radio+.el-radio {
     margin-left: 0px;
 }
-.el-pagination {
-    margin-top: 10px;
-}
 .el-table td {
     padding: 0px;
 }
@@ -411,4 +408,8 @@ a.panel-block:hover {
   width:5px;
   position: absolute;
   cursor: e-resize;
+}
+
+.top-query-free .el-form-item__content{
+  width: 100%;
 }

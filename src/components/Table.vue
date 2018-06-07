@@ -1,18 +1,17 @@
 <template>
   <div>
-    <span>（{{ totalRecords }}件中1-{{ totalRecords }}件表示）</span>
-    <el-pagination background layout="prev, pager, next" :total="200"></el-pagination>
-    <el-table :row-class-name="tableRowClass" 
-      :data="tableData" :max-height="tableHeight" 
-      border fit
-      v-loading="isLoading"
-      :default-sort="{prop: 'uploadDate', order: 'descending'}"
+    <div class="pagination-span">
+      <el-pagination background layout="prev, pager, next" :total="200" style="display:inline-block;"></el-pagination>
+      <span>（{{ totalRecords }}件中1-{{ totalRecords }}件表示）</span>
+    </div>
+
+    <el-table :row-class-name="tableRowClass" :data="tableData" :max-height="tableHeight" border fit v-loading="isLoading" :default-sort="{prop: 'uploadDate', order: 'descending'}"
       style="width: 100%">
       <el-table-column type="selection" min-width=40>
       </el-table-column>
-      <el-table-column align="center" fixed prop="cmmt" label="注釈" min-width=50>
+      <el-table-column align="center" fixed prop="cmmt" min-width=50>
         <template slot-scope="scope">
-          <el-popover v-if="scope.row.cmmt.length!=0" trigger="hover" placement="top" :open-delay=500 >
+          <el-popover v-if="scope.row.cmmt.length!=0" trigger="hover" placement="right-end" :open-delay=500>
             <p class="hover-text">注釈: {{ scope.row.cmmt[0].text }}</p>
             <div slot="reference" class="name-wrapper">
               <i class="far fa-comment" style="font-size: 20px"></i>
@@ -31,7 +30,7 @@
           </el-button>
         </template>
       </el-table-column>
-      <el-table-column sortable prop="free" label="フリー" min-width=180>
+      <el-table-column sortable show-overflow-tooltip prop="free" label="フリー" min-width=180>
       </el-table-column>
       <el-table-column sortable prop="uploadDate" label="登録日" min-width=120>
       </el-table-column>
@@ -41,30 +40,45 @@
       </el-table-column>
       <el-table-column sortable prop="manager" label="管理担当" min-width=110>
       </el-table-column>
-      <el-table-column sortable prop="owner" label="オーナー" min-width=110>
+      <el-table-column prop="owner" label="オーナー" min-width=110>
       </el-table-column>
-      <el-table-column sortable prop="propertyNo" label="物件NO." min-width=150>
+      <el-table-column prop="propertyNo" label="物件NO." min-width=150>
       </el-table-column>
-      <el-table-column sortable prop="propertyName" label="物件名" min-width=150>
+      <el-table-column prop="propertyName" label="物件名" min-width=150>
       </el-table-column>
     </el-table>
   </div>
 </template>
 
+<style scoped>
+  .el-pagination {
+    vertical-align: middle;
+  }
+
+  .pagination-span {
+    margin: 5px 0;
+    vertical-align: middle;
+  }
+
+</style>
+
 <script>
   export default {
     data() {
       return {
-        isLoading:false,
+        isLoading: false,
         previewData: {}
       }
     },
     props: ['tableData', 'tableHeight', 'currentTabName'],
     methods: {
-      tableRowClass({row,idx}) {
+      tableRowClass({
+        row,
+        idx
+      }) {
         if (row.type != this.currentTabName && this.currentTabName != '') {
           return 'unshow-row';
-        }else if (row.isNew) {
+        } else if (row.isNew) {
           return 'success-row';
         }
       },
@@ -92,4 +106,5 @@
       },
     },
   }
+
 </script>
