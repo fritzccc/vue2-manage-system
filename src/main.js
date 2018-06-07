@@ -15,10 +15,16 @@ Vue.config.productionTip = false
 Vue.use(VueResource);
 Vue.use(ElementUI,{locale});
 
+Vue.filter('no_ext',(filename)=>{
+  if (!filename)
+    return '';
+  return filename.replace(/\.\w+$/,'')
+})
+
 /* eslint-disable no-new */
 new Vue({
     el: '#app',
     router,
     components: { App },
-    template: '<App/>'
+    template: '<App/>',
 })

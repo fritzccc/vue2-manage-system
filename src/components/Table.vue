@@ -27,7 +27,7 @@
             <i v-else-if="scope.row.filetype=='pdf'" class="far fa-file-pdf" style="font-size: 16px;"></i>
             <i v-else-if="['doc','docx'].indexOf(scope.row.filetype)>-1" class="far fa-file-word" style="font-size: 16px;"></i>
             <i v-else-if="['jpg','png','bmp'].indexOf(scope.row.filetype)>-1" class="far fa-images" style="font-size: 16px;"></i>
-            {{scope.row.filename.replace(/\.\w+$/,'')}} ({{scope.row.filesize}})
+            {{scope.row.filename | no_ext}} ({{scope.row.filesize}})
           </el-button>
         </template>
       </el-table-column>

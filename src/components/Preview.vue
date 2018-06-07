@@ -4,7 +4,7 @@
     <div class="modal-card" style="width: 1500px;">
       <header class="modal-card-head">
         <img src="../assets/logo.png" width="140px" height="35px" style="margin-right:10px;">
-        <p class="modal-card-title">{{previewData.filename.replace(/\.\w+$/,'')}}</p>
+        <p class="modal-card-title">{{previewData.filename | no_ext}}</p>
         <el-button type="primary">ダウンロード</el-button>
         <el-button type="danger" icon="el-icon-close" circle @click="close"></el-button>
       </header>
@@ -27,7 +27,7 @@
               <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" v-model="previewForm.text"></el-input>
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" @click="comment">コメント{{btnText}}</el-button>
+              <el-button type="primary" @click="comment('previewForm')">コメント{{btnText}}</el-button>
             </el-form-item>
           </el-form>
           <hr>
@@ -54,7 +54,13 @@
           updateDate: '',
           text: ''
         },
-        previewFormRules: {},
+        previewFormRules: {
+          text: [{
+            required: true,
+            message: 'コメントは空きです。',
+            trigger: 'blur'
+          }],
+        },
         total: 0,
         btnText:''
       }
@@ -64,8 +70,15 @@
       close(formName) {
         this.$emit('close');
       },
-      comment() {
-        this.$emit('comment', this.previewForm);
+      comment(formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            this.$emit('comment', this.previewForm);        
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
       },
     },
     mounted() {

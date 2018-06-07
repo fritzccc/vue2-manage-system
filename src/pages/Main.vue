@@ -278,7 +278,6 @@ export default {
       if (e.type != "dragenter" || e.fromElement != null) {
         return false;
       }
-      console.log("enter");
     },
     onDrop(e) {
       e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);
@@ -301,7 +300,7 @@ export default {
           return false;
         }
         this.reqData.uploadForm.form[i].filename = dt.files[i].name;
-        let filesize=dt.files[i].size / (1024*1024).toFixed(1);
+        let filesize=(dt.files[i].size / (1024*1024)).toFixed(1);
         filesize=(filesize=='0.0') ? '<0.1MB' : (filesize+'MB');
         this.reqData.uploadForm.form[i].filesize = filesize;
       }

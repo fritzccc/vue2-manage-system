@@ -116,7 +116,7 @@
     },
     props: ['uploadForm'],
     mounted() {
-      this.uploadForm.form.forEach(form => {
+      this.uploadForm.form.forEach((form ,id)=> {
         form.fileinfo = form.filename + ' (' + form.filesize + ')';
       })
     },
