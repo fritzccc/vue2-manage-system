@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-col class="login-form" :span="8" :offset="8" style="min-width:400px;">
+    <el-col class="login-form" :span="8" :offset="8" style="width:480px;">
         <h3>ログイン</h3>
         <el-form :model="loginForm" status-icon :rules="loginFormRules" ref="loginForm" label-width="120px" class="demo-ruleForm">
           <el-form-item label="ユーザーID" prop="user">

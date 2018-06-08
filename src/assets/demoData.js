@@ -5,6 +5,9 @@ var demo={
         tableHeight:window.innerHeight-290,
         isUpload: false,
         isPreview:false,
+        cantPrev:true,
+        cantDwld:true,
+        cantDel:true,
         currentTabName:'',
         recordsPerPage: {
             value: 500,

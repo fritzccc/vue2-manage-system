@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-col class="reset-pass-form" :span="8" :offset="8" style="min-width:400px;">
+    <el-col class="reset-pass-form" :span="8" :offset="8" style="width:480px;">
         <h3>パスワードリセット</h3>
         <el-form :model="resetPassForm" status-icon ref="resetPassForm" label-width="120px" class="demo-ruleForm">
           <el-form-item label="ユーザーID" prop="user">

@@ -5,7 +5,11 @@
       <span>（{{ totalRecords }}件中1-{{ totalRecords }}件表示）</span>
     </div>
 
-    <el-table :row-class-name="tableRowClass" :data="tableData" :max-height="tableHeight" border fit v-loading="isLoading" :default-sort="{prop: 'uploadDate', order: 'descending'}"
+    <el-table :row-class-name="tableRowClass" 
+      :data="tableData" :max-height="tableHeight" 
+      :default-sort="{prop: 'uploadDate', order: 'descending'}"
+      border fit v-loading="isLoading"
+      @select="select" @select-all="selectAll"
       style="width: 100%">
       <el-table-column type="selection" min-width=40>
       </el-table-column>
@@ -72,6 +76,12 @@
     },
     props: ['tableData', 'tableHeight', 'currentTabName'],
     methods: {
+      select(selection, row){
+        this.$emit('select',{selection, row})
+      },
+      selectAll(selection){
+        this.$emit('select-all',selection)
+      },
       tableRowClass({
         row,
         idx

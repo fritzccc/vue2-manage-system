@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-col class="change-pass-form" :span="8" :offset="8" style="min-width:400px;">
+    <el-col class="change-pass-form" :span="8" :offset="8" style="width:480px;">
         <h3>パスワード変更</h3>
         <el-form :model="changePassForm" status-icon :rules="changePassFormRules" ref="changePassForm" label-width="150px" class="demo-ruleForm">
           <el-form-item label="ユーザーID" prop="user">

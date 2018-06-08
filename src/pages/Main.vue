@@ -146,10 +146,10 @@
               <el-option v-for="option in pageConfig.recordsPerPage.options" :key="option.value" :label="option.label" :value="option.value">
               </el-option>
             </el-select>
-            <el-button type="primary" plain style="margin-left: 3px">一括PV</el-button>
+            <el-button type="primary" plain :disabled="pageConfig.cantPrev" style="margin-left: 3px">一括PV</el-button>
             <!-- <el-button type="primary" plain style="margin-left: 3px">公開/非公開</el-button> -->
-            <el-button type="primary" plain style="margin-left: 3px">一括DL</el-button>
-            <el-button type="primary" plain style="margin-left: 3px">削除</el-button>
+            <el-button type="primary" plain :disabled="pageConfig.cantDwld" style="margin-left: 3px">一括DL</el-button>
+            <el-button type="primary" plain :disabled="pageConfig.cantDel" style="margin-left: 3px">削除</el-button>
           </el-row>
           <!-- <div class="tabs is-toggle is-fullwidth is-large">
             <ul>
@@ -171,8 +171,12 @@
           </el-radio-group>
           <transition name="component-fade" mode="out-in">
             <download-list v-if="pageConfig.currentTabName=='downloadList'" :download-list="respData.downloadList"></download-list>
-            <main-table v-else :table-data="respData.tableData" :table-height="pageConfig.tableHeight" :current-tab-name="pageConfig.currentTabName"
-              @preview="previewFile">
+            <main-table v-else :table-data="respData.tableData" 
+              :table-height="pageConfig.tableHeight" 
+              :current-tab-name="pageConfig.currentTabName"
+              @preview="previewFile"
+              @select="select"
+              @select-all="selectAll">
             </main-table>
           </transition>
         </el-main>
@@ -204,6 +208,10 @@
     margin-bottom: 5px;
     margin-right: 20px;
   }
+  .el-row .el-form-item {
+    margin-bottom: 0px;
+    padding: 2px;
+}
 
   .top-query-free{
     width: 100%;
@@ -246,6 +254,31 @@
     //   }
     // },
     methods: {
+      select({row,selection}){
+        if(selection.length>0 && selection.length<=10){
+          this.pageConfig.cantDwld=false;
+          this.pageConfig.cantDel=false;
+          if(selection.length>1)
+            this.pageConfig.cantPrev=false;
+        }else{
+          this.pageConfig.cantDwld=true;
+          this.pageConfig.cantDel=true;
+          this.pageConfig.cantPrev=true;
+        }
+      },
+      selectAll(selection){
+        if(selection.length>0 && selection.length<=10){
+          this.pageConfig.cantDwld=false;
+          this.pageConfig.cantDel=false;
+          if(selection.length>1)
+            this.pageConfig.cantPrev=false;
+        }else{
+          this.pageConfig.cantDwld=true;
+          this.pageConfig.cantDel=true;
+          this.pageConfig.cantPrev=true;
+        }
+      },
+      
       mouseDown(e) {
         let that = this;
         let x = e.clientX;
@@ -319,6 +352,7 @@
           let filesize = (dt.files[i].size / (1024 * 1024)).toFixed(1);
           filesize = (filesize == '0.0') ? '<0.1MB' : (filesize + 'MB');
           this.reqData.uploadForm.form[i].filesize = filesize;
+          this.reqData.uploadForm.form[i].type=this.pageConfig.currentTabName;
         }
         this.pageConfig.isUpload = true;
       },

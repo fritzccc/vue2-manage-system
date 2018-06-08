@@ -13,7 +13,8 @@
             label-width="100px" class="demo-ruleForm">
             <h3>第{{parseInt(index)+1}}件</h3>
             <el-form-item label="ファイル名" prop="fileinfo">
-              <el-input disabled v-model="uploadForm.form[index].fileinfo"></el-input>
+              <!-- <el-input disabled v-model="uploadForm.form[index].fileinfo"></el-input> -->
+              <span>{{uploadForm.form[index].filename}} ({{uploadForm.form[index].filesize}})</span>
             </el-form-item>
             <el-row>
               <el-col :span="12">
@@ -34,7 +35,7 @@
                     <el-option label="書類名１" value="書類名１"></el-option>
                     <el-option label="書類名２" value="書類名２"></el-option>
                     <el-option label="書類名３" value="書類名３"></el-option>
-                    <el-option label="指定なし" value="指定なし"></el-option>
+                    <el-option label="指定なし" value=""></el-option>
                   </el-select>
                 </el-form-item>
               </el-col>
@@ -123,11 +124,6 @@ h3{
       }
     },
     props: ['uploadForm'],
-    mounted() {
-      this.uploadForm.form.forEach((form, id) => {
-        form.fileinfo = form.filename + ' (' + form.filesize + ')';
-      })
-    },
     methods: {
       close(formName) {
         this.resetForm(formName);
