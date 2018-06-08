@@ -11,9 +11,7 @@
           <!-- Content ... -->
           <el-form v-for="(file,index) in uploadForm.files" :key="index" :model="uploadForm.form[index]" :rules="uploadFormRules" ref="uploadForm"
             label-width="100px" class="demo-ruleForm">
-            <h3>
-              <b>第{{parseInt(index)+1}}件</b>
-            </h3>
+            <h3>第{{parseInt(index)+1}}件</h3>
             <el-form-item label="ファイル名" prop="fileinfo">
               <el-input disabled v-model="uploadForm.form[index].fileinfo"></el-input>
             </el-form-item>
@@ -89,6 +87,16 @@
     </div>
   </div>
 </template>
+
+
+<style scoped>
+.el-form-item{
+  margin-bottom: 10px;
+}
+h3{
+  margin-top: 0;
+}
+</style>
 
 <script>
   export default {

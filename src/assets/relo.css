@@ -298,10 +298,6 @@ ul {
 .el-table th {
     padding: 6px 0px;
 }
-
-.modal-card-body .el-row {
-    margin-bottom: 22px;
-}
 .hover-text {
     max-width: 300px;
     white-space: nowrap;
