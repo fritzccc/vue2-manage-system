@@ -8,7 +8,7 @@
         <el-form :inline="true" :model="reqData.queryFormTop" class="demo-form-inline">
           <el-row>
             <el-form-item>
-              <el-radio-group v-model="reqData.queryFormTop.area" size="small">
+              <el-radio-group v-model="reqData.queryFormTop.sArea" size="small">
                 <el-radio-button :label="1">東京</el-radio-button>
                 <el-radio-button :label="2">大阪</el-radio-button>
                 <el-radio-button :label="3">名古屋</el-radio-button>
@@ -23,7 +23,7 @@
               </el-radio-group>
             </el-form-item> -->
             <el-form-item>
-              <el-radio-group v-model="reqData.queryFormTop.date.index" style="padding-right: 0px;" size="small">
+              <el-radio-group v-model="reqData.queryFormTop.date.sDateClass" style="padding-right: 0px;" size="small">
                 <el-radio-button :label="1">登録日</el-radio-button>
                 <el-radio-button :label="0">指定なし</el-radio-button>
               </el-radio-group>
@@ -48,36 +48,36 @@
             </el-col>
             <el-col :sm="3" :md="3" :lg="5" :xl="5" style="margin-right:5px;">
               <el-form-item class="top-query-free">
-                <el-input v-model="reqData.queryFormTop.free" placeholder="フリー"></el-input>
+                <el-input v-model="reqData.queryFormTop.freeFormat" placeholder="フリー"></el-input>
               </el-form-item>
             </el-col>
             <el-col :sm="9" :md="9" :lg="7" :xl="7">
               <el-row>
                 <el-col :span="8">
                   <el-form-item>
-                    <el-input v-model="reqData.queryFormTop.uploader" placeholder="登録者"></el-input>
+                    <el-input v-model="reqData.queryFormTop.entryNm" placeholder="登録者"></el-input>
                   </el-form-item>
                 </el-col>
                 <el-col :span="8">
                   <el-form-item>
-                    <el-input v-model="reqData.queryFormTop.salesman" placeholder="営業担当"></el-input>
+                    <el-input v-model="reqData.queryFormTop.salesNm" placeholder="営業担当"></el-input>
                   </el-form-item>
                 </el-col>
                 <el-col :span="8">
                   <el-form-item>
-                    <el-input v-model="reqData.queryFormTop.manager" placeholder="管理担当"></el-input>
+                    <el-input v-model="reqData.queryFormTop.manageNm" placeholder="管理担当"></el-input>
                   </el-form-item>
                 </el-col>
               </el-row>
             </el-col>
             <!-- <el-col :sm="3" :md="3" :lg="2" :xl="2">
               <el-form-item>
-                <el-input v-model="reqData.queryFormTop.salesman" placeholder="営業担当"></el-input>
+                <el-input v-model="reqData.queryFormTop.salesNm" placeholder="営業担当"></el-input>
               </el-form-item>
             </el-col>
             <el-col :sm="3" :md="3" :lg="2" :xl="2">
               <el-form-item>
-                <el-input v-model="reqData.queryFormTop.manager" placeholder="管理担当"></el-input>
+                <el-input v-model="reqData.queryFormTop.manageNm" placeholder="管理担当"></el-input>
               </el-form-item>
             </el-col> -->
             <el-col :sm="3" :md="3" :lg="3" :xl="3">
@@ -101,18 +101,24 @@
         <div style="margin-left: 20px;">
           <el-form :inline="true" ref="queryFormAside" :model="reqData.queryFormAside">
             <el-row class="query-aside-input">
-              <el-input v-model="reqData.queryFormAside.owner" placeholder="オーナーCD、オーナー名"></el-input>
+              <el-form-item prop="sOwner">
+              <el-input v-model="reqData.queryFormAside.sOwner" placeholder="オーナーCD、オーナー名"></el-input>
+              </el-form-item>
             </el-row>
             <el-row class="query-aside-input">
-              <el-input v-model="reqData.queryFormAside.property" placeholder="物件CD、物件名"></el-input>
+              <el-form-item prop="sEstate">
+              <el-input v-model="reqData.queryFormAside.sEstate" placeholder="物件CD、物件名"></el-input>
+              </el-form-item>
             </el-row>
             <el-row class="query-aside-input">
-              <el-input v-model="reqData.queryFormAside.guest" placeholder="テナントCD、入居者名"></el-input>
+              <el-form-item prop="sTenant">
+              <el-input v-model="reqData.queryFormAside.sTenant" placeholder="テナントCD、入居者名"></el-input>
+              </el-form-item>
             </el-row>
             <el-row>
               <el-form-item>
                 <el-button type="primary" @click="queryAside" style="margin-left: 3px">検索</el-button>
-                <el-button type="primary" plain style="margin-left: 3px">リセット</el-button>
+                <el-button type="primary" @click="reset('queryFormAside')" plain style="margin-left: 3px">リセット</el-button>
               </el-form-item>
             </el-row>
           </el-form>
@@ -141,16 +147,7 @@
       </label>
       <el-container :class="'bg-color'" style="margin-top: 0px;margin-bottom: 0px;margin-right:0px;">
         <el-main style="height: auto;">
-          <el-row>
-            <el-select v-model="pageConfig.recordsPerPage.value" placeholder="選択してください" style="width: 100px;">
-              <el-option v-for="option in pageConfig.recordsPerPage.options" :key="option.value" :label="option.label" :value="option.value">
-              </el-option>
-            </el-select>
-            <el-button type="primary" plain :disabled="pageConfig.cantPrev" style="margin-left: 3px">一括PV</el-button>
-            <!-- <el-button type="primary" plain style="margin-left: 3px">公開/非公開</el-button> -->
-            <el-button type="primary" plain :disabled="pageConfig.cantDwld" style="margin-left: 3px">一括DL</el-button>
-            <el-button type="primary" plain :disabled="pageConfig.cantDel" style="margin-left: 3px">削除</el-button>
-          </el-row>
+
           <!-- <div class="tabs is-toggle is-fullwidth is-large">
             <ul>
               <li v-for="tab in pageConfig.tabs" :key="tab.id" :class="{ 'is-active':tab.isSelected }">
@@ -160,30 +157,32 @@
               </li>
             </ul>
           </div> -->
-          <el-radio-group v-model="pageConfig.currentTabName" style="margin: 5px 0;">
-            <el-radio-button label="jutaku">受託</el-radio-button>
-            <el-radio-button label="seiyaku">成約</el-radio-button>
-            <el-radio-button label="kouji">工事</el-radio-button>
-            <el-radio-button label="kanri">管理</el-radio-button>
-            <el-radio-button label="kaiyaku">解約</el-radio-button>
-            <el-radio-button label="">指定なし</el-radio-button>
-            <el-radio-button label="downloadList">ダウンロードリスト</el-radio-button>
-          </el-radio-group>
+            <el-radio-group v-model="pageConfig.currentTabName" style="margin: 5px 0;">
+              <el-radio-button label="jutaku">受託</el-radio-button>
+              <el-radio-button label="seiyaku">成約</el-radio-button>
+              <el-radio-button label="kouji">工事</el-radio-button>
+              <el-radio-button label="kanri">管理</el-radio-button>
+              <el-radio-button label="kaiyaku">解約</el-radio-button>
+              <el-radio-button label="">指定なし</el-radio-button>
+              <el-radio-button label="downloadList">ダウンロードリスト</el-radio-button>
+            </el-radio-group>
           <transition name="component-fade" mode="out-in">
-            <download-list v-if="pageConfig.currentTabName=='downloadList'" :download-list="respData.downloadList"></download-list>
-            <main-table v-else :table-data="respData.tableData" 
-              :table-height="pageConfig.tableHeight" 
-              :current-tab-name="pageConfig.currentTabName"
-              @preview="previewFile"
-              @select="select"
-              @select-all="selectAll">
-            </main-table>
+            <keep-alive>
+              <main-table v-if="pageConfig.currentTabName!='downloadList'" :table-data="respData.tableData" 
+                :table-height="pageConfig.tableHeight" 
+                :current-tab-name="pageConfig.currentTabName"
+                :records-per-page="pageConfig.recordsPerPage"
+                @preview="previewFile"
+                @multi-preview="multiPreview">
+              </main-table>
+              <download-list v-else :download-list="respData.downloadList"></download-list>
+            </keep-alive>
           </transition>
         </el-main>
       </el-container>
     </el-container>
     <transition name="component-fade" mode="out-in">
-      <upload v-if="pageConfig.isUpload" :upload-form="reqData.uploadForm" @upload="uploadFile" @close="close" @reset="reset">
+      <upload v-if="pageConfig.isUpload" :upload-form="reqData.uploadForm" @upload="uploadFile" @close="close">
       </upload>
       <preview v-if="pageConfig.isPreview" :loginUser="pageConfig.loginUser" :preview-data="reqData.previewData" @comment="comment"
         @close="close">
@@ -205,7 +204,6 @@
   }
 
   .query-aside-input {
-    margin-bottom: 5px;
     margin-right: 20px;
   }
   .el-row .el-form-item {
@@ -224,10 +222,12 @@
   import downloadList from '@/components/DownloadList.vue'
   import upload from '@/components/Upload.vue'
   import preview from '@/components/Preview.vue'
+  import multiPreview from '@/components/MultiPreview.vue'
   import moment from "moment";
   import {
     demo
   } from "../assets/demoData";
+
   export default {
     name: "Main",
     data() {
@@ -238,6 +238,7 @@
       downloadList,
       upload,
       preview,
+      multiPreview,
     },
     // components: {
     //   mainTable: resolve => {
@@ -254,31 +255,6 @@
     //   }
     // },
     methods: {
-      select({row,selection}){
-        if(selection.length>0 && selection.length<=10){
-          this.pageConfig.cantDwld=false;
-          this.pageConfig.cantDel=false;
-          if(selection.length>1)
-            this.pageConfig.cantPrev=false;
-        }else{
-          this.pageConfig.cantDwld=true;
-          this.pageConfig.cantDel=true;
-          this.pageConfig.cantPrev=true;
-        }
-      },
-      selectAll(selection){
-        if(selection.length>0 && selection.length<=10){
-          this.pageConfig.cantDwld=false;
-          this.pageConfig.cantDel=false;
-          if(selection.length>1)
-            this.pageConfig.cantPrev=false;
-        }else{
-          this.pageConfig.cantDwld=true;
-          this.pageConfig.cantDel=true;
-          this.pageConfig.cantPrev=true;
-        }
-      },
-      
       mouseDown(e) {
         let that = this;
         let x = e.clientX;
@@ -308,6 +284,9 @@
             console.log("err: ", err);
           }
         );
+      },
+      resetQueryAside(){
+        
       },
       submitQueryFormTop() {
         console.log(this.searchForm);
@@ -352,7 +331,7 @@
           let filesize = (dt.files[i].size / (1024 * 1024)).toFixed(1);
           filesize = (filesize == '0.0') ? '<0.1MB' : (filesize + 'MB');
           this.reqData.uploadForm.form[i].filesize = filesize;
-          this.reqData.uploadForm.form[i].type=this.pageConfig.currentTabName;
+          this.reqData.uploadForm.form[i].businessKbn=this.pageConfig.currentTabName;
         }
         this.pageConfig.isUpload = true;
       },
@@ -360,12 +339,12 @@
         let that = this;
         for (let i = 0; i < that.reqData.uploadForm.files.length; i++) {
           if (
-            that.reqData.uploadForm.form[i].cmmt.length &&
-            that.reqData.uploadForm.form[i].cmmt[0].text != ""
+            that.reqData.uploadForm.form[i].comment.length &&
+            that.reqData.uploadForm.form[i].comment[0].text != ""
           ) {
-            that.reqData.uploadForm.form[i].cmmt[0].uploader =
+            that.reqData.uploadForm.form[i].comment[0].entryNm =
               that.pageConfig.loginUser;
-            that.reqData.uploadForm.form[i].cmmt[0].updateDate = moment().format(
+            that.reqData.uploadForm.form[i].comment[0].updateDate = moment().format(
               "YYYY-MM-DD"
             );
           }
@@ -373,36 +352,41 @@
             JSON.stringify(that.reqData.uploadForm.form[i])
           );
           newData.isNew = true;
-          newData.uploadDate = moment().format("YYYY-MM-DD");
+          newData.entryDate = moment().format("YYYY-MM-DD");
           newData.filetype = newData.filename.split(".")[1];
-          newData.uploader = that.pageConfig.loginUser;
+          newData.entryNm = that.pageConfig.loginUser;
           that.respData.tableData.unshift(newData);
-          that.reqData.uploadForm.form[i].cmmt = [{
-            uploader: "",
+          that.reqData.uploadForm.form[i].comment = [{
+            entryNm: "",
             updateDate: "",
             text: ""
           }];
         }
       },
-      previewFile(formData) {
-        let that = this;
-        that.reqData.previewData = formData;
-        that.pageConfig.isPreview = true;
+      previewFile(data) {
+        this.reqData.previewData = data;
+        this.pageConfig.isPreview = true;
+      },
+      multiPreview(data){
+        console.log('data: ', data);
+        //TODO
+        this.reqData.muiltPreviewData=data;
+        this.pageConfig.isMultiPreview=true;
       },
       comment(formData) {
         let that = this;
         formData.updateDate = moment().format("YYYY-MM-DD");
         that.respData.tableData.forEach((data, idx) => {
           if (data == that.reqData.previewData) {
-            if (formData.uploader != "") {
-              data.cmmt.forEach((c, index) => {
-                if (c.uploader == that.pageConfig.loginUser) {
-                  that.respData.tableData[idx].cmmt.splice(index, 1);
+            if (formData.userNm != "") {
+              data.comment.forEach((c, index) => {
+                if (c.userNm == that.pageConfig.loginUser) {
+                  that.respData.tableData[idx].comment.splice(index, 1);
                 }
               });
             }
-            formData.uploader = that.pageConfig.loginUser;
-            that.respData.tableData[idx].cmmt.unshift(formData);
+            formData.userNm = that.pageConfig.loginUser;
+            that.respData.tableData[idx].comment.unshift(formData);
           }
         });
         that.close();
@@ -411,8 +395,9 @@
         this.pageConfig.isUpload = false;
         this.pageConfig.isPreview = false;
       },
-      reset(form) {
-        // console.log(this.reqData[form].form);
+      reset(formName) {
+        this.$refs[formName].resetFields();
+        this.respData.treeData=[];
       }
     },
     mounted() {
@@ -421,18 +406,14 @@
       window.addEventListener("dragover", that.onDrag, false);
       window.addEventListener("drop", that.onDrop, false);
       that.respData.tableData.forEach(data => {
-        data.filetype = data.filename.split(".")[1];
+        data.filetype = data.docNm.split(".")[1];
       }); //need to adjust later...should do when AJAX get the data,not in mounted
       window.onresize = () => {
-        that.pageConfig.tableHeight = window.innerHeight - 290;
+        that.pageConfig.tableHeight = window.innerHeight - 260;
       };
-    }
+    },
   };
 
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-
-
-</style>

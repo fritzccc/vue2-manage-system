@@ -456,7 +456,7 @@
         color: #fff;
         outline: none; }
       .el-button--primary.is-plain.is-disabled, .el-button--primary.is-plain.is-disabled:hover, .el-button--primary.is-plain.is-disabled:focus, .el-button--primary.is-plain.is-disabled:active {
-        color: #708298;
+        color: #c0c4cc;
         background-color: #e7eaee;
         border-color: #cfd5dd; }
   .el-button--success {

@@ -4,11 +4,11 @@
     <div class="modal-card" style="width: 1500px;">
       <header class="modal-card-head">
         <img src="../assets/logo.png" width="140px" height="35px" style="margin-right:10px;">
-        <p class="modal-card-title">{{previewData.filename | no_ext}}</p>
+        <p class="modal-card-title">{{previewData.docNm | no_ext}}</p>
         <el-button type="primary">ダウンロード</el-button>
         <el-button type="danger" icon="el-icon-close" circle @click="close"></el-button>
       </header>
-      <section class="modal-card-body" v-if="previewData.cmmt">
+      <section class="modal-card-body" v-if="previewData.comment">
         <!-- Preview File  -->
         <el-col :span="16">
           <h3>
@@ -22,21 +22,31 @@
           <h3>
             <b>コメント：合計{{total}}件あります</b>
           </h3>
-          <el-form :model="previewForm" :rules="previewFormRules" ref="previewForm" label-width="100px" class="demo-ruleForm">
+          <el-form v-if="!hasComment" :model="previewForm" :rules="previewFormRules" ref="previewForm" label-width="100px" class="demo-ruleForm">
             <el-form-item label="コメント" prop="text">
               <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" v-model="previewForm.text"></el-input>
             </el-form-item>
-            <el-form-item>
-              <el-button type="primary" @click="comment('previewForm')">コメント{{btnText}}</el-button>
+            <el-form-item >
+              <el-button plain type="primary" @click="addComment('previewForm')">コメント追加</el-button>
             </el-form-item>
           </el-form>
-          <hr>
-          <article v-for="(cmmt,index) in previewData.cmmt" v-if="cmmt.uploader!=loginUser" :key="index" class="message is-info">
-            <div class="message-header">
-              <p>{{cmmt.uploader}}</p>
-              <span>{{cmmt.updateDate}}</span>
+          <article v-else class="message is-info">
+            <div class="message-header" style="background:#54677E">
+              <p>自分のコメント
+                <el-button type="danger" @click="delComment('previewForm')" style="padding: 6px 12px;">削除</el-button>
+              </p>
+              <span>{{previewForm.updateDate}}</span>
             </div>
-            <div class="message-body">{{cmmt.text}}</div>
+            <div class="message-body">{{previewForm.text}}</div>
+            <br>
+          </article>
+          <hr>
+          <article v-for="(comment,index) in previewData.comment" v-if="comment.userNm!=loginUser" :key="index" class="message is-info">
+            <div class="message-header">
+              <p>{{comment.userNm}}</p>
+              <span>{{comment.updateDate}}</span>
+            </div>
+            <div class="message-body">{{comment.text}}</div>
             <br>
           </article>
         </el-col>
@@ -50,7 +60,7 @@
     data() {
       return {
         previewForm: {
-          uploader: '',
+          userNm: '',
           updateDate: '',
           text: ''
         },
@@ -62,7 +72,7 @@
           }],
         },
         total: 0,
-        btnText:''
+        hasComment:false,
       }
     },
     props: ['previewData', 'loginUser'],
@@ -70,7 +80,7 @@
       close(formName) {
         this.$emit('close');
       },
-      comment(formName) {
+      addComment(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
             this.$emit('comment', this.previewForm);        
@@ -83,16 +93,15 @@
     },
     mounted() {
       let that = this;
-      that.total = that.previewData.cmmt.length;
+      that.total = that.previewData.comment.length;
       if (that.total > 0) {
-        that.previewData.cmmt.forEach((cmmt, idx) => {
-          if (cmmt.uploader == that.loginUser) {
-            that.previewForm.text = cmmt.text;
-            that.previewForm.uploader = cmmt.uploader;
+        that.previewData.comment.forEach((comment, idx) => {
+          if (comment.userNm == that.loginUser) {
+            that.hasComment=true;
+            that.previewForm= JSON.parse(JSON.stringify(comment));
           }
         });
       };
-      that.btnText=(that.previewForm.text == '') ? '追加' : '修正';
     }
   }
 

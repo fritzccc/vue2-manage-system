@@ -15,10 +15,10 @@ Vue.config.productionTip = false
 Vue.use(VueResource);
 Vue.use(ElementUI,{locale});
 
-Vue.filter('no_ext',(filename)=>{
-  if (!filename)
+Vue.filter('no_ext',(docNm)=>{
+  if (!docNm)
     return '';
-  return filename.replace(/\.\w+$/,'')
+  return docNm.replace(/\.\w+$/,'')
 })
 
 /* eslint-disable no-new */
