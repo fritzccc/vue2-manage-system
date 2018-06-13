@@ -16,7 +16,8 @@
     </div>
 
     <el-table :row-class-name="tableRowClass" 
-      :data="tableData" :max-height="tableHeight" 
+      :data="tableData" :max-height="tableHeight"
+      row-key="setRowKey" 
       :default-sort="{prop: 'entryDate', order: 'descending'}"
       border fit v-loading="isLoading"
       @select="select" @select-all="selectAll"
@@ -25,8 +26,10 @@
       </el-table-column>
       <el-table-column align="center" fixed prop="comment" min-width=50>
         <template slot-scope="scope">
-          <el-popover v-if="scope.row.comment.length!=0" trigger="hover" placement="right-end" :open-delay=500>
-            <p class="hover-text">注釈: {{ scope.row.comment[0].text }}</p>
+          <el-popover	v-if="scope.row.comment.length!=0" trigger="hover" placement="right-end" :open-delay=500>
+            <div :class="{'hover-text-after':(scope.row.comment[0].text.length>=100)}" class="hover-text">
+              <strong>計{{scope.row.comment.length}}件:</strong> {{ scope.row.comment[0].text }}
+            </div>
             <div slot="reference" class="name-wrapper">
               <i class="far fa-comment" style="font-size: 20px"></i>
             </div>
@@ -40,9 +43,11 @@
             <i v-else-if="scope.row.filetype=='pdf'" class="far fa-file-pdf" style="font-size: 16px;"></i>
             <i v-else-if="['doc','docx'].indexOf(scope.row.filetype)>-1" class="far fa-file-word" style="font-size: 16px;"></i>
             <i v-else-if="['jpg','png','bmp'].indexOf(scope.row.filetype)>-1" class="far fa-images" style="font-size: 16px;"></i>
-            {{scope.row.docNm | no_ext}} ({{scope.row.filesize}})
+            {{scope.row.docNm | no_ext}} 
           </el-button>
         </template>
+      </el-table-column>
+      <el-table-column sortable prop="filesize" label="サイズ" min-width=90>
       </el-table-column>
       <el-table-column sortable show-overflow-tooltip prop="freeFormat" label="フリー" min-width=180>
       </el-table-column>
@@ -68,7 +73,9 @@
   .el-pagination {
     vertical-align: middle;
   }
-
+  strong{
+    color:#102E54;
+  }
   .pagination-span {
     margin: 5px 0;
     vertical-align: middle;
@@ -110,6 +117,9 @@
         } else if (row.isNew) {
           return 'success-row';
         }
+      },
+      setRowKey(row){
+        return row.key;
       },
       multiPreview(){
         this.$emit('multi-preview', this.selectedFiles);

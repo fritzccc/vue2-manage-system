@@ -22,7 +22,7 @@
           <h3>
             <b>コメント：合計{{total}}件あります</b>
           </h3>
-          <el-form :model="previewForm" :rules="previewFormRules" ref="previewForm" label-width="100px" class="demo-ruleForm">
+          <el-form v-if="!hasComment" :model="previewForm" :rules="previewFormRules" ref="previewForm" label-width="100px" class="demo-ruleForm">
             <el-form-item label="コメント" prop="text">
               <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" v-model="previewForm.text"></el-input>
             </el-form-item>
@@ -30,27 +30,20 @@
               <el-button plain type="primary" @click="addComment('previewForm')">コメント追加</el-button>
             </el-form-item>
           </el-form>
-
-          <hr>
-          <article v-for="(comment,index) in previewData.comment" :key="index" class="message is-info">
-            <div class="message-header" v-if="comment.userNm!=loginUser">
-              <p>{{comment.userNm}}</p>
-              <span>{{comment.updateDate}}</span>
-            </div>
-            <div class="message-header" v-else style="background:#54677E">
-              <p>自分
-                <el-popover
-                  placement="top"
-                  width="160"
-                  v-model="showPop">
-                  <p>このコメントを削除してよろしいですか？</p>
-                  <div style="text-align: right; margin: 0">
-                    <el-button size="mini" type="text" @click="showPop = false">キャンセル</el-button>
-                    <el-button type="primary" size="mini" @click="delComment(index)">確定</el-button>
-                  </div>
-                  <el-button slot="reference" type="danger" style="padding: 6px 12px;">削除</el-button>
-                </el-popover>
+          <article v-else class="message is-info">
+            <div class="message-header" style="background:#54677E">
+              <p>自分のコメント
+                <el-button type="danger" @click="delComment('previewForm')" style="padding: 6px 12px;">削除</el-button>
               </p>
+              <span>{{previewForm.updateDate}}</span>
+            </div>
+            <div class="message-body">{{previewForm.text}}</div>
+            <br>
+          </article>
+          <hr>
+          <article v-for="(comment,index) in previewData.comment" v-if="comment.userNm!=loginUser" :key="index" class="message is-info">
+            <div class="message-header">
+              <p>{{comment.userNm}}</p>
               <span>{{comment.updateDate}}</span>
             </div>
             <div class="message-body">{{comment.text}}</div>
@@ -79,7 +72,7 @@
           }],
         },
         total: 0,
-        showPop:false
+        hasComment:false,
       }
     },
     props: ['previewData', 'loginUser'],
@@ -90,29 +83,25 @@
       addComment(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            this.$emit('add-comment', this.previewForm);        
+            this.$emit('comment', this.previewForm);        
           } else {
             console.log('error submit!!');
             return false;
           }
         });
       },
-      delComment(index){
-        this.$emit('del-comment', index);
-        this.showPop=false;
-      }
     },
     mounted() {
       let that = this;
       that.total = that.previewData.comment.length;
-      // if (that.total > 0) {
-      //   that.previewData.comment.forEach((comment, idx) => {
-      //     if (comment.userNm == that.loginUser) {
-      //       that.hasComment=true;
-      //       that.previewForm= JSON.parse(JSON.stringify(comment));
-      //     }
-      //   });
-      // };
+      if (that.total > 0) {
+        that.previewData.comment.forEach((comment, idx) => {
+          if (comment.userNm == that.loginUser) {
+            that.hasComment=true;
+            that.previewForm= JSON.parse(JSON.stringify(comment));
+          }
+        });
+      };
     }
   }
 

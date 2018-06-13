@@ -184,7 +184,11 @@
     <transition name="component-fade" mode="out-in">
       <upload v-if="pageConfig.isUpload" :upload-form="reqData.uploadForm" @upload="uploadFile" @close="close">
       </upload>
-      <preview v-if="pageConfig.isPreview" :loginUser="pageConfig.loginUser" :preview-data="reqData.previewData" @comment="comment"
+      <preview v-if="pageConfig.isPreview" 
+        :loginUser="pageConfig.loginUser" 
+        :preview-data="reqData.previewData" 
+        @add-comment="addComment"
+        @del-comment="delComment"
         @close="close">
       </preview>
     </transition>
@@ -204,7 +208,7 @@
   }
 
   .query-aside-input {
-    margin-right: 20px;
+    margin-right: 15px;
   }
   .el-row .el-form-item {
     margin-bottom: 0px;
@@ -214,7 +218,6 @@
   .top-query-free{
     width: 100%;
   }
-
 </style>
 
 <script>
@@ -255,6 +258,11 @@
     //   }
     // },
     methods: {
+      addKey(data){
+        data.forEach(d=>{
+          d.key=Math.random();
+        })
+      },
       mouseDown(e) {
         let that = this;
         let x = e.clientX;
@@ -373,7 +381,7 @@
         this.reqData.muiltPreviewData=data;
         this.pageConfig.isMultiPreview=true;
       },
-      comment(formData) {
+      addComment(formData) {
         let that = this;
         formData.updateDate = moment().format("YYYY-MM-DD");
         that.respData.tableData.forEach((data, idx) => {
@@ -391,6 +399,16 @@
         });
         that.close();
       },
+      delComment(index){
+        // console.log('index: ', index);
+        let that = this;
+        that.respData.tableData.forEach((data, idx) => {
+          if (data == that.reqData.previewData) {
+            data.comment.splice(index,1);
+            that.reqData.previewData=JSON.parse(JSON.stringify(data));
+          }
+        });
+      },
       close() {
         this.pageConfig.isUpload = false;
         this.pageConfig.isPreview = false;
@@ -407,10 +425,12 @@
       window.addEventListener("drop", that.onDrop, false);
       that.respData.tableData.forEach(data => {
         data.filetype = data.docNm.split(".")[1];
+        data.key=Math.random();
       }); //need to adjust later...should do when AJAX get the data,not in mounted
       window.onresize = () => {
         that.pageConfig.tableHeight = window.innerHeight - 260;
       };
+
     },
   };
 

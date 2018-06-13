@@ -349,11 +349,31 @@ ul {
   padding: 6px 0px;
 }
 
-.hover-text {
+/* .hover-text {
   max-width: 300px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+} */
+
+.hover-text{
+  font-size: 13px;
+  max-width: 330px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  overflow: hidden;
+  position:relative;
+  line-height:1.5em;
+  max-height:6em;
+  overflow:hidden;
+}
+.hover-text-after:after {
+  content: "..."; position: absolute; bottom: 0; right: 0; padding-left: 40px;
+  background: -webkit-linear-gradient(left, transparent, #fff 50%);
+  background: -o-linear-gradient(right, transparent, #fff 50%);
+  background: -moz-linear-gradient(right, transparent, #fff 50%);
+  background: linear-gradient(to right, transparent, #fff 50%);
 }
 
 .message {
@@ -481,3 +501,7 @@ a.panel-block:hover {
 .el-button--primary.is-plain.is-disabled:active {
   color: #c0c4cc;
 }
+
+.el-tree-node__content:hover,
+.el-tree-node:focus > .el-tree-node__content  {
+  background-color: #D0D7DF; }
