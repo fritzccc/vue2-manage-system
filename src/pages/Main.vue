@@ -123,7 +123,7 @@
             </el-row>
           </el-form>
         </div>
-        <el-tree :class="'bg-color'" :data="respData.treeData" accordion node-key="id">
+        <el-tree :class="'bg-color'" :data="respData.treeData" accordion highlight-current node-key="id">
           <span slot-scope="nodeData">
             <span class="tree-mark" v-if="nodeData.node.label[0]=='A'">
               <b>オ</b>
@@ -186,7 +186,6 @@
       </upload>
       <preview v-if="pageConfig.isPreview" 
         :loginUser="pageConfig.loginUser" 
-        :preview-data="reqData.previewData" 
         @add-comment="addComment"
         @del-comment="delComment"
         @close="close">
@@ -299,6 +298,11 @@
       submitQueryFormTop() {
         console.log(this.searchForm);
       },
+      treeNodeClick(a,b,c){
+        console.log(a);
+        console.log(b);
+        console.log(c);
+      },
       switchTab(tabname) {
         this.pageConfig.currentTabName = tabname;
         this.pageConfig.tabs.forEach(function (tab) {
@@ -371,8 +375,8 @@
           }];
         }
       },
-      previewFile(data) {
-        this.reqData.previewData = data;
+      previewFile() {
+        // this.reqData.previewData = data;
         this.pageConfig.isPreview = true;
       },
       multiPreview(data){
@@ -381,33 +385,13 @@
         this.reqData.muiltPreviewData=data;
         this.pageConfig.isMultiPreview=true;
       },
-      addComment(formData) {
-        let that = this;
-        formData.updateDate = moment().format("YYYY-MM-DD");
-        that.respData.tableData.forEach((data, idx) => {
-          if (data == that.reqData.previewData) {
-            if (formData.userNm != "") {
-              data.comment.forEach((c, index) => {
-                if (c.userNm == that.pageConfig.loginUser) {
-                  that.respData.tableData[idx].comment.splice(index, 1);
-                }
-              });
-            }
-            formData.userNm = that.pageConfig.loginUser;
-            that.respData.tableData[idx].comment.unshift(formData);
-          }
-        });
-        that.close();
+      addComment(previewData,newComment) {
+        previewData.comment.unshift(JSON.parse(JSON.stringify(newComment)));
+        // AJAX
       },
-      delComment(index){
+      delComment(previewData,index){
         // console.log('index: ', index);
-        let that = this;
-        that.respData.tableData.forEach((data, idx) => {
-          if (data == that.reqData.previewData) {
-            data.comment.splice(index,1);
-            that.reqData.previewData=JSON.parse(JSON.stringify(data));
-          }
-        });
+        previewData.comment.splice(index,1);
       },
       close() {
         this.pageConfig.isUpload = false;

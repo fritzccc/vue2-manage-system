@@ -143,8 +143,7 @@ h3{
         } else {
           for (let i = 1; i < that.uploadForm.files.length; i++) {
             that.uploadForm.form[i].comment = [''];
-            that.uploadForm.form[i].freeFormat
- = '';
+            that.uploadForm.form[i].freeFormat= '';
             that.uploadForm.form[i].service = '';
             that.uploadForm.form[i].docNm = '';
           }

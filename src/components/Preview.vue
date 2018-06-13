@@ -22,12 +22,12 @@
           <h3>
             <b>コメント：合計{{total}}件あります</b>
           </h3>
-          <el-form :model="previewForm" :rules="previewFormRules" ref="previewForm" label-width="100px" class="demo-ruleForm">
+          <el-form :model="newComment" :rules="newCommentRules" ref="newComment" label-width="100px" class="demo-ruleForm">
             <el-form-item label="コメント" prop="text">
-              <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" v-model="previewForm.text"></el-input>
+              <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" v-model="newComment.text"></el-input>
             </el-form-item>
             <el-form-item >
-              <el-button plain type="primary" @click="addComment('previewForm')">コメント追加</el-button>
+              <el-button plain type="primary" @click="addComment('newComment')">コメント追加</el-button>
             </el-form-item>
           </el-form>
 
@@ -39,16 +39,13 @@
             </div>
             <div class="message-header" v-else style="background:#54677E">
               <p>自分
-                <el-popover
-                  placement="top"
-                  width="160"
-                  v-model="showPop">
+                <el-popover placement="top" width="160" v-model="comment.delPop">
                   <p>このコメントを削除してよろしいですか？</p>
                   <div style="text-align: right; margin: 0">
-                    <el-button size="mini" type="text" @click="showPop = false">キャンセル</el-button>
+                    <el-button size="mini" type="text" @click="comment.delPop = false">キャンセル</el-button>
                     <el-button type="primary" size="mini" @click="delComment(index)">確定</el-button>
                   </div>
-                  <el-button slot="reference" type="danger" style="padding: 6px 12px;">削除</el-button>
+                  <el-button slot="reference" type="danger" style="padding: 6px 12px;" @click="comment.delPop = !comment.delPop">削除</el-button>
                 </el-popover>
               </p>
               <span>{{comment.updateDate}}</span>
@@ -63,34 +60,40 @@
 </template>
 
 <script>
+  import moment from "moment";
+  import evtBus from '../assets/evtBus'
   export default {
     data() {
       return {
-        previewForm: {
-          userNm: '',
-          updateDate: '',
-          text: ''
+        total: 0,
+        showPop:false,
+        previewData:{},
+        newComment: {
+          userNm: this.loginUser,
+          updateDate: moment().format("YYYY-MM-DD"),
+          text: '',
+          delPop:false,
         },
-        previewFormRules: {
+        newCommentRules: {
           text: [{
             required: true,
             message: 'コメントは空きです。',
             trigger: 'blur'
           }],
         },
-        total: 0,
-        showPop:false
       }
     },
-    props: ['previewData', 'loginUser'],
+    props: ['loginUser'],
     methods: {
       close(formName) {
         this.$emit('close');
       },
       addComment(formName) {
-        this.$refs[formName].validate((valid) => {
+        let me =this
+        me.$refs[formName].validate((valid) => {
           if (valid) {
-            this.$emit('add-comment', this.previewForm);        
+            me.$emit('add-comment',me.previewData,me.newComment);
+            me.newComment.text=''
           } else {
             console.log('error submit!!');
             return false;
@@ -98,18 +101,25 @@
         });
       },
       delComment(index){
-        this.$emit('del-comment', index);
+        this.$emit('del-comment', this.previewData,index);
         this.showPop=false;
       }
     },
-    mounted() {
-      let that = this;
-      that.total = that.previewData.comment.length;
-      // if (that.total > 0) {
-      //   that.previewData.comment.forEach((comment, idx) => {
-      //     if (comment.userNm == that.loginUser) {
-      //       that.hasComment=true;
-      //       that.previewForm= JSON.parse(JSON.stringify(comment));
+    created() {
+      let me = this;
+      evtBus.$on('preview',data=>{
+        me.total=data.comment.length;
+        data.comment.forEach(comment=>{
+          comment.delPop=false;
+        })
+        me.previewData=data;
+      })
+      // me.total = me.previewData.comment.length;
+      // if (me.total > 0) {
+      //   me.previewData.comment.forEach((comment, idx) => {
+      //     if (comment.userNm == me.loginUser) {
+      //       me.hasComment=true;
+      //       me.newComment= JSON.parse(JSON.stringify(comment));
       //     }
       //   });
       // };

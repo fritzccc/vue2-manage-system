@@ -83,11 +83,12 @@
 </style>
 
 <script>
+  import Vue from 'vue'
+  import evtBus from '../assets/evtBus'
   export default {
     data() {
       return {
         isLoading: false,
-        previewData: {},
         selectedFiles:null,
         cantDel:true,
         cantPrev:true,
@@ -125,9 +126,9 @@
         this.$emit('multi-preview', this.selectedFiles);
       },
       previewFile(data) {
-        console.log('data', data);
-        this.previewData = data;
-        this.$emit('preview', this.previewData);
+        console.log('rowData', data);
+        this.$emit('preview',data);
+        Vue.nextTick(()=>evtBus.$emit('preview',data));
       }
     },
     computed: {

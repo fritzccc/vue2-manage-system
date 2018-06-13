@@ -73,8 +73,6 @@ var demo={
             sEstate:"",
             sTenant:""
         },
-        previewData:{},
-        multiPreviewData:{},
         uploadForm:{
             checked:false,
             files:[],

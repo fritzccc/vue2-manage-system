@@ -503,5 +503,6 @@ a.panel-block:hover {
 }
 
 .el-tree-node__content:hover,
-.el-tree-node:focus > .el-tree-node__content  {
+.el-tree-node:focus > .el-tree-node__content,
+.el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content{
   background-color: #D0D7DF; }

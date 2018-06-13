@@ -21,6 +21,7 @@ Vue.filter('no_ext',(docNm)=>{
   return docNm.replace(/\.\w+$/,'')
 })
 
+
 /* eslint-disable no-new */
 new Vue({
     el: '#app',
