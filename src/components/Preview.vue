@@ -1,6 +1,6 @@
 <template>
   <div class="modal is-active">
-    <div class="modal-background"></div>
+    <!-- <div class="modal-background"></div> -->
     <div class="modal-card" style="width: 1500px;">
       <header class="modal-card-head">
         <img src="../assets/logo.png" width="140px" height="35px" style="margin-right:10px;">
@@ -8,7 +8,7 @@
         <el-button type="primary">ダウンロード</el-button>
         <el-button type="danger" icon="el-icon-close" circle @click="close"></el-button>
       </header>
-      <section class="modal-card-body" v-if="previewData.comment">
+      <section class="modal-card-body">
         <!-- Preview File  -->
         <el-col :span="16">
           <h3>
@@ -20,7 +20,7 @@
         </el-col>
         <el-col :span="7" :offset="1">
           <h3>
-            <b>コメント：合計{{total}}件あります</b>
+            <b>コメント：{{total|comment}}</b>
           </h3>
           <el-form :model="newComment" :rules="newCommentRules" ref="newComment" label-width="100px" class="demo-ruleForm">
             <el-form-item label="コメント" prop="text">
@@ -42,10 +42,10 @@
                 <el-popover placement="top" width="160" v-model="comment.delPop">
                   <p>このコメントを削除してよろしいですか？</p>
                   <div style="text-align: right; margin: 0">
-                    <el-button size="mini" type="text" @click="comment.delPop = false">キャンセル</el-button>
+                    <el-button size="mini" type="text" @click="comment.delPop=false">キャンセル</el-button>
                     <el-button type="primary" size="mini" @click="delComment(index)">確定</el-button>
                   </div>
-                  <el-button slot="reference" type="danger" style="padding: 6px 12px;" @click="comment.delPop = !comment.delPop">削除</el-button>
+                  <el-button slot="reference" type="danger" style="padding: 6px 12px;">削除</el-button>
                 </el-popover>
               </p>
               <span>{{comment.updateDate}}</span>
@@ -56,6 +56,7 @@
         </el-col>
       </section>
     </div>
+
   </div>
 </template>
 
@@ -65,8 +66,9 @@
   export default {
     data() {
       return {
+        visible2:false,
         total: 0,
-        showPop:false,
+        isFromMultiPreview:false,
         previewData:{},
         newComment: {
           userNm: this.loginUser,
@@ -86,7 +88,15 @@
     props: ['loginUser'],
     methods: {
       close(formName) {
-        this.$emit('close');
+        if(this.isFromMultiPreview){
+          this.$emit('close',true);
+        }else{
+          this.$emit('close',false);
+        }
+      },
+      test(index){
+        this.previewData.comment[index].delPop=false;
+        console.log('comment: ', this.previewData.comment[index]);
       },
       addComment(formName) {
         let me =this
@@ -102,28 +112,19 @@
       },
       delComment(index){
         this.$emit('del-comment', this.previewData,index);
-        this.showPop=false;
       }
     },
     created() {
       let me = this;
-      evtBus.$on('preview',data=>{
+      evtBus.$on('preview',(data,fromMultiPreview)=>{
         me.total=data.comment.length;
-        data.comment.forEach(comment=>{
+        me.isFromMultiPreview=fromMultiPreview ? true:false;
+        me.previewData=JSON.parse(JSON.stringify(data));
+        me.previewData.comment.forEach(comment=>{
           comment.delPop=false;
         })
-        me.previewData=data;
       })
-      // me.total = me.previewData.comment.length;
-      // if (me.total > 0) {
-      //   me.previewData.comment.forEach((comment, idx) => {
-      //     if (comment.userNm == me.loginUser) {
-      //       me.hasComment=true;
-      //       me.newComment= JSON.parse(JSON.stringify(comment));
-      //     }
-      //   });
-      // };
-    }
+    },
   }
 
 </script>

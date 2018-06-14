@@ -21,6 +21,9 @@ Vue.filter('no_ext',(docNm)=>{
   return docNm.replace(/\.\w+$/,'')
 })
 
+Vue.filter('comment',(length)=>{
+  return length>0?("合計"+length+"件あります"):"まだありません"
+})
 
 /* eslint-disable no-new */
 new Vue({

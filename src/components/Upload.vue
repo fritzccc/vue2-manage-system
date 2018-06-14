@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="modal is-active">
-      <div class="modal-background"></div>
+      <!-- <div class="modal-background"></div> -->
       <div class="modal-card">
         <header class="modal-card-head">
           <p class="modal-card-title">アップロード</p>
@@ -133,19 +133,19 @@ h3{
         this.$emit('close');
       },
       copySettings() {
-        let that = this;
-        if (that.uploadForm.checked) {
-          for (let i = 1; i < that.uploadForm.files.length; i++) {
-            let filename = that.uploadForm.form[i].filename;
-            that.uploadForm.form[i] = JSON.parse(JSON.stringify(that.uploadForm.form[0]));
-            that.uploadForm.form[i].filename = filename;
+        let me = this;
+        if (me.uploadForm.checked) {
+          for (let i = 1; i < me.uploadForm.files.length; i++) {
+            let filename = me.uploadForm.form[i].filename;
+            me.uploadForm.form[i] = JSON.parse(JSON.stringify(me.uploadForm.form[0]));
+            me.uploadForm.form[i].filename = filename;
           }
         } else {
-          for (let i = 1; i < that.uploadForm.files.length; i++) {
-            that.uploadForm.form[i].comment = [''];
-            that.uploadForm.form[i].freeFormat= '';
-            that.uploadForm.form[i].service = '';
-            that.uploadForm.form[i].docNm = '';
+          for (let i = 1; i < me.uploadForm.files.length; i++) {
+            me.uploadForm.form[i].comment = [''];
+            me.uploadForm.form[i].freeFormat= '';
+            me.uploadForm.form[i].service = '';
+            me.uploadForm.form[i].docNm = '';
           }
         }
       },
@@ -156,25 +156,25 @@ h3{
         this.$emit('reset', formName);
       },
       uploadFiles(formName) {
-        let that = this;
+        let me = this;
         let checkflag = true;
-        that.$refs[formName].forEach((formData, idx) => {
+        me.$refs[formName].forEach((formData, idx) => {
           formData.validate(valid => {
             if (!valid) checkflag = false;
           })
-          if (that.uploadForm.form[idx].comment[0].text == '') {
-            console.log('text: ', that.uploadForm.form[idx].comment[0].text);
-            that.uploadForm.form[idx].comment = [];
+          if (me.uploadForm.form[idx].comment[0].text == '') {
+            console.log('text: ', me.uploadForm.form[idx].comment[0].text);
+            me.uploadForm.form[idx].comment = [];
           }
         });
         if (checkflag) {
-          that.$emit('upload');
+          me.$emit('upload');
         } else {
           console.log('submit failed');
           return false;
         }
-        that.close(formName);
-        that.resetForm(formName);
+        me.close(formName);
+        me.resetForm(formName);
       },
     }
   }

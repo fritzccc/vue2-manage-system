@@ -168,7 +168,8 @@
             </el-radio-group>
           <transition name="component-fade" mode="out-in">
             <keep-alive>
-              <main-table v-if="pageConfig.currentTabName!='downloadList'" :table-data="respData.tableData" 
+              <main-table v-if="pageConfig.currentTabName!='downloadList'"
+                :table-data="respData.tableData" 
                 :table-height="pageConfig.tableHeight" 
                 :current-tab-name="pageConfig.currentTabName"
                 :records-per-page="pageConfig.recordsPerPage"
@@ -181,15 +182,26 @@
         </el-main>
       </el-container>
     </el-container>
+    <div class="modal-background"
+    v-if="pageConfig.isMultiPreview || pageConfig.isPreview|| pageConfig.isUpload"></div>
     <transition name="component-fade" mode="out-in">
       <upload v-if="pageConfig.isUpload" :upload-form="reqData.uploadForm" @upload="uploadFile" @close="close">
       </upload>
       <preview v-if="pageConfig.isPreview" 
-        :loginUser="pageConfig.loginUser" 
+        :loginUser="pageConfig.loginUser"
+        :isFromMultiPreview="pageConfig.isMultiPreview"
         @add-comment="addComment"
         @del-comment="delComment"
         @close="close">
       </preview>
+    </transition>
+    <transition name="component-fade" mode="out-in">
+      <multi-preview v-if="pageConfig.isMultiPreview" 
+        v-show="pageConfig.showMp"
+        :loginUser="pageConfig.loginUser" 
+        @preview="previewFile"
+        @close="close">
+      </multi-preview>
     </transition>
 
   </div>
@@ -198,7 +210,7 @@
 <style scoped>
   .component-fade-enter-active,
   .component-fade-leave-active {
-    transition: opacity .2s ease;
+    transition: opacity .3s ease;
   }
 
   .component-fade-enter,
@@ -263,12 +275,12 @@
         })
       },
       mouseDown(e) {
-        let that = this;
+        let me = this;
         let x = e.clientX;
-        let pos = JSON.parse(JSON.stringify(that.pageConfig.asideWidth));
+        let pos = JSON.parse(JSON.stringify(me.pageConfig.asideWidth));
         window.onmousemove = (evt) => {
           let xx = evt.clientX;
-          that.pageConfig.asideWidth = pos + xx - x;
+          me.pageConfig.asideWidth = pos + xx - x;
         };
         window.onmouseup = (evt) => {
           window.onmousemove = null;
@@ -280,12 +292,12 @@
         return false;
       },
       queryAside() {
-        let that = this;
+        let me = this;
         let url =
           "https://nyl0e196gg.execute-api.ap-northeast-1.amazonaws.com/isp/tree";
-        that.$http.post(url, {}).then(
+        me.$http.post(url, {}).then(
           resp => {
-            that.respData.treeData = JSON.parse(resp.bodyText).treeData;
+            me.respData.treeData = JSON.parse(resp.bodyText).treeData;
           },
           err => {
             console.log("err: ", err);
@@ -348,27 +360,27 @@
         this.pageConfig.isUpload = true;
       },
       uploadFile() {
-        let that = this;
-        for (let i = 0; i < that.reqData.uploadForm.files.length; i++) {
+        let me = this;
+        for (let i = 0; i < me.reqData.uploadForm.files.length; i++) {
           if (
-            that.reqData.uploadForm.form[i].comment.length &&
-            that.reqData.uploadForm.form[i].comment[0].text != ""
+            me.reqData.uploadForm.form[i].comment.length &&
+            me.reqData.uploadForm.form[i].comment[0].text != ""
           ) {
-            that.reqData.uploadForm.form[i].comment[0].entryNm =
-              that.pageConfig.loginUser;
-            that.reqData.uploadForm.form[i].comment[0].updateDate = moment().format(
+            me.reqData.uploadForm.form[i].comment[0].entryNm =
+              me.pageConfig.loginUser;
+            me.reqData.uploadForm.form[i].comment[0].updateDate = moment().format(
               "YYYY-MM-DD"
             );
           }
           let newData = JSON.parse(
-            JSON.stringify(that.reqData.uploadForm.form[i])
+            JSON.stringify(me.reqData.uploadForm.form[i])
           );
           newData.isNew = true;
           newData.entryDate = moment().format("YYYY-MM-DD");
           newData.filetype = newData.filename.split(".")[1];
-          newData.entryNm = that.pageConfig.loginUser;
-          that.respData.tableData.unshift(newData);
-          that.reqData.uploadForm.form[i].comment = [{
+          newData.entryNm = me.pageConfig.loginUser;
+          me.respData.tableData.unshift(newData);
+          me.reqData.uploadForm.form[i].comment = [{
             entryNm: "",
             updateDate: "",
             text: ""
@@ -376,13 +388,11 @@
         }
       },
       previewFile() {
-        // this.reqData.previewData = data;
+        this.pageConfig.showMp=false;
         this.pageConfig.isPreview = true;
       },
       multiPreview(data){
-        console.log('data: ', data);
         //TODO
-        this.reqData.muiltPreviewData=data;
         this.pageConfig.isMultiPreview=true;
       },
       addComment(previewData,newComment) {
@@ -391,9 +401,16 @@
       },
       delComment(previewData,index){
         // console.log('index: ', index);
-        previewData.comment.splice(index,1);
+        this.respData.tableData.forEach(data=>{
+          if(data.key===previewData.key){
+            data.comment.splice(index,1);
+            previewData.comment.splice(index,1);
+          }
+        })
+        // previewData.comment.splice(index,1);
       },
-      close() {
+      close(goBack) {
+        goBack ? this.pageConfig.showMp=true:this.pageConfig.isMultiPreview=false;
         this.pageConfig.isUpload = false;
         this.pageConfig.isPreview = false;
       },
@@ -403,16 +420,16 @@
       }
     },
     mounted() {
-      let that = this;
-      window.addEventListener("dragenter", that.onDrag, false);
-      window.addEventListener("dragover", that.onDrag, false);
-      window.addEventListener("drop", that.onDrop, false);
-      that.respData.tableData.forEach(data => {
+      let me = this;
+      window.addEventListener("dragenter", me.onDrag, false);
+      window.addEventListener("dragover", me.onDrag, false);
+      window.addEventListener("drop", me.onDrop, false);
+      me.respData.tableData.forEach(data => {
         data.filetype = data.docNm.split(".")[1];
         data.key=Math.random();
       }); //need to adjust later...should do when AJAX get the data,not in mounted
       window.onresize = () => {
-        that.pageConfig.tableHeight = window.innerHeight - 260;
+        me.pageConfig.tableHeight = window.innerHeight - 260;
       };
 
     },

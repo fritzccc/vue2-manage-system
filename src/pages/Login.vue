@@ -73,12 +73,12 @@
     },
     methods: {
       login(formName) {
-        let that = this;
+        let me = this;
         this.$refs[formName].validate((valid) => {
           if (valid) {
             //TODO
-            if (that.loginForm.user == 'admin' && that.loginForm.pass == 'admin') {
-              that.$router.push('/main');
+            if (me.loginForm.user == 'admin' && me.loginForm.pass == 'admin') {
+              me.$router.push('/main');
             } else {
               this.$message.error('入力されたアカウントまたはパスワードに誤りがあります。');
             }
@@ -87,28 +87,28 @@
             return false;
           }
         });
-        // if(that.username == "" || that.password == ""){
+        // if(me.username == "" || me.password == ""){
         // 	alert("请输入用户名或密码")
         // }else{
-        // 	let data = {'username':that.username,'password':that.password}
+        // 	let data = {'username':me.username,'password':me.password}
 
-        // 	that.$http.post('http://localhost/vueapi/index.php/Home/user/login',data).then((res)=>{
+        // 	me.$http.post('http://localhost/vueapi/index.php/Home/user/login',data).then((res)=>{
         // 		console.log(res)
         // 		if(res.data == -1){
-        // 			that.tishi = "该用户不存在"
-        // 			that.showTishi = true
+        // 			me.tishi = "该用户不存在"
+        // 			me.showTishi = true
         // 		}else if(res.data == 0){
-        // 			that.tishi = "密码输入错误"
-        // 			that.showTishi = true
+        // 			me.tishi = "密码输入错误"
+        // 			me.showTishi = true
         // 		}else if(res.data == 'admin'){
-        // 			that.$router.push('/main')
+        // 			me.$router.push('/main')
         // 		}else{
-        // 			that.tishi = "登录成功"
-        // 			that.showTishi = true
-        // 			setCookie('username',that.username,1000*60)
+        // 			me.tishi = "登录成功"
+        // 			me.showTishi = true
+        // 			setCookie('username',me.username,1000*60)
         // 			setTimeout(function(){
-        // 				that.$router.push({path:'home',query:{id:1}})
-        // 			}.bind(that),1000)
+        // 				me.$router.push({path:'home',query:{id:1}})
+        // 			}.bind(me),1000)
         // 		}
         // 	})
         // }

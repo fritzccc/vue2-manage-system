@@ -4,6 +4,7 @@
 
 .modal,
 .modal-background {
+  z-index: 4;
   bottom: 0;
   left: 0;
   position: absolute;

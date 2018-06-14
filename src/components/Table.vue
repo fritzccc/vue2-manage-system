@@ -89,7 +89,7 @@
     data() {
       return {
         isLoading: false,
-        selectedFiles:null,
+        selectedItems:null,
         cantDel:true,
         cantPrev:true,
         cantDwld:true,
@@ -101,13 +101,13 @@
         this.cantPrev=!(selection.length>1 && selection.length<=10);
         this.cantDwld=!(selection.length>0 && selection.length<=10);
         this.cantDel=!(selection.length>0 && selection.length<=10);
-        this.selectedFiles=selection;
+        this.selectedItems=selection;
       },
       selectAll(selection){
         this.cantPrev=!(selection.length>1 && selection.length<=10);
         this.cantDwld=!(selection.length>0 && selection.length<=10);
         this.cantDel=!(selection.length>0 && selection.length<=10);
-        this.selectedFiles=selection;
+        this.selectedItems=selection;
       },
       tableRowClass({
         row,
@@ -123,26 +123,27 @@
         return row.key;
       },
       multiPreview(){
-        this.$emit('multi-preview', this.selectedFiles);
+        let me=this;
+        me.$emit('multi-preview');
+        Vue.nextTick(()=>evtBus.$emit('multi-preview',me.selectedItems));
       },
       previewFile(data) {
-        console.log('rowData', data);
-        this.$emit('preview',data);
+        this.$emit('preview');
         Vue.nextTick(()=>evtBus.$emit('preview',data));
       }
     },
     computed: {
       totalRecords: function () {
-        let that = this,
+        let me = this,
           total = 0;
-        if (that.currentTabName == '') {
-          return that.tableData.length;
+        if (me.currentTabName == '') {
+          return me.tableData.length;
         }
-        if (that.currentTabName == 'downloadList') {
+        if (me.currentTabName == 'downloadList') {
           return 99999;
         }
-        that.tableData.forEach(function (data) {
-          if (data.businessKbn == that.currentTabName) {
+        me.tableData.forEach(function (data) {
+          if (data.businessKbn == me.currentTabName) {
             total++;
           }
         })

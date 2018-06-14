@@ -6,6 +6,7 @@ var demo={
         isUpload: false,
         isPreview:false,
         isMultiPreview:false,
+        showMp:true,
         cantPrev:true,
         cantDwld:true,
         cantDel:true,
