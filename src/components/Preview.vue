@@ -66,7 +66,6 @@
   export default {
     data() {
       return {
-        visible2:false,
         total: 0,
         isFromMultiPreview:false,
         previewData:{},
@@ -93,6 +92,7 @@
         }else{
           this.$emit('close',false);
         }
+        this.$destroy;
       },
       test(index){
         this.previewData.comment[index].delPop=false;

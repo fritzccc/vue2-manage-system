@@ -410,7 +410,8 @@
         // previewData.comment.splice(index,1);
       },
       close(goBack) {
-        goBack ? this.pageConfig.showMp=true:this.pageConfig.isMultiPreview=false;
+        if(!goBack) this.pageConfig.isMultiPreview=false;
+        this.pageConfig.showMp=true;
         this.pageConfig.isUpload = false;
         this.pageConfig.isPreview = false;
       },
