@@ -35,9 +35,9 @@
               </el-select>
             </el-form-item>
             <el-form-item>
-              <el-date-picker style="width: 250px" v-if="reqData.queryFormTop.date.value=='0'" v-model="reqData.queryFormTop.date.range"
-                type="daterange" value-format="yyyy-MM-dd" range-separator="～" start-placeholder="From" end-placeholder="To">
-              </el-date-picker>
+                <el-date-picker style="width: 250px; margin-top:2px;" v-if="reqData.queryFormTop.date.value=='0'" v-model="reqData.queryFormTop.date.range"
+                  type="daterange" value-format="yyyy-MM-dd" range-separator="～" start-placeholder="From" end-placeholder="To">
+                </el-date-picker>
             </el-form-item>
           </el-row>
           <el-row>
@@ -157,7 +157,7 @@
               </li>
             </ul>
           </div> -->
-            <el-radio-group v-model="pageConfig.currentTabName" style="margin: 5px 0;">
+            <el-radio-group v-model="pageConfig.currentTabName" @change="switchTab" style="margin: 5px 0;">
               <el-radio-button label="jutaku">受託</el-radio-button>
               <el-radio-button label="seiyaku">成約</el-radio-button>
               <el-radio-button label="kouji">工事</el-radio-button>
@@ -169,12 +169,11 @@
           <transition name="component-fade" mode="out-in">
             <keep-alive>
               <main-table v-if="pageConfig.currentTabName!='downloadList'"
-                :table-data="respData.tableData" 
+                :table-data="tableData" 
                 :table-height="pageConfig.tableHeight" 
                 :current-tab-name="pageConfig.currentTabName"
                 :records-per-page="pageConfig.recordsPerPage"
-                @preview="previewFile"
-                @multi-preview="multiPreview">
+                @preview="previewFiles">
               </main-table>
               <download-list v-else :download-list="respData.downloadList"></download-list>
             </keep-alive>
@@ -182,26 +181,24 @@
         </el-main>
       </el-container>
     </el-container>
-    <div class="modal-background"
-    v-if="pageConfig.isMultiPreview || pageConfig.isPreview|| pageConfig.isUpload"></div>
     <transition name="component-fade" mode="out-in">
       <upload v-if="pageConfig.isUpload" :upload-form="reqData.uploadForm" @upload="uploadFile" @close="close">
       </upload>
-      <preview v-if="pageConfig.isPreview" 
+      <!-- <preview v-if="pageConfig.isPreview" 
         :loginUser="pageConfig.loginUser"
         :isFromMultiPreview="pageConfig.isMultiPreview"
         @add-comment="addComment"
         @del-comment="delComment"
         @close="close">
-      </preview>
+      </preview> -->
     </transition>
     <transition name="component-fade" mode="out-in">
-      <multi-preview v-if="pageConfig.isMultiPreview" 
-        v-show="pageConfig.showMp"
+      <preview v-if="pageConfig.isMultiPreview" 
         :loginUser="pageConfig.loginUser" 
-        @preview="previewFile"
+        @add-comment="addComment"
+        @del-comment="delComment"
         @close="close">
-      </multi-preview>
+      </preview>
     </transition>
 
   </div>
@@ -235,12 +232,13 @@
   import mainTable from '@/components/Table.vue'
   import downloadList from '@/components/DownloadList.vue'
   import upload from '@/components/Upload.vue'
-  import preview from '@/components/Preview.vue'
-  import multiPreview from '@/components/MultiPreview.vue'
+  // import preview from '@/components/Preview.vue'
+  import preview from '@/components/MultiPreview.vue'
   import moment from "moment";
   import {
     demo
   } from "../assets/demoData";
+  import evtBus from '../assets/evtBus';
 
   export default {
     name: "Main",
@@ -252,7 +250,6 @@
       downloadList,
       upload,
       preview,
-      multiPreview,
     },
     // components: {
     //   mainTable: resolve => {
@@ -316,13 +313,13 @@
         console.log(c);
       },
       switchTab(tabname) {
-        this.pageConfig.currentTabName = tabname;
-        this.pageConfig.tabs.forEach(function (tab) {
-          tab.isSelected = tab.name == tabname;
-        });
-        if (tabname == "downloadList") {
-          //AJAX Request
-        }
+        evtBus.$emit('switch-tab')
+        // this.pageConfig.tabs.forEach(function (tab) {
+        //   tab.isSelected = tab.name == tabname;
+        // });
+        // if (tabname == "downloadList") {
+        //   //AJAX Request
+        // }
       },
       onDrag: function (e) {
         e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);
@@ -387,12 +384,7 @@
           }];
         }
       },
-      previewFile() {
-        this.pageConfig.showMp=false;
-        this.pageConfig.isPreview = true;
-      },
-      multiPreview(data){
-        //TODO
+      previewFiles(){
         this.pageConfig.isMultiPreview=true;
       },
       addComment(previewData,newComment) {
@@ -404,7 +396,6 @@
         this.respData.tableData.forEach(data=>{
           if(data.key===previewData.key){
             data.comment.splice(index,1);
-            previewData.comment.splice(index,1);
           }
         })
         // previewData.comment.splice(index,1);
@@ -434,6 +425,13 @@
       };
 
     },
+    computed:{
+      tableData(){
+        return this.respData.tableData.filter(data=>{
+          return (this.pageConfig.currentTabName!='') ? data.businessKbn==this.pageConfig.currentTabName:true
+        }) 
+      }
+    }
   };
 
 </script>

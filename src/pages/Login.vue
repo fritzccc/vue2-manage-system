@@ -4,10 +4,10 @@
         <h3>ログイン</h3>
         <el-form :model="loginForm" status-icon :rules="loginFormRules" ref="loginForm" label-width="120px" class="demo-ruleForm">
           <el-form-item label="ユーザーID" prop="user">
-            <el-input v-model.number="loginForm.user" @keyup.enter.native="login('loginForm')" clearable></el-input>
+            <el-input id="username" v-model.number="loginForm.user" @keyup.enter.native="login('loginForm')" clearable></el-input>
           </el-form-item>
           <el-form-item label="パスワード" prop="pass">
-            <el-input type="password" v-model="loginForm.pass" @keyup.enter.native="login('loginForm')" auto-complete="off" clearable></el-input>
+            <el-input id="password" type="password" v-model="loginForm.pass" @keyup.enter.native="login('loginForm')" auto-complete="off" clearable></el-input>
           </el-form-item>
           <el-form-item>
             <el-button plain type="primary" @click="login('loginForm')">ログイン</el-button>
@@ -112,6 +112,9 @@
         // 		}
         // 	})
         // }
+      },
+      resetForm(){
+        this.$refs['loginForm'].resetFields();
       },
       ToRegister() {
         this.showRegister = true

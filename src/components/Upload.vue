@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="modal is-active">
-      <!-- <div class="modal-background"></div> -->
+      <div class="modal-background"></div>
       <div class="modal-card">
         <header class="modal-card-head">
           <p class="modal-card-title">アップロード</p>
@@ -153,7 +153,6 @@ h3{
         this.$refs[formName].forEach(formData => {
           formData.resetFields();
         });
-        this.$emit('reset', formName);
       },
       uploadFiles(formName) {
         let me = this;

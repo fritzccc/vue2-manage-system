@@ -4,7 +4,7 @@
 
 .modal,
 .modal-background {
-  z-index: 4;
+  /* z-index: 4; */
   bottom: 0;
   left: 0;
   position: absolute;
@@ -59,7 +59,7 @@ print {
   display: flex;
   flex-shrink: 0;
   justify-content: flex-start;
-  padding: 20px;
+  padding: 10px;
   position: relative;
 }
 
@@ -90,7 +90,7 @@ print {
   flex-grow: 1;
   flex-shrink: 1;
   overflow: auto;
-  padding: 20px;
+  padding: 0 20px;
 }
 
 .tabs {

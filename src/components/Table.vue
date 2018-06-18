@@ -20,7 +20,7 @@
       row-key="setRowKey" 
       :default-sort="{prop: 'entryDate', order: 'descending'}"
       border fit v-loading="isLoading"
-      @select="select" @select-all="selectAll"
+      @select="select" @select-all="select"
       style="width: 100%">
       <el-table-column type="selection" min-width=40>
       </el-table-column>
@@ -95,15 +95,9 @@
         cantDwld:true,
       }
     },
-    props: ['tableData', 'tableHeight', 'currentTabName','recordsPerPage'],
+    props: ['tableData', 'tableHeight','recordsPerPage'],
     methods: {
       select(selection,row){
-        this.cantPrev=!(selection.length>1 && selection.length<=10);
-        this.cantDwld=!(selection.length>0 && selection.length<=10);
-        this.cantDel=!(selection.length>0 && selection.length<=10);
-        this.selectedItems=selection;
-      },
-      selectAll(selection){
         this.cantPrev=!(selection.length>1 && selection.length<=10);
         this.cantDwld=!(selection.length>0 && selection.length<=10);
         this.cantDel=!(selection.length>0 && selection.length<=10);
@@ -113,9 +107,10 @@
         row,
         idx
       }) {
-        if (row.businessKbn != this.currentTabName && this.currentTabName != '') {
-          return 'unshow-row';
-        } else if (row.isNew) {
+        // if (row.businessKbn != this.currentTabName && this.currentTabName != '') {
+        //   return 'unshow-row';
+        // } 
+        if (row.isNew) {
           return 'success-row';
         }
       },
@@ -124,13 +119,20 @@
       },
       multiPreview(){
         let me=this;
-        me.$emit('multi-preview');
-        Vue.nextTick(()=>evtBus.$emit('multi-preview',me.selectedItems));
+        me.$emit('preview');
+        Vue.nextTick(()=>evtBus.$emit('preview',me.selectedItems));
       },
       previewFile(data) {
         this.$emit('preview');
-        Vue.nextTick(()=>evtBus.$emit('preview',data));
+        Vue.nextTick(()=>evtBus.$emit('preview',[data]));
       }
+    },
+    created(){
+      evtBus.$on('switch-tab',()=>{
+        this.cantDel=true;
+        this.cantPrev=true;
+        this.cantDwld=true;
+      })
     },
     computed: {
       totalRecords: function () {
@@ -142,7 +144,7 @@
         if (me.currentTabName == 'downloadList') {
           return 99999;
         }
-        me.tableData.forEach(function (data) {
+        me.tableData.forEach(data=> {
           if (data.businessKbn == me.currentTabName) {
             total++;
           }

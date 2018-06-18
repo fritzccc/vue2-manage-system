@@ -6,7 +6,6 @@ var demo={
         isUpload: false,
         isPreview:false,
         isMultiPreview:false,
-        showMp:true,
         cantPrev:true,
         cantDwld:true,
         cantDel:true,
@@ -216,10 +215,12 @@ var demo={
             comment:[{
                 userNm:'テスト太郎',
                 updateDate:'2018-05-07',
+                delPop:false,
                 text:'テスト英二からのコメント！テスト英二からのコメント'
             },{
                 userNm:'テスト秀吉',
                 updateDate:'2018-05-07',
+                delPop:false,
                 text:'テスト英二からのコメント！'
             },],
             freeFormat:'フリーテキスト',
@@ -238,10 +239,12 @@ var demo={
             comment:[{
                 userNm:'テスト太郎',
                 updateDate:'2018-05-07',
+                delPop:false,
                 text:'テスト太郎からのコメント！'
             },{
                 userNm:'テスト秀吉',
                 updateDate:'2018-05-07',
+                delPop:false,
                 text:'テスト秀吉からのコメント！'
             },],
             freeFormat:'フリーテキスト',
@@ -260,18 +263,22 @@ var demo={
             comment:[{
                 userNm:'テスト花子',
                 updateDate:'2018-05-07',
+                delPop:false,
                 text:'テスト花子からのコメント！'
             },{
                 userNm:'テスト英二',
                 updateDate:'2018-05-07',
+                delPop:false,
                 text:'テスト英二からのコメント！'
             },{
                 userNm:'テスト太郎',
                 updateDate:'2018-05-07',
+                delPop:false,
                 text:'テスト太郎からのコメント！'
             },{
                 userNm:'テスト秀吉',
                 updateDate:'2018-05-07',
+                delPop:false,
                 text:'テスト秀吉からのコメント！'
             },],
             freeFormat:'フリーテキスト',
@@ -290,18 +297,22 @@ var demo={
             comment:[{
                 userNm:'テスト花子',
                 updateDate:'2018-05-07',
+                delPop:false,
                 text:'テスト花子からのコメント！'
             },{
                 userNm:'テスト英二',
                 updateDate:'2018-05-07',
+                delPop:false,
                 text:'テスト英二からのコメント！'
             },{
                 userNm:'テスト太郎',
                 updateDate:'2018-05-07',
+                delPop:false,
                 text:'テスト太郎からのコメント！'
             },{
                 userNm:'テスト秀吉',
                 updateDate:'2018-05-07',
+                delPop:false,
                 text:'テスト秀吉からのコメント！'
             },],
             freeFormat:'フリーテキストフリーテキストフリーテキストフリーテキスト',
@@ -320,14 +331,17 @@ var demo={
             comment:[{
                 userNm:'テスト英二',
                 updateDate:'2018-05-07',
+                delPop:false,
                 text:'テスト英二からのコメント！'
             },{
                 userNm:'テスト太郎',
                 updateDate:'2018-05-07',
+                delPop:false,
                 text:'テスト太郎からのコメント！'
             },{
                 userNm:'テスト秀吉',
                 updateDate:'2018-05-07',
+                delPop:false,
                 text:'テスト秀吉からのコメント！'
             },],
             freeFormat:'フリーテキスト',
@@ -346,14 +360,17 @@ var demo={
             comment:[{
                 userNm:'テスト英二',
                 updateDate:'2018-05-07',
+                delPop:false,
                 text:'テスト英二からのコメント！'
             },{
                 userNm:'テスト太郎',
                 updateDate:'2018-05-07',
+                delPop:false,
                 text:'テスト太郎からのコメント！'
             },{
                 userNm:'テスト秀吉',
                 updateDate:'2018-05-07',
+                delPop:false,
                 text:'テスト秀吉からのコメント！'
             },],
             freeFormat:'フリーテキストフリーテキストフリーテキストフリーテキストフリーテキスト',
@@ -386,18 +403,22 @@ var demo={
             comment:[{
                 userNm:'テスト花子',
                 updateDate:'2018-05-07',
+                delPop:false,
                 text:'テスト花子からのコメント！'
             },{
                 userNm:'テスト英二',
                 updateDate:'2018-05-07',
+                delPop:false,
                 text:'テスト英二からのコメント！'
             },{
                 userNm:'テスト太郎',
                 updateDate:'2018-05-07',
+                delPop:false,
                 text:'テスト太郎からのコメント！'
             },{
                 userNm:'テスト秀吉',
                 updateDate:'2018-05-07',
+                delPop:false,
                 text:'テスト秀吉からのコメント！'
             },],
             freeFormat:'フリーテキスト',
