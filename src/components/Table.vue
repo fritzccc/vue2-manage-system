@@ -135,21 +135,8 @@
       })
     },
     computed: {
-      totalRecords: function () {
-        let me = this,
-          total = 0;
-        if (me.currentTabName == '') {
-          return me.tableData.length;
-        }
-        if (me.currentTabName == 'downloadList') {
-          return 99999;
-        }
-        me.tableData.forEach(data=> {
-          if (data.businessKbn == me.currentTabName) {
-            total++;
-          }
-        })
-        return total;
+      totalRecords () {
+          return this.tableData.length;
       },
     },
   }

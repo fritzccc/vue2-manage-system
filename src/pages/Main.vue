@@ -35,7 +35,7 @@
               </el-select>
             </el-form-item>
             <el-form-item>
-                <el-date-picker style="width: 250px; margin-top:2px;" v-if="reqData.queryFormTop.date.value=='0'" v-model="reqData.queryFormTop.date.range"
+                <el-date-picker style="width: 250px;" v-if="reqData.queryFormTop.date.value=='0'" v-model="reqData.queryFormTop.date.range"
                   type="daterange" value-format="yyyy-MM-dd" range-separator="～" start-placeholder="From" end-placeholder="To">
                 </el-date-picker>
             </el-form-item>
@@ -182,36 +182,31 @@
       </el-container>
     </el-container>
     <transition name="component-fade" mode="out-in">
-      <upload v-if="pageConfig.isUpload" :upload-form="reqData.uploadForm" @upload="uploadFile" @close="close">
-      </upload>
-      <!-- <preview v-if="pageConfig.isPreview" 
-        :loginUser="pageConfig.loginUser"
-        :isFromMultiPreview="pageConfig.isMultiPreview"
-        @add-comment="addComment"
-        @del-comment="delComment"
-        @close="close">
-      </preview> -->
+      <div v-if="pageConfig.isUpload || pageConfig.isPreview" class="modal-background"></div>
     </transition>
     <transition name="component-fade" mode="out-in">
-      <preview v-if="pageConfig.isMultiPreview" 
+      <upload v-if="pageConfig.isUpload" :upload-form="reqData.uploadForm" @upload="uploadFile" @close="close">
+      </upload>
+      <preview v-if="pageConfig.isPreview" 
         :loginUser="pageConfig.loginUser" 
         @add-comment="addComment"
         @del-comment="delComment"
         @close="close">
       </preview>
     </transition>
-
   </div>
 </template>
 
 <style scoped>
   .component-fade-enter-active,
   .component-fade-leave-active {
+    z-index: 4;
     transition: opacity .3s ease;
   }
 
   .component-fade-enter,
   .component-fade-leave-to {
+    z-index: 4;
     opacity: 0;
   }
 
@@ -385,7 +380,7 @@
         }
       },
       previewFiles(){
-        this.pageConfig.isMultiPreview=true;
+        this.pageConfig.isPreview=true;
       },
       addComment(previewData,newComment) {
         previewData.comment.unshift(JSON.parse(JSON.stringify(newComment)));
@@ -400,9 +395,7 @@
         })
         // previewData.comment.splice(index,1);
       },
-      close(goBack) {
-        if(!goBack) this.pageConfig.isMultiPreview=false;
-        this.pageConfig.showMp=true;
+      close() {
         this.pageConfig.isUpload = false;
         this.pageConfig.isPreview = false;
       },

@@ -1,6 +1,6 @@
 <template>
   <div class="modal is-active">
-    <div class="modal-background"></div>
+    <!-- <div class="modal-background"></div> -->
       <div v-if="previewDatas.length==1" class="modal-card" style="width: 1500px;">
       <header class="modal-card-head">
         <img src="../assets/logo.png" width="140px" height="35px" style="margin-right:10px;">
@@ -63,7 +63,7 @@
         </div>
       </section>
     </div>
-    <div v-else class="modal-card" style="width: 1500px;">
+    <div v-if="previewDatas.length>1" class="modal-card" style="width: 1500px;">
       <header class="modal-card-head">
         <img src="../assets/logo.png" width="140px" height="35px" style="margin-right:10px;">
         <p class="modal-card-title">プレビュー（計{{total}}件）</p>

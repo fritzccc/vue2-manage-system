@@ -4,7 +4,7 @@
 
 .modal,
 .modal-background {
-  /* z-index: 4; */
+  z-index: 4;
   bottom: 0;
   left: 0;
   position: absolute;
@@ -490,6 +490,10 @@ a.panel-block:hover {
   width: 5px;
   position: absolute;
   cursor: e-resize;
+}
+
+.query-aside-input .el-form-item__content{
+  width: 110%;
 }
 
 .top-query-free .el-form-item__content {

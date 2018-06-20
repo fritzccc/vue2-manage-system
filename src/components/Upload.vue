@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="modal is-active">
-      <div class="modal-background"></div>
+      <!-- <div class="modal-background"></div> -->
       <div class="modal-card">
         <header class="modal-card-head">
           <p class="modal-card-title">アップロード</p>
@@ -11,7 +11,7 @@
           <!-- Content ... -->
           <el-form v-for="(file,index) in uploadForm.files" :key="index" :model="uploadForm.form[index]" :rules="uploadFormRules" ref="uploadForm"
             label-width="100px" class="demo-ruleForm">
-            <h3>第{{parseInt(index)+1}}件</h3>
+            <h3 style="margin-top:20px;">第{{parseInt(index)+1}}件</h3>
             <el-form-item label="ファイル名" prop="fileinfo">
               <!-- <el-input disabled v-model="uploadForm.form[index].fileinfo"></el-input> -->
               <span>{{uploadForm.form[index].filename}} ({{uploadForm.form[index].filesize}})</span>

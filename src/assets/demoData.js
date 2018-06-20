@@ -5,7 +5,6 @@ var demo={
         tableHeight:window.innerHeight-260,
         isUpload: false,
         isPreview:false,
-        isMultiPreview:false,
         cantPrev:true,
         cantDwld:true,
         cantDel:true,
