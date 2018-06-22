@@ -16,7 +16,7 @@
     </div>
 
     <el-table :row-class-name="tableRowClass" 
-      :data="tableData" :max-height="tableHeight"
+      :data="tableData" :max-height="maxHeight"
       row-key="setRowKey" 
       :default-sort="{prop: 'entryDate', order: 'descending'}"
       border fit v-loading="isLoading"
@@ -26,7 +26,7 @@
       </el-table-column>
       <el-table-column align="center" fixed prop="comment" min-width=50>
         <template slot-scope="scope">
-          <el-popover	v-if="scope.row.comment.length!=0" trigger="hover" placement="right-end" :open-delay=500>
+          <el-popover	v-if="scope.row.comment.length>0" trigger="hover" placement="right-end" :open-delay=500>
             <div :class="{'hover-text-after':(scope.row.comment[0].text.length>=100)}" class="hover-text">
               <strong>計{{scope.row.comment.length}}件:</strong> {{ scope.row.comment[0].text }}
             </div>
@@ -40,9 +40,10 @@
         <template slot-scope="scope">
           <el-button type="text" size="medium" @click="previewFile(scope.row)">
             <i v-if="['xls','xlsx'].indexOf(scope.row.filetype)>-1" class="far fa-file-excel" style="font-size: 16px;"></i>
-            <i v-else-if="scope.row.filetype=='pdf'" class="far fa-file-pdf" style="font-size: 16px;"></i>
-            <i v-else-if="['doc','docx'].indexOf(scope.row.filetype)>-1" class="far fa-file-word" style="font-size: 16px;"></i>
-            <i v-else-if="['jpg','png','bmp'].indexOf(scope.row.filetype)>-1" class="far fa-images" style="font-size: 16px;"></i>
+            <i v-if="scope.row.filetype=='pdf'" class="far fa-file-pdf" style="font-size: 16px;"></i>
+            <i v-if="['doc','docx'].indexOf(scope.row.filetype)>-1" class="far fa-file-word" style="font-size: 16px;"></i>
+            <i v-if="['jpg','png','bmp','jpeg'].indexOf(scope.row.filetype)>-1" class="far fa-images" style="font-size: 16px;"></i>
+            <!-- more ext v-if -->
             {{scope.row.docNm | no_ext}} 
           </el-button>
         </template>
@@ -93,9 +94,17 @@
         cantDel:true,
         cantPrev:true,
         cantDwld:true,
+        maxHeight:window.innerHeight-260,
+        recordsPerPage: {
+          value: 500,
+          options: [{ value: 30, label: '30件' },
+            { value: 100, label: '100件' },
+            { value: 200, label: '200件' },
+            { value: 500, label: '500件' }]
+        },
       }
     },
-    props: ['tableData', 'tableHeight','recordsPerPage'],
+    props: ['tableData'],
     methods: {
       select(selection,row){
         this.cantPrev=!(selection.length>1 && selection.length<=10);
@@ -103,13 +112,7 @@
         this.cantDel=!(selection.length>0 && selection.length<=10);
         this.selectedItems=selection;
       },
-      tableRowClass({
-        row,
-        idx
-      }) {
-        // if (row.businessKbn != this.currentTabName && this.currentTabName != '') {
-        //   return 'unshow-row';
-        // } 
+      tableRowClass({row,idx}) {
         if (row.isNew) {
           return 'success-row';
         }
@@ -132,7 +135,12 @@
         this.cantDel=true;
         this.cantPrev=true;
         this.cantDwld=true;
-      })
+      });
+    },
+    mounted(){
+      window.onresize = () => {
+        this.maxHeight = window.innerHeight - 260;
+      };
     },
     computed: {
       totalRecords () {

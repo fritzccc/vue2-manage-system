@@ -4,7 +4,7 @@
       <!-- <div class="modal-background"></div> -->
       <div class="modal-card">
         <header class="modal-card-head">
-          <p class="modal-card-title">アップロード</p>
+          <p class="modal-card-title">アップロード{{total}}</p>
           <el-button type="danger" icon="el-icon-delete" circle @click="close('uploadForm')"></el-button>
         </header>
         <section class="modal-card-body">
@@ -16,7 +16,7 @@
               <!-- <el-input disabled v-model="uploadForm.form[index].fileinfo"></el-input> -->
               <span>{{uploadForm.form[index].filename}} ({{uploadForm.form[index].filesize}})</span>
             </el-form-item>
-            <el-row>
+            <el-row class="warning-area">
               <el-col :span="12">
                 <el-form-item label="業務区分" prop="businessKbn">
                   <el-select v-model="uploadForm.form[index].businessKbn" placeholder="業務区分">
@@ -92,7 +92,10 @@
 
 <style scoped>
 .el-form-item{
-  margin-bottom: 10px;
+  margin-bottom:10px;
+}
+.warning-area .el-form-item{
+  margin-bottom: 20px;
 }
 h3{
   margin-top: 0;
@@ -100,9 +103,16 @@ h3{
 </style>
 
 <script>
+  import moment from 'moment'
+  import evtBus from '../assets/evtBus';
   export default {
     data() {
       return {
+        uploadForm:{
+            checked:false,
+            files:[],
+            form:[]
+        },
         uploadFormRules: {
           businessKbn: [{
             required: true,
@@ -123,7 +133,6 @@ h3{
         },
       }
     },
-    props: ['uploadForm'],
     methods: {
       close(formName) {
         this.resetForm(formName);
@@ -137,8 +146,12 @@ h3{
         if (me.uploadForm.checked) {
           for (let i = 1; i < me.uploadForm.files.length; i++) {
             let filename = me.uploadForm.form[i].filename;
+            let filesize = me.uploadForm.form[i].filesize;
+            let filetype = me.uploadForm.form[i].filetype;
             me.uploadForm.form[i] = JSON.parse(JSON.stringify(me.uploadForm.form[0]));
             me.uploadForm.form[i].filename = filename;
+            me.uploadForm.form[i].filesize = filesize;
+            me.uploadForm.form[i].filetype = filetype;
           }
         } else {
           for (let i = 1; i < me.uploadForm.files.length; i++) {
@@ -161,13 +174,9 @@ h3{
           formData.validate(valid => {
             if (!valid) checkflag = false;
           })
-          if (me.uploadForm.form[idx].comment[0].text == '') {
-            console.log('text: ', me.uploadForm.form[idx].comment[0].text);
-            me.uploadForm.form[idx].comment = [];
-          }
         });
         if (checkflag) {
-          me.$emit('upload');
+          me.$emit('upload',me.uploadForm);
         } else {
           console.log('submit failed');
           return false;
@@ -175,6 +184,41 @@ h3{
         me.close(formName);
         me.resetForm(formName);
       },
+    },
+    computed:{
+      total(){
+        return this.uploadForm.files.length>1 ? 
+          "(計"+this.uploadForm.files.length+"件)" :
+          ""
+      }
+    },
+    created(){
+      evtBus.$on('upload-files',(files,currentTabName)=>{
+        console.log("files",files);
+        this.uploadForm.files=files;
+        for (let i = 0; i < files.length; i++) {
+          let filesize = (files[i].size / (1024 * 1024)).toFixed(1);
+          filesize = (filesize == '0.0') ? '<0.1MB' : (filesize + 'MB');
+          let form={
+            docNm: '',
+            filename:files[i].name,
+            filesize:filesize,
+            freeFormat: '',
+            entryNm: '',
+            entryDate: moment().format("YYYY-MM-DD"),
+            ownerCd:'オーナーCD',
+            estateCd:'物件CD',
+            tenantNm:'入居者',
+            salesNm: '営業担当',
+            manageNm: '管理担当',
+            businessKbn:currentTabName,
+            isNew:true,
+            filetype:files[i].name.split(".")[1],
+            comment:[]
+          }
+          this.uploadForm.form.push(form);
+        }
+      })
     }
   }
 

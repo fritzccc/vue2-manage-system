@@ -2,20 +2,12 @@ var demo={
     pageConfig:{
         asideWidth:300,
         loginUser: 'テスト花子',
-        tableHeight:window.innerHeight-260,
         isUpload: false,
         isPreview:false,
         cantPrev:true,
         cantDwld:true,
         cantDel:true,
         currentTabName:'',
-        recordsPerPage: {
-            value: 500,
-            options: [{ value: 30, label: '30件' },
-                { value: 100, label: '100件' },
-                { value: 200, label: '200件' },
-                { value: 500, label: '500件' }]
-        },
         tabs:[{
             label:'受託',
             isSelected:false,
@@ -72,107 +64,6 @@ var demo={
             sEstate:"",
             sTenant:""
         },
-        uploadForm:{
-            checked:false,
-            files:[],
-            form:[{
-                    comment: [{
-                        userNm:'',
-                        updateDate:'',
-                        text:'',
-                    }],
-                    docNm: '',
-                    filesize:'',
-                    fileinfo:'',
-                    freeFormat: '',
-                    entryNm: '',
-                    entryDate: '',
-                    ownerCd:'オーナーCD',
-                    estateCd:'物件CD',
-                    tenantNm:'入居者既定値',
-                    salesNm: '営業担当既定値',
-                    manageNm: '管理担当既定値',
-                    businessKbn:'',
-                    filename:''
-                },{
-                    comment: [{
-                        userNm:'',
-                        updateDate:'',
-                        text:'',
-                    }],
-                    docNm: '',
-                    filesize:'',
-                    fileinfo:'',
-                    freeFormat: '',
-                    entryNm: '',
-                    updateDate: '',
-                    ownerCd:'オーナーCD',
-                    estateCd:'物件CD',
-                    tenantNm:'入居者既定値',
-                    salesNm: '営業担当既定値',
-                    manageNm: '管理担当既定値',
-                    businessKbn:'',
-                    filename:''
-                },{
-                    comment: [{
-                        entryNm:'',
-                        updateDate:'',
-                        text:'',
-                    }],
-                    docNm: '',
-                    filesize:'',
-                    fileinfo:'',
-                    freeFormat: '',
-                    entryNm: '',
-                    entryDate: '',
-                    ownerCd:'オーナーCD',
-                    estateCd:'物件CD',
-                    tenantNm:'入居者既定値',
-                    salesNm: '営業担当既定値',
-                    manageNm: '管理担当既定値',
-                    businessKbn:'',
-                    filename:''
-                },{
-                    comment: [{
-                        userNm:'',
-                        updateDate:'',
-                        text:'',
-                    }],
-                    docNm: '',
-                    filesize:'',
-                    fileinfo:'',
-                    freeFormat: '',
-                    entryNm: '',
-                    entryDate: '',
-                    ownerCd:'オーナーCD',
-                    estateCd:'物件CD',
-                    tenantNm:'入居者既定値',
-                    salesNm: '営業担当既定値',
-                    manageNm: '管理担当既定値',
-                    businessKbn:'',
-                    filename:''
-                },{
-                    comment: [{
-                        userNm:'',
-                        updateDate:'',
-                        text:'',
-                    }],
-                    docNm: '',
-                    filesize:'',
-                    fileinfo:'',
-                    freeFormat: '',
-                    entryNm: '',
-                    entryDate: '',
-                    ownerCd:'オーナーCD',
-                    estateCd:'物件CD',
-                    tenantNm:'入居者既定値',
-                    salesNm: '営業担当既定値',
-                    manageNm: '管理担当既定値',
-                    businessKbn:'',
-                    filename:''
-                },
-            ]
-        }
     },
     respData:{
         treeData: [],

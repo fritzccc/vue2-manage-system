@@ -170,9 +170,6 @@
             <keep-alive>
               <main-table v-if="pageConfig.currentTabName!='downloadList'"
                 :table-data="tableData" 
-                :table-height="pageConfig.tableHeight" 
-                :current-tab-name="pageConfig.currentTabName"
-                :records-per-page="pageConfig.recordsPerPage"
                 @preview="previewFiles">
               </main-table>
               <download-list v-else :download-list="respData.downloadList"></download-list>
@@ -185,7 +182,7 @@
       <div v-if="pageConfig.isUpload || pageConfig.isPreview" class="modal-background"></div>
     </transition>
     <transition name="component-fade" mode="out-in">
-      <upload v-if="pageConfig.isUpload" :upload-form="reqData.uploadForm" @upload="uploadFile" @close="close">
+      <upload v-if="pageConfig.isUpload" @upload="uploadFile" @close="close">
       </upload>
       <preview v-if="pageConfig.isPreview" 
         :loginUser="pageConfig.loginUser" 
@@ -224,6 +221,7 @@
 </style>
 
 <script>
+  import Vue from 'vue'
   import mainTable from '@/components/Table.vue'
   import downloadList from '@/components/DownloadList.vue'
   import upload from '@/components/Upload.vue'
@@ -309,12 +307,7 @@
       },
       switchTab(tabname) {
         evtBus.$emit('switch-tab')
-        // this.pageConfig.tabs.forEach(function (tab) {
-        //   tab.isSelected = tab.name == tabname;
-        // });
-        // if (tabname == "downloadList") {
-        //   //AJAX Request
-        // }
+
       },
       onDrag: function (e) {
         e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);
@@ -326,57 +319,27 @@
       onDrop(e) {
         e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);
         e.preventDefault ? e.preventDefault() : (e.returnValue = false);
-        let dt = e.dataTransfer;
-        if (dt.files.length < 1) return;
-        console.log("dt.files: ", dt.files);
-        if (dt.files.length > this.reqData.uploadForm.form.length) {
-          alert(
-            "cannot upload >" +
-            this.reqData.uploadForm.form.length +
-            " files a time!"
-          );
-          return false;
-        }
-        this.reqData.uploadForm.files = dt.files;
-        for (let i = 0; i < dt.files.length; i++) {
-          if (dt.files[i].type == "") {
+        let {files} = e.dataTransfer;
+        if (files.length < 1) return;
+        for (let i = 0; i < files.length; i++) {
+          if (files[i].type == "") {
             alert("cannot upload a folder or such type is not supported!");
             return false;
           }
-          this.reqData.uploadForm.form[i].filename = dt.files[i].name;
-          let filesize = (dt.files[i].size / (1024 * 1024)).toFixed(1);
-          filesize = (filesize == '0.0') ? '<0.1MB' : (filesize + 'MB');
-          this.reqData.uploadForm.form[i].filesize = filesize;
-          this.reqData.uploadForm.form[i].businessKbn=this.pageConfig.currentTabName;
         }
         this.pageConfig.isUpload = true;
+        Vue.nextTick(()=>{
+          evtBus.$emit('upload-files',files,this.pageConfig.currentTabName)
+        })
       },
-      uploadFile() {
+      uploadFile(uploadForm) {
         let me = this;
-        for (let i = 0; i < me.reqData.uploadForm.files.length; i++) {
-          if (
-            me.reqData.uploadForm.form[i].comment.length &&
-            me.reqData.uploadForm.form[i].comment[0].text != ""
-          ) {
-            me.reqData.uploadForm.form[i].comment[0].entryNm =
-              me.pageConfig.loginUser;
-            me.reqData.uploadForm.form[i].comment[0].updateDate = moment().format(
-              "YYYY-MM-DD"
-            );
-          }
+        for (let i = 0; i < uploadForm.files.length; i++) {
           let newData = JSON.parse(
-            JSON.stringify(me.reqData.uploadForm.form[i])
+            JSON.stringify(uploadForm.form[i])
           );
-          newData.isNew = true;
-          newData.entryDate = moment().format("YYYY-MM-DD");
-          newData.filetype = newData.filename.split(".")[1];
           newData.entryNm = me.pageConfig.loginUser;
-          me.respData.tableData.unshift(newData);
-          me.reqData.uploadForm.form[i].comment = [{
-            entryNm: "",
-            updateDate: "",
-            text: ""
-          }];
+          console.log(me.respData.tableData.unshift(newData));
         }
       },
       previewFiles(){
@@ -413,10 +376,6 @@
         data.filetype = data.docNm.split(".")[1];
         data.key=Math.random();
       }); //need to adjust later...should do when AJAX get the data,not in mounted
-      window.onresize = () => {
-        me.pageConfig.tableHeight = window.innerHeight - 260;
-      };
-
     },
     computed:{
       tableData(){
