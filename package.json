@@ -9,8 +9,8 @@
     "start": "npm run dev",
     "unit": "cross-env BABEL_ENV=test karma start test/unit/karma.conf.js --single-run",
     "e2e": "node test/e2e/runner.js",
-    "utest":"mocha-webpack --webpack-config test/unit/webpack.config.js --require test/unit/setup.js test/unit/specs/*.spec.js",
-    "uwatch":"mocha-webpack --webpack-config test/unit/webpack.config.js --watch --require test/unit/setup.js test/unit/specs/*.spec.js",
+    "utest": "mocha-webpack --webpack-config test/unit/webpack.config.js --require test/unit/setup.js test/unit/specs/*.spec.js",
+    "uwatch": "mocha-webpack --webpack-config test/unit/webpack.config.js --watch --require test/unit/setup.js test/unit/specs/*.spec.js",
     "test": "npm run unit && npm run e2e",
     "build": "node build/build.js"
   },

@@ -268,13 +268,13 @@
         let me = this;
         let x = e.clientX;
         let pos = JSON.parse(JSON.stringify(me.pageConfig.asideWidth));
-        window.onmousemove = (evt) => {
+        document.onmousemove = (evt) => {
           let xx = evt.clientX;
           me.pageConfig.asideWidth = pos + xx - x;
         };
-        window.onmouseup = (evt) => {
-          window.onmousemove = null;
-          window.onmouseup = null;
+        document.onmouseup = (evt) => {
+          document.onmousemove = null;
+          document.onmouseup = null;
         };
         if (e.preventDefault) {
           e.preventDefault();
@@ -312,7 +312,7 @@
       switchTab(tabname) {
         evtBus.$emit('switch-tab')
       },
-      onDrag: function (e) {
+      onDrag(e) {
         e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);
         e.preventDefault ? e.preventDefault() : (e.returnValue = false);
         if (e.type != "dragenter" || e.fromElement != null) {
@@ -396,9 +396,12 @@
     },
     mounted() {
       let me = this;
-      window.addEventListener("dragenter", me.onDrag, false);
-      window.addEventListener("dragover", me.onDrag, false);
-      window.addEventListener("drop", me.onDrop, false);
+      document.addEventListener("dragstart",(e)=>{
+        e.dataTransfer.setData('text/plain',null);        
+      }, false);      
+      document.addEventListener("dragenter", me.onDrag, false);
+      document.addEventListener("dragover", me.onDrag, false);
+      document.addEventListener("drop", me.onDrop, false);
       me.respData.tableData.forEach(data => {
         data.filetype = data.docNm.split(".")[1];
         data.key=Math.random();

@@ -20,7 +20,7 @@
       row-key="setRowKey" 
       :default-sort="{prop: 'entryDate', order: 'descending'}"
       border fit v-loading="isLoading"
-      @select="select" @select-all="select"
+      @selection-change="select"
       style="width: 100%">
       <el-table-column type="selection" min-width=40>
       </el-table-column>
@@ -90,10 +90,7 @@
     data() {
       return {
         isLoading: false,
-        selectedItems:null,
-        cantDel:true,
-        cantPrev:true,
-        cantDwld:true,
+        selectedItems:[],
         maxHeight:window.innerHeight-260,
         recordsPerPage: {
           value: 500,
@@ -107,9 +104,6 @@
     props: ['tableData'],
     methods: {
       select(selection,row){
-        this.cantPrev=!(selection.length>1 && selection.length<=10);
-        this.cantDwld=!(selection.length>0 && selection.length<=10);
-        this.cantDel=!(selection.length>0 && selection.length<=10);
         this.selectedItems=selection;
       },
       tableRowClass({row,idx}) {
@@ -135,7 +129,7 @@
           cancelButtonText: 'キャンセル',
           type: 'warning'
         }).then(() => {
-          this.$emit('delete',this.selectedItems)
+          this.$emit('delete',this.selectedItems);
         }).catch(() => {
           //canceled
           // this.$message({
@@ -143,19 +137,11 @@
           //   message: 'Delete canceled'
           // });          
         });
-        
       },
       previewFile(data) {
         this.$emit('preview');
         Vue.nextTick(()=>evtBus.$emit('preview',[data]));
       }
-    },
-    created(){
-      evtBus.$on('switch-tab',()=>{
-        this.cantDel=true;
-        this.cantPrev=true;
-        this.cantDwld=true;
-      });
     },
     mounted(){
       window.onresize = () => {
@@ -165,6 +151,15 @@
     computed: {
       totalRecords () {
           return this.tableData.length;
+      },
+      cantDel(){
+        return (this.selectedItems.length)? !(this.selectedItems.length>0 && this.selectedItems.length<=10):true
+      },
+      cantPrev(){
+        return (this.selectedItems.length)? !(this.selectedItems.length>1 && this.selectedItems.length<=10):true
+      },
+      cantDwld(){
+        return (this.selectedItems.length)? !(this.selectedItems.length>0 && this.selectedItems.length<=10):true
       },
     },
   }
