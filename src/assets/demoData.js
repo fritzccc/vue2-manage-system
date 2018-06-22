@@ -1,6 +1,7 @@
 var demo={
     pageConfig:{
         asideWidth:300,
+        dragbarHeight: window.innerHeight-120,
         loginUser: 'テスト花子',
         isUpload: false,
         isPreview:false,

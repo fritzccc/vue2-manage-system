@@ -5,7 +5,7 @@
       <div class="modal-card">
         <header class="modal-card-head">
           <p class="modal-card-title">アップロード{{total}}</p>
-          <el-button type="danger" icon="el-icon-delete" circle @click="close('uploadForm')"></el-button>
+          <el-button type="danger" icon="el-icon-close" circle @click="close('uploadForm')"></el-button>
         </header>
         <section class="modal-card-body">
           <!-- Content ... -->
@@ -194,7 +194,6 @@ h3{
     },
     created(){
       evtBus.$on('upload-files',(files,currentTabName)=>{
-        console.log("files",files);
         this.uploadForm.files=files;
         for (let i = 0; i < files.length; i++) {
           let filesize = (files[i].size / (1024 * 1024)).toFixed(1);

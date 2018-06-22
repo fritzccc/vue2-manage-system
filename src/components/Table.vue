@@ -7,8 +7,8 @@
       </el-select>
       <el-button type="primary" @click="multiPreview" plain :disabled="cantPrev" style="margin-left: 3px">一括PV</el-button>
       <!-- <el-button type="primary" plain style="margin-left: 3px">公開/非公開</el-button> -->
-      <el-button type="primary" plain :disabled="cantDwld" style="margin-left: 3px">一括DL</el-button>
-      <el-button type="primary" plain :disabled="cantDel" style="margin-left: 3px">削除</el-button>
+      <el-button type="primary" @click="multiDownload" plain :disabled="cantDwld" style="margin-left: 3px">一括DL</el-button>
+      <el-button type="primary" @click="multiDelete" plain :disabled="cantDel" style="margin-left: 3px">削除</el-button>
     </el-row>
     <div class="pagination-span">
       <el-pagination background layout="prev, pager, next" :total="200" style="display:inline-block;"></el-pagination>
@@ -120,10 +120,30 @@
       setRowKey(row){
         return row.key;
       },
+      
       multiPreview(){
         let me=this;
         me.$emit('preview');
         Vue.nextTick(()=>evtBus.$emit('preview',me.selectedItems));
+      },
+      multiDownload(){
+
+      },
+      multiDelete(){
+        this.$confirm('選択した項目を削除してもよろしいですか？', 'Warning', {
+          confirmButtonText: '確定',
+          cancelButtonText: 'キャンセル',
+          type: 'warning'
+        }).then(() => {
+          this.$emit('delete',this.selectedItems)
+        }).catch(() => {
+          //canceled
+          // this.$message({
+          //   type: 'info',
+          //   message: 'Delete canceled'
+          // });          
+        });
+        
       },
       previewFile(data) {
         this.$emit('preview');

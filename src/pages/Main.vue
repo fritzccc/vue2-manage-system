@@ -141,7 +141,7 @@
         </el-tree>
       </el-aside>
       <label class="dragbar" :style="{
-          height:(pageConfig.tableHeight+150)+'px',
+          height:pageConfig.dragbarHeight+'px',
           left:pageConfig.asideWidth+'px'
           }" @mousedown="mouseDown">
       </label>
@@ -168,11 +168,11 @@
             </el-radio-group>
           <transition name="component-fade" mode="out-in">
             <keep-alive>
-              <main-table v-if="pageConfig.currentTabName!='downloadList'"
-                :table-data="tableData" 
-                @preview="previewFiles">
+              <download-list v-if="pageConfig.currentTabName=='downloadList'" :download-list="respData.downloadList"></download-list>
+              <main-table v-else :table-data="tableData"
+                @preview="previewFiles"
+                @delete="deleteFiles">
               </main-table>
-              <download-list v-else :download-list="respData.downloadList"></download-list>
             </keep-alive>
           </transition>
         </el-main>
@@ -290,6 +290,10 @@
             me.respData.treeData = JSON.parse(resp.bodyText).treeData;
           },
           err => {
+            this.$message({
+              message: '通信エラーが発生しました！',
+              type: 'error'
+            });
             console.log("err: ", err);
           }
         );
@@ -307,7 +311,6 @@
       },
       switchTab(tabname) {
         evtBus.$emit('switch-tab')
-
       },
       onDrag: function (e) {
         e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);
@@ -344,6 +347,30 @@
       },
       previewFiles(){
         this.pageConfig.isPreview=true;
+      },
+      deleteFiles(selectedItems){
+        let flag=false;
+        selectedItems.forEach(item=>{
+          this.respData.tableData.forEach((data,index)=>{
+            if(item.key==data.key){
+              this.respData.tableData.splice(index,1);
+            }
+          })
+        })
+        //AJAX
+        flag=true;
+        if(flag){
+          this.$message({
+            type: 'success',
+            message: '削除されました！'
+          });
+        }else{
+          this.$message({
+            type: 'error',
+            message: 'エラーが発生しました！'
+          });
+        }
+
       },
       addComment(previewData,newComment) {
         previewData.comment.unshift(JSON.parse(JSON.stringify(newComment)));

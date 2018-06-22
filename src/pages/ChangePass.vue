@@ -4,16 +4,16 @@
         <h3>パスワード変更</h3>
         <el-form :model="changePassForm" status-icon :rules="changePassFormRules" ref="changePassForm" label-width="150px" class="demo-ruleForm">
           <el-form-item label="ユーザーID" prop="user">
-            <el-input v-model="changePassForm.user" @keyup.enter.native="changePass('changePassForm')" clearable></el-input>
+            <el-input id="username" v-model="changePassForm.user" @keyup.enter.native="changePass('changePassForm')" clearable></el-input>
           </el-form-item>
           <el-form-item label="旧パスワード" prop="oldPass">
-            <el-input type="password" v-model="changePassForm.oldPass" @keyup.enter.native="changePass('changePassForm')" clearable></el-input>
+            <el-input id="password" type="password" v-model="changePassForm.oldPass" @keyup.enter.native="changePass('changePassForm')" clearable></el-input>
           </el-form-item>
           <el-form-item label="新パスワード" prop="newPass">
-            <el-input type="password" v-model="changePassForm.newPass" @keyup.enter.native="changePass('changePassForm')" clearable></el-input>
+            <el-input id="newpass" type="password" v-model="changePassForm.newPass" @keyup.enter.native="changePass('changePassForm')" clearable></el-input>
           </el-form-item>
           <el-form-item label="新パスワード確認" prop="newPassConfirm">
-            <el-input type="password" v-model="changePassForm.newPassConfirm" @keyup.enter.native="changePass('changePassForm')" clearable></el-input>
+            <el-input id="newpass_confirm" type="password" v-model="changePassForm.newPassConfirm" @keyup.enter.native="changePass('changePassForm')" clearable></el-input>
           </el-form-item>
           <el-form-item>
             <el-button plain type="primary" @click="changePass('changePassForm')">確定</el-button>

@@ -194,7 +194,7 @@
           text: [{
             required: true,
             message: 'コメントは空きです。',
-            trigger: ''
+            trigger: 'blur'
           }],
         },
       }
