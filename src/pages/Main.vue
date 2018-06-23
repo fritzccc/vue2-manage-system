@@ -167,13 +167,14 @@
               <el-radio-button label="downloadList">ダウンロードリスト</el-radio-button>
             </el-radio-group>
           <transition name="component-fade" mode="out-in">
-            <keep-alive>
-              <download-list v-if="pageConfig.currentTabName=='downloadList'" :download-list="respData.downloadList"></download-list>
+              <download-list v-if="pageConfig.currentTabName=='downloadList'"
+              key="downloadList"
+              :download-list="respData.downloadList"></download-list>
               <main-table v-else :table-data="tableData"
+                :key="pageConfig.currentTabName"
                 @preview="previewFiles"
                 @delete="deleteFiles">
               </main-table>
-            </keep-alive>
           </transition>
         </el-main>
       </el-container>
@@ -198,7 +199,7 @@
   .component-fade-enter-active,
   .component-fade-leave-active {
     z-index: 4;
-    transition: opacity .3s ease;
+    transition: opacity .2s ease;
   }
 
   .component-fade-enter,
@@ -410,7 +411,7 @@
     computed:{
       tableData(){
         return this.respData.tableData.filter(data=>{
-          return (this.pageConfig.currentTabName!='') ? data.businessKbn==this.pageConfig.currentTabName:true
+          return (this.pageConfig.currentTabName=='') ? true : data.businessKbn==this.pageConfig.currentTabName
         }) 
       }
     }

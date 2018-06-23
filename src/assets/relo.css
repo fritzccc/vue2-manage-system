@@ -492,10 +492,6 @@ a.panel-block:hover {
   cursor: e-resize;
 }
 
-.query-aside-input .el-form-item__content{
-  width: 110%;
-}
-
 .top-query-free .el-form-item__content {
   width: 100%;
 }
