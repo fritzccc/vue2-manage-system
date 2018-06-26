@@ -284,20 +284,19 @@
       },
       queryAside() {
         let me = this;
-        let url =
-          "https://nyl0e196gg.execute-api.ap-northeast-1.amazonaws.com/isp/tree";
-        me.$http.post(url, {}).then(
-          resp => {
-            me.respData.treeData = JSON.parse(resp.bodyText).treeData;
-          },
-          err => {
+        let url = "https://nyl0e196gg.execute-api.ap-northeast-1.amazonaws.com/isp/tree";
+        let data = {};
+        me.$http.post(url, data)
+          .then(resp => {
+            me.respData.treeData = resp.data.treeData;
+          })
+          .catch(err => {
             this.$message({
               message: '通信エラーが発生しました！',
               type: 'error'
-            });
+            })
             console.log("err: ", err);
-          }
-        );
+          });
       },
       resetQueryAside(){
         

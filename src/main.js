@@ -2,18 +2,19 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import App from './App'
+import axios from 'axios'
 import router from './router'
 import ElementUI from 'element-ui'
 import locale from 'element-ui/lib/locale/lang/ja'
-import VueResource from 'vue-resource'
 import 'babel-polyfill'
 import 'normalize.css'
 import 'element-ui/lib/theme-chalk/index.css'
 import '../theme/index.css'
 import './assets/relo.css'
 Vue.config.productionTip = false
-Vue.use(VueResource);
 Vue.use(ElementUI,{locale});
+
+Vue.prototype.$http = axios
 
 Vue.filter('no_ext',(docNm)=>{
   if (!docNm)
