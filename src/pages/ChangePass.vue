@@ -88,10 +88,12 @@
             trigger: 'blur'
           }],
           newPass:[{
+            required: true,
             validator:validatePass,
             trigger:'blur'
           }],
           newPassConfirm:[{
+            required: true,
             validator:validatePass2,
             trigger:'blur'
           }]
