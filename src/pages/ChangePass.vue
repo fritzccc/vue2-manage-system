@@ -4,16 +4,30 @@
         <h3>パスワード変更</h3>
         <el-form :model="changePassForm" status-icon :rules="changePassFormRules" ref="changePassForm" label-width="150px" class="demo-ruleForm">
           <el-form-item label="ユーザーID" prop="user">
-            <el-input id="username" v-model="changePassForm.user" @keyup.enter.native="changePass('changePassForm')" clearable></el-input>
+            <el-input id="username" v-model="changePassForm.user" clearable></el-input>
           </el-form-item>
           <el-form-item label="旧パスワード" prop="oldPass">
-            <el-input id="password" type="password" v-model="changePassForm.oldPass" @keyup.enter.native="changePass('changePassForm')" clearable></el-input>
+            <el-input id="password" type="password" v-model="changePassForm.oldPass" clearable></el-input>
           </el-form-item>
           <el-form-item label="新パスワード" prop="newPass">
-            <el-input id="newpass" type="password" v-model="changePassForm.newPass" @keyup.enter.native="changePass('changePassForm')" clearable></el-input>
+            <el-input id="newpass" type="password" v-model="changePassForm.newPass" clearable>
+              <el-popover
+                slot="suffix"
+                placement="top-start"
+                title="パスワードは以下の条件を満たす必要があります:"
+                width="400"
+                trigger="hover">
+                <ul style="margin-left:20px;">
+                  <li>6～30 文字で構成されている</li>
+                  <li>大文字、小文字、数字を含めている</li>
+                  <li>お使いいただける特殊文字は <b>!@#$%^&*?+=_-</b> です</li>
+                </ul>
+                <i slot="reference" class="el-icon-question"></i>
+              </el-popover>
+            </el-input>
           </el-form-item>
           <el-form-item label="新パスワード確認" prop="newPassConfirm">
-            <el-input id="newpass_confirm" type="password" v-model="changePassForm.newPassConfirm" @keyup.enter.native="changePass('changePassForm')" clearable></el-input>
+            <el-input id="newpass_confirm" type="password" :disabled="changePassForm.newPass==''" v-model="changePassForm.newPassConfirm" @keyup.enter.native="changePass('changePassForm')" clearable></el-input>
           </el-form-item>
           <el-form-item>
             <el-button plain type="primary" @click="changePass('changePassForm')">確定</el-button>
@@ -50,10 +64,25 @@
   // import { setCookie,getCookie } from '../../assets/js/cookie.js'
   export default {
     data() {
+      let len = /^[!@#$%^&*?+=_\(\)\w-]{6,30}$/;
+      let lower=/^.*(?=.*[a-z]).*$/;
+      let upper=/^.*(?=.*[A-Z]).*$/
+      let num=/^.*(?=.*\d).*$/;
+      let pattern = /^.*(?=.{6,30})(?=.*\d)(?=.*[A-Z])(?=.*[a-z]).*$/;
       let validatePass = (rule, value, callback) => {
         if (value === '') {
           callback(new Error('新しいパスワード入力してください'));
-        } else {
+        } else if(!len.test(value)){
+          callback(new Error('6-30桁でお願いします'))
+        }else if(!lower.test(value)){
+          callback(new Error('小文字を含めていない'))
+        }else if(!upper.test(value)){
+          callback(new Error('大文字を含めていない'))
+        }else if(!num.test(value)){
+          callback(new Error('数字を含めていない'))
+        }else if(!pattern.test(value)){
+          callback(new Error('パスワードポリシーを満たしていない'))
+        }else {
           if (this.changePassForm.newPassConfirm !== '') {
             this.$refs.changePassForm.validateField('newPassConfirm');
           }
@@ -108,13 +137,14 @@
     methods: {
       changePass(formName) {
         let me = this;
-        this.$refs[formName].validate((valid) => {
+        me.$refs[formName].validate((valid) => {
           if (valid) {
             //TODO
             if (me.loginForm.user == 'admin' && me.loginForm.pass == 'admin') {
               me.$router.push('/main');
             } else {
-              this.$message.error('入力されたアカウントまたはパスワードに誤りがあります。');
+              me.$message.error('入力されたアカウントまたはパスワードに誤りがあります。');
+              return false;
             }
           } else {
             console.log('error submit!!');
@@ -148,7 +178,7 @@
         // }
       },
       back(){
-        this.$router.back();
+        this.$router.push("/");
       }
     }
   }

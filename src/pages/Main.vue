@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="bg-main">
     <el-container class="bg-color" style="margin:0 0 5px 0;">
       <el-aside>
         <img src="../assets/logo.png" width="280px" height="70px" style="margin-top:10px">
@@ -97,7 +97,7 @@
     </el-container>
 
     <el-container style="margin:5px 0 0 0;">
-      <el-aside class="bg-color" :style="{width:pageConfig.asideWidth+'px'}">
+      <el-aside class="bg-color bg-shadow" :style="{width:pageConfig.asideWidth+'px'}">
         <div style="margin-left: 20px;">
           <el-form :inline="true" ref="queryFormAside" :model="reqData.queryFormAside">
             <el-row class="query-aside-input">
@@ -141,11 +141,10 @@
         </el-tree>
       </el-aside>
       <label class="dragbar" :style="{
-          height:pageConfig.dragbarHeight+'px',
           left:pageConfig.asideWidth+'px'
           }" @mousedown="mouseDown">
       </label>
-      <el-container :class="'bg-color'" style="margin-top: 0px;margin-bottom: 0px;margin-right:0px;">
+      <el-container :class="'bg-color bg-shadow'" style="margin-top: 0px;margin-bottom: 0px;margin-right:0px;">
         <el-main style="height: auto;">
 
           <!-- <div class="tabs is-toggle is-fullwidth is-large">
@@ -412,7 +411,7 @@
         return this.respData.tableData.filter(data=>{
           return (this.pageConfig.currentTabName=='') ? true : data.businessKbn==this.pageConfig.currentTabName
         }) 
-      }
+      },
     }
   };
 
