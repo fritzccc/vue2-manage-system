@@ -18,7 +18,7 @@
                 width="400"
                 trigger="hover">
                 <ul style="margin-left:20px;">
-                  <li>6～30 文字で構成されている</li>
+                  <li>6～20文字で構成されている</li>
                   <li>大文字、小文字、数字を含めている</li>
                   <li>お使いいただける特殊文字は <b>!@#$%^&*?+=_-</b> です</li>
                 </ul>
@@ -64,16 +64,16 @@
   // import { setCookie,getCookie } from '../../assets/js/cookie.js'
   export default {
     data() {
-      let len = /^[!@#$%^&*?+=_\(\)\w-]{6,30}$/;
+      let len = /^[!@#$%^&*?+=_\(\)\w-]{6,20}$/;
       let lower=/^.*(?=.*[a-z]).*$/;
       let upper=/^.*(?=.*[A-Z]).*$/
       let num=/^.*(?=.*\d).*$/;
-      let pattern = /^.*(?=.{6,30})(?=.*\d)(?=.*[A-Z])(?=.*[a-z]).*$/;
+      let pattern = /^.*(?=.{6,20})(?=.*\d)(?=.*[A-Z])(?=.*[a-z]).*$/;
       let validatePass = (rule, value, callback) => {
         if (value === '') {
           callback(new Error('新しいパスワード入力してください'));
         } else if(!len.test(value)){
-          callback(new Error('6-30桁でお願いします'))
+          callback(new Error('6-20桁でお願いします'))
         }else if(!lower.test(value)){
           callback(new Error('小文字を含めていない'))
         }else if(!upper.test(value)){
