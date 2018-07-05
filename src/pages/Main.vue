@@ -29,7 +29,11 @@
               </el-radio-group>
             </el-form-item>
             <!-- <el-form-item>
+<<<<<<< HEAD
               <el-select style="width: 150px;" v-model="reqData.queryFormTop.date.value" placeholder="期間">
+=======
+              <el-select style="width: 150px;" v-model="reqData.queryFormTop.date.value" @change="dataSelect" placeholder="期間">
+>>>>>>> master
                 <el-option v-for="option in reqData.queryFormTop.date.options" :key="option.value" :label="option.label" :value="option.value">
                 </el-option>
               </el-select>
@@ -324,6 +328,25 @@
       switchTab(tabname) {
         evtBus.$emit('switch-tab')
       },
+      // dataSelect(val){
+      //   switch (val) {
+      //     case 0://期間指定
+      //       this.reqData.queryFormTop.date.range=[];
+      //       break;
+      //     case 1://過去1週
+      //       this.reqData.queryFormTop.date.range[0]=moment().subtract(7,'days').format("YYYY-MM-DD");
+      //       this.reqData.queryFormTop.date.range[1]=moment().format("YYYY-MM-DD");
+      //       break;
+      //     case 2://過去1ヶ月
+      //       this.reqData.queryFormTop.date.range[0]=moment().subtract(1,'month').format("YYYY-MM-DD");
+      //       this.reqData.queryFormTop.date.range[1]=moment().format("YYYY-MM-DD");
+      //       break;
+      //     case 3://過去1年
+      //       this.reqData.queryFormTop.date.range[0]=moment().subtract(1,'year').format("YYYY-MM-DD");
+      //       this.reqData.queryFormTop.date.range[1]=moment().format("YYYY-MM-DD");
+      //       break;
+      //   }
+      // },
       onDrag(e) {
         e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);
         e.preventDefault ? e.preventDefault() : (e.returnValue = false);

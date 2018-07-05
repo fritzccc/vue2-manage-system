@@ -54,7 +54,7 @@
     "cross-env": "^5.2.0",
     "cross-spawn": "^5.0.1",
     "css-loader": "^0.28.11",
-    "element-theme-chalk": "^2.4.2",
+    "element-theme-chalk": "^2.4.3",
     "element-theme-default": "^1.4.13",
     "element-ui": "^2.4.3",
     "expect": "^23.2.0",

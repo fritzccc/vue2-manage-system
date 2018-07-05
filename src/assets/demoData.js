@@ -72,7 +72,7 @@ var demo={
             freeFormat: "",
             entryNm: "",
             salesNm: "",
-            sManageNm: "",
+            ManageNm: "",
             comment: "",
             dateRange:[],
             dateKbn:0
