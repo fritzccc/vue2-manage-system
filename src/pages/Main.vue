@@ -8,7 +8,7 @@
         <el-form :inline="true" :model="reqData.queryFormTop" class="demo-form-inline">
           <el-row>
             <el-form-item>
-              <el-radio-group v-model="reqData.queryFormTop.sArea" size="small">
+              <el-radio-group v-model="reqData.queryFormTop.area" size="small">
                 <el-radio-button :label="1">東京</el-radio-button>
                 <el-radio-button :label="2">大阪</el-radio-button>
                 <el-radio-button :label="3">名古屋</el-radio-button>
@@ -23,12 +23,12 @@
               </el-radio-group>
             </el-form-item> -->
             <el-form-item>
-              <el-radio-group v-model="reqData.queryFormTop.date.sDateClass" style="padding-right: 0px;" size="small">
+              <el-radio-group v-model="reqData.queryFormTop.dateKbn" style="padding-right: 0px;" size="small">
                 <el-radio-button :label="1">登録日</el-radio-button>
                 <el-radio-button :label="0">指定なし</el-radio-button>
               </el-radio-group>
             </el-form-item>
-            <el-form-item>
+            <!-- <el-form-item>
               <el-select style="width: 150px;" v-model="reqData.queryFormTop.date.value" placeholder="期間">
                 <el-option v-for="option in reqData.queryFormTop.date.options" :key="option.value" :label="option.label" :value="option.value">
                 </el-option>
@@ -38,6 +38,19 @@
                 <el-date-picker style="width: 250px;" v-if="reqData.queryFormTop.date.value=='0'" v-model="reqData.queryFormTop.date.range"
                   type="daterange" value-format="yyyy-MM-dd" range-separator="～" start-placeholder="From" end-placeholder="To">
                 </el-date-picker>
+            </el-form-item> -->
+            <el-form-item>
+              <el-date-picker style="width: 250px;"
+                v-model="reqData.queryFormTop.dateRange"
+                :picker-options="pageConfig.pickerOptions"
+                unlink-panels
+                align="left"
+                type="daterange"
+                value-format="yyyy-MM-dd"
+                range-separator="～"
+                start-placeholder="From"
+                end-placeholder="To">
+              </el-date-picker>
             </el-form-item>
           </el-row>
           <el-row>

@@ -1,3 +1,4 @@
+import moment from 'moment'
 var demo={
     pageConfig:{
         asideWidth:300,
@@ -9,6 +10,30 @@ var demo={
         cantDwld:true,
         cantDel:true,
         currentTabName:'',
+        pickerOptions: {
+          shortcuts: [{
+            text: '最近１週',
+            onClick(picker) {
+              let start=moment().subtract(7,'days').format("YYYY-MM-DD");
+              let end=moment().format("YYYY-MM-DD");
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近１ヶ月',
+            onClick(picker) {
+              let start=moment().subtract(1,'month').format("YYYY-MM-DD");
+              let end=moment().format("YYYY-MM-DD");
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近１年',
+            onClick(picker) {
+              let start=moment().subtract(1,'year').format("YYYY-MM-DD");
+              let end=moment().format("YYYY-MM-DD");
+              picker.$emit('pick', [start, end]);
+            }
+          }]
+        },
         tabs:[{
             label:'受託',
             isSelected:false,
@@ -41,24 +66,16 @@ var demo={
     },
     reqData:{
         queryFormTop: {
-            sArea: 0,
-            openStatus: 0,
-            sDoc: "",
-            sreeFormat: "",
+            area: 0,
+            publicKbn: 0,
+            doc: "",
+            freeFormat: "",
             entryNm: "",
             salesNm: "",
             sManageNm: "",
             comment: "",
-            date: {
-                sDateClass: 0,
-                range: "",
-                options: [
-                    { value: 1, label: '過去7週間' },
-                    { value: 2, label: '過去1ヶ月' },
-                    { value: 3, label: '過去1年' },
-                    { value: 0, label: '期間を指定' },
-                ]
-            },
+            dateRange:[],
+            dateKbn:0
         },
         queryFormAside:{
             sOwner:"",
