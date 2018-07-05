@@ -18,15 +18,6 @@
           </el-form-item>
         </el-form>
     </el-col>
-
-    <!-- <div class="register-wrap" v-show="showRegister">
-			<h3>注册</h3>
-			<p v-show="showTishi">{{tishi}}</p>
-			<input type="text" placeholder="请输入用户名" v-model="newUsername">
-			<input type="password" placeholder="请输入密码" v-model="newPassword">
-			<button v-on:click="register">注册</button>
-			<span v-on:click="ToLogin">已有账号？马上登录</span>
-		</div> -->
   </div>
 </template>
 <style scoped>
@@ -119,10 +110,6 @@
       ToRegister() {
         this.showRegister = true
         this.showLogin = false
-      },
-      ToLogin() {
-        this.showRegister = false
-        this.showLogin = true
       },
       register() {
         if (this.newUsername == "" || this.newPassword == "") {

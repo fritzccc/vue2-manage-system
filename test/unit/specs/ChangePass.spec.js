@@ -99,8 +99,6 @@ describe('ChangePass画面', () => {
         wrapper.find(selector).setValue('');
       })
     }
-    
-    
   })
 
   it('7. パスワードポリシーテスト',()=>{

@@ -13,7 +13,6 @@
             label-width="100px" class="demo-ruleForm">
             <h3 style="margin-top:20px;">第{{parseInt(index)+1}}件</h3>
             <el-form-item label="ファイル名" prop="fileinfo">
-              <!-- <el-input disabled v-model="uploadForm.form[index].fileinfo"></el-input> -->
               <span>{{uploadForm.form[index].filename}} ({{uploadForm.form[index].filesize}})</span>
             </el-form-item>
             <el-row class="warning-area">
