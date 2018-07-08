@@ -41,7 +41,7 @@
 
 
 <script>
-  // import { setCookie,getCookie } from '../../assets/js/cookie.js'
+  import loading from '@/components/Loading.vue'
   export default {
     data() {
       return {

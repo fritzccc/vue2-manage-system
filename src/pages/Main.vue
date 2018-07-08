@@ -7,6 +7,7 @@
       <el-main>
         <el-form :inline="true" :model="reqData.queryFormTop" class="demo-form-inline">
           <el-row>
+            <el-col :sm="21" :md="21" :lg="21" :xl="21">
             <el-form-item>
               <el-radio-group v-model="reqData.queryFormTop.area" size="small">
                 <el-radio-button :label="1">東京</el-radio-button>
@@ -29,11 +30,7 @@
               </el-radio-group>
             </el-form-item>
             <!-- <el-form-item>
-<<<<<<< HEAD
-              <el-select style="width: 150px;" v-model="reqData.queryFormTop.date.value" placeholder="期間">
-=======
               <el-select style="width: 150px;" v-model="reqData.queryFormTop.date.value" @change="dataSelect" placeholder="期間">
->>>>>>> master
                 <el-option v-for="option in reqData.queryFormTop.date.options" :key="option.value" :label="option.label" :value="option.value">
                 </el-option>
               </el-select>
@@ -56,6 +53,10 @@
                 end-placeholder="To">
               </el-date-picker>
             </el-form-item>
+            </el-col>
+            <el-col :offset=2 :sm="1" :md="1" :lg="1" :xl="1">
+              <el-button @click="logout" type="primary" circle><i class="fas fa-sign-out-alt"></i></el-button>
+            </el-col>
           </el-row>
           <el-row>
             <el-col :sm="3" :md="3" :lg="3" :xl="3">
@@ -242,6 +243,7 @@
   import mainTable from '@/components/Table.vue'
   import downloadList from '@/components/DownloadList.vue'
   import upload from '@/components/Upload.vue'
+  import loading from '@/components/Loading.vue'
   // import preview from '@/components/Preview.vue'
   import preview from '@/components/MultiPreview.vue'
   import moment from "moment";
@@ -260,6 +262,7 @@
       downloadList,
       upload,
       preview,
+      loading
     },
     // components: {
     //   mainTable: resolve => {
@@ -300,9 +303,8 @@
       },
       queryAside() {
         let me = this;
-        let url = "https://nyl0e196gg.execute-api.ap-northeast-1.amazonaws.com/isp/tree";
         let data = {};
-        me.$http.post(url, data)
+        me.$http.post('tree', data)
           .then(resp => {
             me.respData.treeData = resp.data.treeData;
           })
@@ -405,7 +407,6 @@
             message: 'エラーが発生しました！'
           });
         }
-
       },
       addComment(previewData,newComment) {
         previewData.comment.unshift(JSON.parse(JSON.stringify(newComment)));
@@ -427,6 +428,12 @@
       reset(formName) {
         this.$refs[formName].resetFields();
         this.respData.treeData=[];
+      },
+      logout(){
+        this.delCookie('session');
+        this.delCookie('username');
+        this.delCookie('u_uuid');
+        this.$router.push('/login');
       }
     },
     mounted() {

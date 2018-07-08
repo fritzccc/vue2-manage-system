@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <el-col class="login-form" :span="8" :offset="8" style="width:480px;">
+  <div class="centered">
+    <div class="login-form">
         <h3>ログイン</h3>
         <el-form :model="loginForm" status-icon :rules="loginFormRules" ref="loginForm" label-width="120px" class="demo-ruleForm">
           <el-form-item label="ユーザーID" prop="user">
@@ -17,7 +17,8 @@
             <router-link tag="a" to="/forgotpass">Forgot Password?</router-link>
           </el-form-item>
         </el-form>
-    </el-col>
+    </div>
+    <loading v-if="isLoading"></loading>
 
     <!-- <div class="register-wrap" v-show="showRegister">
 			<h3>注册</h3>
@@ -30,6 +31,11 @@
   </div>
 </template>
 <style scoped>
+  .centered{
+    width: 500px;
+    margin: auto;
+  }
+
   h3 {
     text-align: center;
   }
@@ -44,7 +50,7 @@
 
 
 <script>
-  // import { setCookie,getCookie } from '../../assets/js/cookie.js'
+  import loading from '@/components/Loading.vue'
   export default {
     data() {
       return {
@@ -52,6 +58,7 @@
           user: '',
           pass: ''
         },
+        isLoading:false,
         loginFormRules: {
           user: [{
             required: true,
@@ -66,9 +73,12 @@
         },
       }
     },
+    components: {
+      loading
+    },
     mounted() {
-      // if(getCookie('username')){
-      // 	this.$router.push('/home')
+      // if(this.$getCookie('username')){
+      // 	this.$router.push('/main')
       // }
     },
     methods: {
@@ -76,14 +86,45 @@
         let me = this;
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            //TODO
+            //DEMO
             if (me.loginForm.user == 'admin' && me.loginForm.pass == 'admin') {
-              me.$router.push('/main');
+              this.isLoading=true;              
+              let expire=1000*60*60;
+              this.setCookie('session','blablablablabla...', expire);
+              this.setCookie('username',me.loginForm.user,expire);
+              setTimeout(() => {
+                me.$router.push('/main');
+              }, 1500);
             } else {
               this.$message.error('入力されたアカウントまたはパスワードに誤りがあります。');
             }
+
+            //TODO 20180708
+            // this.$http.post('ver1.0.0/signin',this.loginForm)
+            //   .then(resp=>{
+            //     this.isLoading=false;
+            //     if(resp.statusCode!=200){
+            //       //login failed
+            //       this.$message.error(resp.errMsg)
+            //     }else{
+            //       //login success
+            //       let expire=1000*60*60*24*7;
+            //       //Session
+            //       this.setCookie('session',res.data.token,expire);
+            //       //uuid 
+            //       this.setCookie('u_uuid',res.data.u_uuid,expire);
+            //       //username
+            //       this.setCookie('username',res.data.username,expire);
+
+            //       if(this.$route.query.redirect) {
+            //       this.$router.push(this.$route.query.redirect);
+            //       } else {
+            //         this.$router.push('/main');
+            //       }
+            //     }
+            //   })
           } else {
-            console.log('error submit!!');
+            console.log('error submit');
             return false;
           }
         });
