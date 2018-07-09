@@ -10,7 +10,7 @@ import {getCookie, setCookie, delCookie} from './assets/util'
 
 import 'babel-polyfill'
 import 'normalize.css'
-import 'element-ui/lib/theme-chalk/index.css'
+// import 'element-ui/lib/theme-chalk/index.css'
 import '../theme/index.css'
 import './assets/relo.css'
 Vue.config.productionTip = false
@@ -47,13 +47,13 @@ new Vue({
       this.checkLogin();
     },
     methods:{
-      checkLogin(){
-        //check if session exists
-        if(!this.getCookie('session')){
-          this.$router.push('/login');
-        }else{
-          this.$router.push('/main');
-        }
-      }
+      // checkLogin(){
+      //   //check if session exists
+      //   if(!this.getCookie('session')){
+      //     this.$router.push('/login');
+      //   }else{
+      //     this.$router.push('/main');
+      //   }
+      // }
     }
 })

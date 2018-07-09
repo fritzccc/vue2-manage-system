@@ -33,7 +33,7 @@
 
           <hr>
           <article v-for="(comment,index) in previewData.comment" :key="index" class="message is-info">
-            <div class="message-header" v-if="comment.userNm!=loginUser">
+            <div class="message-header" v-if="comment.userNm!=user.userNm">
               <p>{{comment.userNm}}</p>
               <span>{{comment.updateDate}}</span>
             </div>
@@ -70,7 +70,7 @@
         isFromMultiPreview:false,
         previewData:{},
         newComment: {
-          userNm: this.loginUser,
+          userNm: this.user.userNm,
           updateDate: moment().format("YYYY-MM-DD"),
           text: '',
           delPop:false,
@@ -84,7 +84,7 @@
         },
       }
     },
-    props: ['loginUser'],
+    props: ['user.userNm'],
     methods: {
       close(formName) {
         if(this.isFromMultiPreview){

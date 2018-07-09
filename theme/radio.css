@@ -468,9 +468,9 @@
     right: 0;
     bottom: 0;
     margin: 0; }
-  .el-radio:focus:not(.is-focus):not(:active) {
+  .el-radio:focus:not(.is-focus):not(:active):not(.is-disabled) {
     /*获得焦点时 样式提醒*/ }
-    .el-radio:focus:not(.is-focus):not(:active) .el-radio__inner {
+    .el-radio:focus:not(.is-focus):not(:active):not(.is-disabled) .el-radio__inner {
       -webkit-box-shadow: 0 0 2px 2px #102E54;
       box-shadow: 0 0 2px 2px #102E54; }
   .el-radio__label {

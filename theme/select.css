@@ -2430,7 +2430,6 @@
     transition: transform .3s, -webkit-transform .3s;
     -webkit-transform: rotateZ(180deg);
     transform: rotateZ(180deg);
-    line-height: 16px;
     cursor: pointer; }
     .el-select .el-input .el-select__caret.is-reverse {
       -webkit-transform: rotateZ(0deg);

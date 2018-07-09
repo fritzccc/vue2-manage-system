@@ -15,9 +15,10 @@
       <span>（{{ totalRecords }}件中1-{{ totalRecords }}件表示）</span>
     </div>
 
-    <el-table :row-class-name="tableRowClass" 
-      :data="tableData" :max-height="maxHeight"
-      row-key="setRowKey" 
+    <el-table 
+      :row-class-name="tableRowClass" 
+      :data="tableData"
+      :max-height="maxHeight"
       :default-sort="{prop: 'entryDate', order: 'descending'}"
       border fit v-loading="isLoading"
       @selection-change="select"

@@ -6,8 +6,8 @@
       </el-aside>
       <el-main>
         <el-form :inline="true" :model="reqData.queryFormTop" class="demo-form-inline">
-          <el-row>
-            <el-col :sm="21" :md="21" :lg="21" :xl="21">
+          <el-row type="flex" justify="space-between">
+            <el-col :sm="17" :md="18" :lg="18" :xl="18">
             <el-form-item>
               <el-radio-group v-model="reqData.queryFormTop.area" size="small">
                 <el-radio-button :label="1">東京</el-radio-button>
@@ -54,8 +54,9 @@
               </el-date-picker>
             </el-form-item>
             </el-col>
-            <el-col :offset=2 :sm="1" :md="1" :lg="1" :xl="1">
-              <el-button @click="logout" type="primary" circle><i class="fas fa-sign-out-alt"></i></el-button>
+            <el-col :sm="7" :md="6" :lg="5" :xl="2" style="text-align:right">
+              <span style="padding-right:5px;">{{pageConfig.user.userNm}} さん</span>
+              <el-button @click="logout" type="primary" size="mini" circle><i class="fas fa-sign-out-alt"></i></el-button>
             </el-col>
           </el-row>
           <el-row>
@@ -203,7 +204,7 @@
       <upload v-if="pageConfig.isUpload" @upload="uploadFile" @close="close">
       </upload>
       <preview v-if="pageConfig.isPreview" 
-        :loginUser="pageConfig.loginUser" 
+        :user="pageConfig.user" 
         @add-comment="addComment"
         @del-comment="delComment"
         @close="close">
@@ -378,7 +379,7 @@
           let newData = JSON.parse(
             JSON.stringify(uploadForm.form[i])
           );
-          newData.entryNm = me.pageConfig.loginUser;
+          newData.entryNm = me.pageConfig.user.userNm;
           console.log(me.respData.tableData.unshift(newData));
         }
       },

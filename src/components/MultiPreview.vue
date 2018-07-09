@@ -37,7 +37,7 @@
                 </el-form>
                 <hr>
                 <article v-for="(comment,idx) in previewData.comment" :key="idx" class="message is-info">
-                  <div class="message-header" v-if="comment.userNm!=loginUser">
+                  <div class="message-header" v-if="comment.userNm!=user.userNm">
                     <p>{{comment.userNm}}</p>
                     <span>{{comment.updateDate}}</span>
                   </div>
@@ -103,7 +103,7 @@
                 </el-form>
                 <hr>
                 <article v-for="(comment,idx) in previewData.comment" :key="idx" class="message is-info">
-                  <div class="message-header" v-if="comment.userNm!=loginUser">
+                  <div class="message-header" v-if="comment.userNm!=user.userNm">
                     <p>{{comment.userNm}}</p>
                     <span>{{comment.updateDate}}</span>
                   </div>
@@ -185,7 +185,7 @@
         previewIndex: -1,
         previewDatas: {},
         newComment: {
-          userNm: this.loginUser,
+          userNm: this.user.userNm,
           updateDate: moment().format("YYYY-MM-DD"),
           text: '',
           delPop:false,
@@ -199,7 +199,7 @@
         },
       }
     },
-    props: ['loginUser'],
+    props: ['user'],
     methods: {
       close() {
         this.$emit('close');

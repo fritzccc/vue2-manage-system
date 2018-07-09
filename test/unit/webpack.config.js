@@ -10,7 +10,7 @@ module.exports = {
     devtoolModuleFilenameTemplate: '[absolute-resource-path]',
     devtoolFallbackModuleFilenameTemplate: '[absolute-resource-path]?[hash]'
   },
-  target: 'node',
+  // target: 'node',
   module: {
     rules: [
       {

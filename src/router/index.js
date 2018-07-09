@@ -23,7 +23,11 @@ const routes = [{
     name: 'Main',
     // meta:{requireAuth: true },
     component: resolve => require(['../pages/Main.vue'], resolve)
-  }, ]
+  }, {
+    path:'/test',
+    name:'Test',
+    component: resolve => require(['../components/test.vue'], resolve)
+  }]
 
 const router = new Router({
   routes

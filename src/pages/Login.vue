@@ -50,7 +50,7 @@
 
 
 <script>
-  import loading from '@/components/Loading.vue'
+  import loading from '../components/Loading.vue'
   export default {
     data() {
       return {

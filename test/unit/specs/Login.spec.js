@@ -15,7 +15,7 @@ describe('Login画面', () => {
       localVue,
       router
     });
-    wrapper.vm.$router.push('/')
+    wrapper.vm.$router.push('/login')
   })
 
   it('1. ログインタイトルと、ユーザーIDと、パスワードのinput、ログインボタン、パスワード変更ボタン、Forgot Password?リンクが表示する', () => {
@@ -89,7 +89,7 @@ describe('Login画面', () => {
   })
 
   it('7. パスワード変更ボタンを押すと、画面遷移イベントを出す（ChangePass画面へ）',()=>{
-    expect(wrapper.vm.$route.path).toBe('/')    
+    expect(wrapper.vm.$route.path).toBe('/login')    
     let changepass=wrapper.findAll('button').at(1);
     expect(changepass.text()).toEqual('パスワード変更');
     changepass.trigger('click');
@@ -97,7 +97,7 @@ describe('Login画面', () => {
   })
   
   it('8. Forgot Passwordリンクを押すと、画面遷移イベントを出す（ForgotPass画面へ）',()=>{
-    expect(wrapper.vm.$route.path).toBe('/')
+    expect(wrapper.vm.$route.path).toBe('/login')
     let forgotpass=wrapper.find('a');
     expect(forgotpass.text()).toEqual('Forgot Password?');
     forgotpass.trigger('click');

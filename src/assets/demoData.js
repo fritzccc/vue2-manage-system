@@ -3,7 +3,16 @@ var demo={
     pageConfig:{
         asideWidth:300,
         dragbarHeight: window.innerHeight-120,
-        loginUser: 'テスト花子',
+        user:{
+          user_id:Math.random(),
+          user_nm:'テスト花子',
+          company_nm:'TEST株式会社',
+          control:'名古屋',
+          auth_ptn:{
+            
+          },
+          status:0
+        },
         isUpload: false,
         isPreview:false,
         cantPrev:true,
