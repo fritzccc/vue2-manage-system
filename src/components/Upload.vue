@@ -21,7 +21,7 @@
                 <el-form-item label="業務区分" prop="business_kbn">
                   <el-select v-model="uploadForm.form[index].business_kbn" placeholder="業務区分">
                     <el-option label="受託" value="jutaku"></el-option>
-                    <el-option label="成約" value="seiyaku "></el-option>
+                    <el-option label="成約" value="seiyaku"></el-option>
                     <el-option label="工事" value="kouji"></el-option>
                     <el-option label="管理" value="kanri"></el-option>
                     <el-option label="解約" value="kaiyaku"></el-option>
@@ -42,13 +42,13 @@
             </el-row>
             <el-row>
               <el-col :span="12">
-                <el-form-item label="オーナー" prop="ownerCd">
-                  <el-input disabled v-model="uploadForm.form[index].ownerCd" placeholder="オーナー"></el-input>
+                <el-form-item label="オーナー" prop="owner_cd">
+                  <el-input disabled v-model="uploadForm.form[index].owner_cd" placeholder="オーナー"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="入居者" prop="tenantNm">
-                  <el-input disabled v-model="uploadForm.form[index].tenantNm" placeholder="入居者"></el-input>
+                <el-form-item label="入居者" prop="tenant_nm">
+                  <el-input disabled v-model="uploadForm.form[index].tenant_nm" placeholder="入居者"></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
@@ -205,9 +205,9 @@ h3{
             free_format: '',
             entry_nm: '',
             entry_date: moment().format("YYYY-MM-DD"),
-            ownerCd:'オーナーCD',
-            estateCd:'物件CD',
-            tenantNm:'入居者',
+            owner_cd:'オーナーCD',
+            estate_cd:'物件CD',
+            tenant_nm:'入居者',
             sales_nm: '営業担当',
             manage_nm: '管理担当',
             business_kbn:currentTabName,
