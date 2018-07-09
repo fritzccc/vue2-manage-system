@@ -18,14 +18,14 @@ Vue.use(ElementUI,{locale});
 
 Vue.prototype.$http = axios
 
-Vue.filter('no_ext',(docNm)=>{
-  if (!docNm)
+Vue.filter('no_ext',(doc_nm)=>{
+  if (!doc_nm)
     return '';
-  return docNm.replace(/\.\w+$/,'')
+  return doc_nm.replace(/\.\w+$/,'')
 })
 
 Vue.filter('comment',(length)=>{
-  return length>0?("合計"+length+"件あります"):"まだありません"
+  return length > 0 ? ("合計"+length+"件あります") : "まだありません"
 })
 
 
@@ -40,20 +40,20 @@ new Vue({
     router,
     components: { App },
     template: '<App/>',
-    watch:{
-      "$route" : 'checkLogin'
-    },
-    created() {
-      this.checkLogin();
-    },
-    methods:{
-      // checkLogin(){
-      //   //check if session exists
-      //   if(!this.getCookie('session')){
-      //     this.$router.push('/login');
-      //   }else{
-      //     this.$router.push('/main');
-      //   }
-      // }
-    }
+    // watch:{
+    //   "$route" : 'checkLogin'
+    // },
+    // created() {
+    //   this.checkLogin();
+    // },
+    // methods:{
+    //   checkLogin(){
+    //     //check if session exists
+    //     if(!this.getCookie('session')){
+    //       this.$router.push('/login');
+    //     }else{
+    //       this.$router.push('/main');
+    //     }
+    //   }
+    // }
 })

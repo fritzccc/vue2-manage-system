@@ -21,41 +21,60 @@ const routes = [{
   },{
     path: '/main',
     name: 'Main',
-    // meta:{requireAuth: true },
+    meta:{requireAuth: true },
     component: resolve => require(['../pages/Main.vue'], resolve)
-  }, {
-    path:'/test',
-    name:'Test',
-    component: resolve => require(['../components/test.vue'], resolve)
-  }]
+  }, ]
 
 const router = new Router({
   routes
 });
-
+//demo
 router.beforeEach((to, from, next) => {
   if(to.meta.requireAuth) {
-    fetch('m/is/login').then(resp => {
-      if(resp.statusCode == 200) {
-        next();
-      } else {
-        if(getCookie('session')) {
-          delCookie('session');
-        }
-        if(getCookie('u_uuid')) {
-          delCookie('u_uuid');
-        }
-        if(getCookie('username')) {
-          delCookie('username');
-        }
-        next({
-          path: '/login'
-        });
-      }
-    });
+    if(getCookie('session')){
+      next();
+    }else{
+      next({
+        path: '/login'
+      });
+    }
+  }else if(to.fullPath!='/main'){
+    if(getCookie('session')){
+      next({
+        path: '/main'
+      });
+    }else{
+      next();
+    }
   } else {
     next();
   }
 });
+
+//TODO
+// router.beforeEach((to, from, next) => {
+//   if(to.meta.requireAuth) {
+//     fetch('m/is/login').then(resp => {
+//       if(resp.statusCode == 200) {
+//         next();
+//       } else {
+//         if(getCookie('session')) {
+//           delCookie('session');
+//         }
+//         if(getCookie('u_uuid')) {
+//           delCookie('u_uuid');
+//         }
+//         if(getCookie('username')) {
+//           delCookie('username');
+//         }
+//         next({
+//           path: '/login'
+//         });
+//       }
+//     });
+//   } else {
+//     next();
+//   }
+// });
 
 export default router;

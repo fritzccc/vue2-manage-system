@@ -4,7 +4,7 @@
       <div v-if="previewDatas.length==1" class="modal-card" style="width: 1500px;">
       <header class="modal-card-head">
         <img src="../assets/logo.png" width="140px" height="35px" style="margin-right:10px;">
-        <p class="modal-card-title">{{previewDatas[0].docNm | no_ext}}</p>
+        <p class="modal-card-title">{{previewDatas[0].doc_nm | no_ext}}</p>
         <el-button type="primary" @click="multiDownload">ダウンロード</el-button>
         <el-button type="danger" icon="el-icon-close" circle @click="close"></el-button>
       </header>
@@ -12,7 +12,7 @@
         <div v-for="(previewData,index) in previewDatas" :key=index style="border-bottom:2px solid #d4dde4;">
           <el-row>
               <h3>
-                <b>{{previewData.docNm | no_ext}}</b>
+                <b>{{previewData.doc_nm | no_ext}}</b>
               </h3>
           </el-row>
 
@@ -37,9 +37,9 @@
                 </el-form>
                 <hr>
                 <article v-for="(comment,idx) in previewData.comment" :key="idx" class="message is-info">
-                  <div class="message-header" v-if="comment.userNm!=user.userNm">
-                    <p>{{comment.userNm}}</p>
-                    <span>{{comment.updateDate}}</span>
+                  <div class="message-header" v-if="comment.user_nm!=user.user_nm">
+                    <p>{{comment.user_nm}}</p>
+                    <span>{{comment.update_date}}</span>
                   </div>
                   <div class="message-header" v-else style="background:#54677E">
                     <p class="comment-header">自分
@@ -52,7 +52,7 @@
                         <el-button slot="reference" type="danger" style="padding: 6px 12px;">削除</el-button>
                       </el-popover>
                     </p>
-                    <span>{{comment.updateDate}}</span>
+                    <span>{{comment.update_date}}</span>
                   </div>
                   <div class="message-body">{{comment.text}}</div>
                   <br>
@@ -76,7 +76,7 @@
           <el-row>
             <el-button type="text" @click="previewIndex = index" style="padding:0;">
               <h3>
-                <b>第{{index+1}}件：{{previewData.docNm | no_ext}}</b>
+                <b>第{{index+1}}件：{{previewData.doc_nm | no_ext}}</b>
               </h3>
             </el-button>
             <el-button v-if="previewIndex==index" type="primary" plain @click="previewIndex=-1">プレビューに戻る</el-button>
@@ -103,9 +103,9 @@
                 </el-form>
                 <hr>
                 <article v-for="(comment,idx) in previewData.comment" :key="idx" class="message is-info">
-                  <div class="message-header" v-if="comment.userNm!=user.userNm">
-                    <p>{{comment.userNm}}</p>
-                    <span>{{comment.updateDate}}</span>
+                  <div class="message-header" v-if="comment.user_nm!=user.user_nm">
+                    <p>{{comment.user_nm}}</p>
+                    <span>{{comment.update_date}}</span>
                   </div>
                   <div class="message-header" v-else style="background:#54677E">
                     <p class="comment-header">自分
@@ -118,7 +118,7 @@
                         <el-button slot="reference" type="danger" style="padding: 6px 12px;">削除</el-button>
                       </el-popover>
                     </p>
-                    <span>{{comment.updateDate}}</span>
+                    <span>{{comment.update_date}}</span>
                   </div>
                   <div class="message-body">{{comment.text}}</div>
                   <br>
@@ -127,8 +127,8 @@
               <div v-else>
                 <article v-if="previewData.comment.length" class="message is-info">
                   <div class="message-header">
-                    <p class="comment-header">{{previewData.comment[0].userNm}}</p>
-                    <span>{{previewData.comment[0].updateDate}}</span>
+                    <p class="comment-header">{{previewData.comment[0].user_nm}}</p>
+                    <span>{{previewData.comment[0].update_date}}</span>
                   </div>
                   <div class="message-body">{{previewData.comment[0].text}}</div>
                 </article>
@@ -185,8 +185,8 @@
         previewIndex: -1,
         previewDatas: {},
         newComment: {
-          userNm: this.user.userNm,
-          updateDate: moment().format("YYYY-MM-DD"),
+          user_nm: this.user.user_nm,
+          update_date: moment().format("YYYY-MM-DD"),
           text: '',
           delPop:false,
         },

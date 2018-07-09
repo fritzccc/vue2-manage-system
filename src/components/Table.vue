@@ -19,7 +19,7 @@
       :row-class-name="tableRowClass" 
       :data="tableData"
       :max-height="maxHeight"
-      :default-sort="{prop: 'entryDate', order: 'descending'}"
+      :default-sort="{prop: 'entry_date', order: 'descending'}"
       border fit v-loading="isLoading"
       @selection-change="select"
       style="width: 100%">
@@ -37,7 +37,7 @@
           </el-popover>
         </template>
       </el-table-column>
-      <el-table-column sortable prop="docNm" label="書類名" min-width=280 fixed>
+      <el-table-column sortable prop="doc_nm" label="書類名" min-width=280 fixed>
         <template slot-scope="scope">
           <el-button type="text" size="medium" @click="previewFile(scope.row)">
             <i v-if="['xls','xlsx'].indexOf(scope.row.filetype)>-1" class="far fa-file-excel" style="font-size: 16px;"></i>
@@ -45,27 +45,27 @@
             <i v-if="['doc','docx'].indexOf(scope.row.filetype)>-1" class="far fa-file-word" style="font-size: 16px;"></i>
             <i v-if="['jpg','png','bmp','jpeg'].indexOf(scope.row.filetype)>-1" class="far fa-images" style="font-size: 16px;"></i>
             <!-- more ext v-if -->
-            {{scope.row.docNm | no_ext}} 
+            {{scope.row.doc_nm | no_ext}} 
           </el-button>
         </template>
       </el-table-column>
       <el-table-column sortable prop="filesize" label="サイズ" min-width=90>
       </el-table-column>
-      <el-table-column sortable show-overflow-tooltip prop="freeFormat" label="フリー" min-width=180>
+      <el-table-column sortable show-overflow-tooltip prop="free_format" label="フリー" min-width=180>
       </el-table-column>
-      <el-table-column sortable prop="entryDate" label="登録日" min-width=120>
+      <el-table-column sortable prop="entry_date" label="登録日" min-width=120>
       </el-table-column>
-      <el-table-column sortable prop="entryNm" label="登録者" min-width=100>
+      <el-table-column sortable prop="entry_nm" label="登録者" min-width=100>
       </el-table-column>
-      <el-table-column sortable prop="salesNm" label="営業担当" min-width=110>
+      <el-table-column sortable prop="sales_nm" label="営業担当" min-width=110>
       </el-table-column>
-      <el-table-column sortable prop="manageNm" label="管理担当" min-width=110>
+      <el-table-column sortable prop="manage_nm" label="管理担当" min-width=110>
       </el-table-column>
-      <el-table-column prop="ownerNm" label="オーナー" min-width=110>
+      <el-table-column prop="owner_nm" label="オーナー" min-width=110>
       </el-table-column>
-      <el-table-column prop="estateNo" label="物件NO." min-width=150>
+      <el-table-column prop="estate_no" label="物件NO." min-width=150>
       </el-table-column>
-      <el-table-column prop="estateNm" label="物件名" min-width=150>
+      <el-table-column prop="estate_nm" label="物件名" min-width=150>
       </el-table-column>
     </el-table>
   </div>

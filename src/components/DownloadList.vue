@@ -11,7 +11,7 @@
                 <p>ダウンロード実行後24時間後にファイルは削除されます。</p>
             </div>
             <a v-for="link in downloadList"  :key="link.id" :href="link.url" class="panel-block">
-                {{link.docNm}}
+                {{link.doc_nm}}
             </a>
         </nav>
     </div>

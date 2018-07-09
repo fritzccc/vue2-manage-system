@@ -4,7 +4,7 @@
     <div class="modal-card" style="width: 1500px;">
       <header class="modal-card-head">
         <img src="../assets/logo.png" width="140px" height="35px" style="margin-right:10px;">
-        <p class="modal-card-title">{{previewData.docNm | no_ext}}</p>
+        <p class="modal-card-title">{{previewData.doc_nm | no_ext}}</p>
         <el-button type="primary">ダウンロード</el-button>
         <el-button type="danger" icon="el-icon-close" circle @click="close"></el-button>
       </header>
@@ -33,9 +33,9 @@
 
           <hr>
           <article v-for="(comment,index) in previewData.comment" :key="index" class="message is-info">
-            <div class="message-header" v-if="comment.userNm!=user.userNm">
-              <p>{{comment.userNm}}</p>
-              <span>{{comment.updateDate}}</span>
+            <div class="message-header" v-if="comment.user_nm!=user.user_nm">
+              <p>{{comment.user_nm}}</p>
+              <span>{{comment.update_date}}</span>
             </div>
             <div class="message-header" v-else style="background:#54677E">
               <p>自分
@@ -48,7 +48,7 @@
                   <el-button slot="reference" type="danger" style="padding: 6px 12px;">削除</el-button>
                 </el-popover>
               </p>
-              <span>{{comment.updateDate}}</span>
+              <span>{{comment.update_date}}</span>
             </div>
             <div class="message-body">{{comment.text}}</div>
             <br>
@@ -70,8 +70,8 @@
         isFromMultiPreview:false,
         previewData:{},
         newComment: {
-          userNm: this.user.userNm,
-          updateDate: moment().format("YYYY-MM-DD"),
+          user_nm: this.user.user_nm,
+          update_date: moment().format("YYYY-MM-DD"),
           text: '',
           delPop:false,
         },
@@ -84,7 +84,7 @@
         },
       }
     },
-    props: ['user.userNm'],
+    props: ['user.user_nm'],
     methods: {
       close(formName) {
         if(this.isFromMultiPreview){

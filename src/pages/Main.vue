@@ -55,7 +55,7 @@
             </el-form-item>
             </el-col>
             <el-col :sm="7" :md="6" :lg="5" :xl="2" style="text-align:right">
-              <span style="padding-right:5px;">{{pageConfig.user.userNm}} さん</span>
+              <span style="padding-right:5px;">{{pageConfig.user.user_nm}} さん</span>
               <el-button @click="logout" type="primary" size="mini" circle><i class="fas fa-sign-out-alt"></i></el-button>
             </el-col>
           </el-row>
@@ -67,36 +67,36 @@
             </el-col>
             <el-col :sm="3" :md="3" :lg="5" :xl="5" style="margin-right:5px;">
               <el-form-item class="top-query-free">
-                <el-input v-model="reqData.queryFormTop.freeFormat" placeholder="フリー"></el-input>
+                <el-input v-model="reqData.queryFormTop.free_format" placeholder="フリー"></el-input>
               </el-form-item>
             </el-col>
             <el-col :sm="9" :md="9" :lg="7" :xl="7">
               <el-row>
                 <el-col :span="8">
                   <el-form-item>
-                    <el-input v-model="reqData.queryFormTop.entryNm" placeholder="登録者"></el-input>
+                    <el-input v-model="reqData.queryFormTop.entry_nm" placeholder="登録者"></el-input>
                   </el-form-item>
                 </el-col>
                 <el-col :span="8">
                   <el-form-item>
-                    <el-input v-model="reqData.queryFormTop.salesNm" placeholder="営業担当"></el-input>
+                    <el-input v-model="reqData.queryFormTop.sales_nm" placeholder="営業担当"></el-input>
                   </el-form-item>
                 </el-col>
                 <el-col :span="8">
                   <el-form-item>
-                    <el-input v-model="reqData.queryFormTop.manageNm" placeholder="管理担当"></el-input>
+                    <el-input v-model="reqData.queryFormTop.manage_nm" placeholder="管理担当"></el-input>
                   </el-form-item>
                 </el-col>
               </el-row>
             </el-col>
             <!-- <el-col :sm="3" :md="3" :lg="2" :xl="2">
               <el-form-item>
-                <el-input v-model="reqData.queryFormTop.salesNm" placeholder="営業担当"></el-input>
+                <el-input v-model="reqData.queryFormTop.sales_nm" placeholder="営業担当"></el-input>
               </el-form-item>
             </el-col>
             <el-col :sm="3" :md="3" :lg="2" :xl="2">
               <el-form-item>
-                <el-input v-model="reqData.queryFormTop.manageNm" placeholder="管理担当"></el-input>
+                <el-input v-model="reqData.queryFormTop.manage_nm" placeholder="管理担当"></el-input>
               </el-form-item>
             </el-col> -->
             <el-col :sm="3" :md="3" :lg="3" :xl="3">
@@ -379,7 +379,7 @@
           let newData = JSON.parse(
             JSON.stringify(uploadForm.form[i])
           );
-          newData.entryNm = me.pageConfig.user.userNm;
+          newData.entry_nm = me.pageConfig.user.user_nm;
           console.log(me.respData.tableData.unshift(newData));
         }
       },
@@ -446,14 +446,14 @@
       document.addEventListener("dragover", me.onDrag, false);
       document.addEventListener("drop", me.onDrop, false);
       me.respData.tableData.forEach(data => {
-        data.filetype = data.docNm.split(".")[1];
+        data.filetype = data.doc_nm.split(".")[1];
         data.key=Math.random();
       }); //need to adjust later...should do when AJAX get the data,not in mounted
     },
     computed:{
       tableData(){
         return this.respData.tableData.filter(data=>{
-          return (this.pageConfig.currentTabName=='') ? true : data.businessKbn==this.pageConfig.currentTabName
+          return (this.pageConfig.currentTabName=='') ? true : data.business_kbn==this.pageConfig.currentTabName
         }) 
       },
     }

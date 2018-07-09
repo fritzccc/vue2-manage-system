@@ -18,8 +18,8 @@
             </el-form-item>
             <el-row class="warning-area">
               <el-col :span="12">
-                <el-form-item label="業務区分" prop="businessKbn">
-                  <el-select v-model="uploadForm.form[index].businessKbn" placeholder="業務区分">
+                <el-form-item label="業務区分" prop="business_kbn">
+                  <el-select v-model="uploadForm.form[index].business_kbn" placeholder="業務区分">
                     <el-option label="受託" value="jutaku"></el-option>
                     <el-option label="成約" value="seiyaku "></el-option>
                     <el-option label="工事" value="kouji"></el-option>
@@ -30,8 +30,8 @@
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="書類名" prop="docNm">
-                  <el-select v-model="uploadForm.form[index].docNm" placeholder="書類名">
+                <el-form-item label="書類名" prop="doc_nm">
+                  <el-select v-model="uploadForm.form[index].doc_nm" placeholder="書類名">
                     <el-option label="書類名１" value="書類名１"></el-option>
                     <el-option label="書類名２" value="書類名２"></el-option>
                     <el-option label="書類名３" value="書類名３"></el-option>
@@ -57,18 +57,18 @@
             </el-form-item>
             <el-row>
               <el-col :span="12">
-                <el-form-item label="営業担当" prop="salesNm">
-                  <el-input disabled v-model="uploadForm.form[index].salesNm" placeholder="営業担当者"></el-input>
+                <el-form-item label="営業担当" prop="sales_nm">
+                  <el-input disabled v-model="uploadForm.form[index].sales_nm" placeholder="営業担当者"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="管理担当" prop="manageNm">
-                  <el-input disabled v-model="uploadForm.form[index].manageNm" placeholder="管理担当者"></el-input>
+                <el-form-item label="管理担当" prop="manage_nm">
+                  <el-input disabled v-model="uploadForm.form[index].manage_nm" placeholder="管理担当者"></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
-            <el-form-item label="フリー" prop="freeFormat">
-              <el-input v-model="uploadForm.form[index].freeFormat" placeholder="フリー"></el-input>
+            <el-form-item label="フリー" prop="free_format">
+              <el-input v-model="uploadForm.form[index].free_format" placeholder="フリー"></el-input>
             </el-form-item>
             <!-- <el-form-item label="注釈" prop="text">
               <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" placeholder="注釈" v-model="uploadForm.form[index].comment[0].text"></el-input>
@@ -114,20 +114,20 @@ h3{
             form:[]
         },
         uploadFormRules: {
-          businessKbn: [{
+          business_kbn: [{
             required: true,
             message: '業務区分未選択です',
             trigger: 'change'
           }],
-          docNm: [{
+          doc_nm: [{
             required: true,
             message: '書類名未選択です',
             trigger: 'change'
           }],
-          // salesNm: [
+          // sales_nm: [
           //     { required: true, message: '営業担当未入力です', trigger: 'blur' },
           // ],
-          // manageNm: [
+          // manage_nm: [
           //     { required: true, message: '管理担当未入力です', trigger: 'blur' }
           // ],
         },
@@ -156,9 +156,9 @@ h3{
         } else {
           for (let i = 1; i < me.uploadForm.files.length; i++) {
             me.uploadForm.form[i].comment = [''];
-            me.uploadForm.form[i].freeFormat= '';
+            me.uploadForm.form[i].free_format= '';
             me.uploadForm.form[i].service = '';
-            me.uploadForm.form[i].docNm = '';
+            me.uploadForm.form[i].doc_nm = '';
           }
         }
       },
@@ -199,18 +199,18 @@ h3{
           let filesize = (files[i].size / (1024 * 1024)).toFixed(1);
           filesize = (filesize == '0.0') ? '<0.1MB' : (filesize + 'MB');
           let form={
-            docNm: '',
+            doc_nm: '',
             filename:files[i].name,
             filesize:filesize,
-            freeFormat: '',
-            entryNm: '',
-            entryDate: moment().format("YYYY-MM-DD"),
+            free_format: '',
+            entry_nm: '',
+            entry_date: moment().format("YYYY-MM-DD"),
             ownerCd:'オーナーCD',
             estateCd:'物件CD',
             tenantNm:'入居者',
-            salesNm: '営業担当',
-            manageNm: '管理担当',
-            businessKbn:currentTabName,
+            sales_nm: '営業担当',
+            manage_nm: '管理担当',
+            business_kbn:currentTabName,
             isNew:true,
             filetype:files[i].name.split(".")[1],
             comment:[]
