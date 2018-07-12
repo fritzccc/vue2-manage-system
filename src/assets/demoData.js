@@ -94,6 +94,60 @@ var demo={
     },
     respData:{
         treeData: [],
+        currentTree:{},
+        business_kbn:[{
+          label:'受託',
+          value:'jutaku',
+          children:[{
+            label:'受託受託受託受託１',
+            value:1234455
+          },{
+            label:'受託２',
+            value:32423423
+          },{
+            label:'受託３',
+            value:32423
+          }],
+        },{
+          label:'成約',
+          value:'seiyaku',
+          children:[{
+            label:'成約１',
+            value:2234324
+          },{
+            label:'成約２',
+            value:345352
+          },{
+            label:'成約３',
+            value:2452454
+          }],
+        },{
+          label:'工事',
+          value:'kouji',
+          children:[{
+            label:'工事１',
+            value:6756756
+          },{
+            label:'工事２',
+            value:87685767
+          },{
+            label:'工事３',
+            value:45643453
+          }],
+        },{
+          label:'管理',
+          value:'kanri',
+          children:[{
+            label:'管理１',
+            value:65764534
+          },{
+            label:'管理２',
+            value:785643
+          },{
+            label:'管理３',
+            value:24565758
+          }],
+        },],
         downloadList:[
           {
             doc_nm:"2018053117005500.zip",
@@ -108,7 +162,7 @@ var demo={
         tableData: [{
             entry_date: '2018-04-03',
             doc_nm: '2018-rd-aaabbbcccddd.xls',
-            filesize:'0.2MB',
+            filesize:'0.2',
             entry_nm: '登録太郎',
             business_kbn:'jutaku',
             comment:[{
@@ -126,7 +180,7 @@ var demo={
         }, {
             entry_date: '2018-02-03',
             doc_nm: '2018-rd-aaabbbcccddd.xls',
-            filesize:'0.3MB',
+            filesize:'0.3',
             entry_nm: '登録太郎',
             business_kbn:'jutaku',
             comment:[{
@@ -150,7 +204,7 @@ var demo={
         }, {
             entry_date: '2018-02-03',
             doc_nm: '2018-rd-aaabbbcccddd.xls',
-            filesize:'0.4MB',
+            filesize:'0.4',
             entry_nm: '登録太郎',
             business_kbn:'seiyaku',
             comment:[{
@@ -174,7 +228,7 @@ var demo={
         }, {
             entry_date: '2018-02-03',
             doc_nm: '2017-rd-aaabbbcccddd.pdf',
-            filesize:'0.5MB',
+            filesize:'0.5',
             entry_nm: '登録太郎',
             business_kbn:'kouji',
             comment:[{
@@ -208,7 +262,7 @@ var demo={
         }, {
             entry_date: '2018-02-03',
             doc_nm: '2018-rd-aaabbbcccddd.xls',
-            filesize:'0.8MB',
+            filesize:'0.8',
             entry_nm: '登録太郎',
             business_kbn:'kanri',
             comment:[{
@@ -242,7 +296,7 @@ var demo={
         }, {
             entry_date: '2018-02-03',
             doc_nm: '2018-rd-aaabbbcccddd.xls',
-            filesize:'1.3MB',
+            filesize:'1.3',
             entry_nm: '登録太郎',
             business_kbn:'seiyaku',
             comment:[{
@@ -271,7 +325,7 @@ var demo={
         }, {
             entry_date: '2018-02-03',
             doc_nm: '2018-rd-aaabbbcccddd.xls',
-            filesize:'2.3MB',
+            filesize:'2.3',
             entry_nm: '登録太郎',
             business_kbn:'jutaku',
             comment:[{
@@ -300,7 +354,7 @@ var demo={
         }, {
             entry_date: '2018-02-03',
             doc_nm: '2018-rd-aaabbbcccddd.xls',
-            filesize:'0.9MB',
+            filesize:'0.9',
             entry_nm: '登録太郎',
             business_kbn:'kouji',
             comment:[],
@@ -314,7 +368,7 @@ var demo={
         }, {
             entry_date: '2018-02-03',
             doc_nm: '2018-rd-aaabbbcccddd.xls',
-            filesize:'0.1MB',
+            filesize:'0.1',
             entry_nm: '登録太郎',
             business_kbn:'kaiyaku',
             comment:[{
@@ -348,7 +402,7 @@ var demo={
         }, {
             entry_date: '2018-02-03',
             doc_nm: '2018-rd-aaabbbcccddd.xls',
-            filesize:'1.7MB',
+            filesize:'1.7',
             entry_nm: '登録太郎',
             business_kbn:'kaiyaku',
             comment:[],
@@ -362,7 +416,7 @@ var demo={
         }, {
             entry_date: '2018-02-03',
             doc_nm: '2018-rd-aaabbbcccddd.xls',
-            filesize:'0.3MB',
+            filesize:'0.3',
             entry_nm: '登録太郎',
             business_kbn:'kanri',
             comment:[],
@@ -376,7 +430,7 @@ var demo={
         }, {
             entry_date: '2017-02-03',
             doc_nm: '2018-rd-aaabbbcccddd.jpg',
-            filesize:'2.2MB',
+            filesize:'2.2',
             entry_nm: '登録太郎',
             business_kbn:'kanri',
             comment:[],

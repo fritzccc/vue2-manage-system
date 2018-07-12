@@ -1,20 +1,15 @@
 <template>
-  <div>
-    <el-col class="reset-pass-form" :span="8" :offset="8" style="width:480px;">
-        <h3>パスワードリセット</h3>
-        <el-form :model="resetPassForm" status-icon ref="resetPassForm" label-width="120px" class="demo-ruleForm">
-          <el-form-item label="ユーザーID" prop="user">
-            <el-input v-model.number="resetPassForm.user" @keyup.enter.native="resetPass('resetPassForm')" clearable></el-input>
-          </el-form-item>
-          <el-form-item>
-            <el-button plain type="primary" @click="resetPass('resetPassForm')">リセット</el-button>
-            <el-button plain @click="back">キャンセル</el-button>
-          </el-form-item>
-          <el-form-item>
-            <a href="#">Forgot Password?</a>
-          </el-form-item>
-        </el-form>
-    </el-col>
+  <div class="login-form">
+    <h3>パスワードリセット</h3>
+    <el-form :model="resetPassForm" status-icon ref="resetPassForm" label-width="120px" class="demo-ruleForm">
+      <el-form-item label="ユーザーID" prop="user">
+        <el-input v-model.number="resetPassForm.username" @keyup.enter.native="resetPass('resetPassForm')" clearable></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-button plain type="primary" @click="resetPass('resetPassForm')">リセット</el-button>
+        <el-button plain @click="back">キャンセル</el-button>
+      </el-form-item>
+    </el-form>
 
     <!-- <div class="register-wrap" v-show="showRegister">
 			<h3>注册</h3>
@@ -31,12 +26,6 @@
     text-align: center;
   }
 
-  .reset-pass-form {
-    margin-top: 50px;
-    padding: 20px;
-    border: 1px solid rgba(99, 99, 99, .3);
-  }
-
 </style>
 
 
@@ -46,7 +35,7 @@
     data() {
       return {
         resetPassForm: {
-          user: '',
+          username: '',
         },
       }
     },

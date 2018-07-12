@@ -6,7 +6,7 @@ import axios from './assets/http'
 import router from './router'
 import ElementUI from 'element-ui'
 import locale from 'element-ui/lib/locale/lang/ja'
-import {getCookie, setCookie, delCookie} from './assets/util'
+import {getCookie, setCookie, delCookie,clearAllCookies} from './assets/util'
 
 import 'babel-polyfill'
 import 'normalize.css'
@@ -33,6 +33,7 @@ Vue.filter('comment',(length)=>{
 Vue.prototype.getCookie=getCookie;
 Vue.prototype.setCookie=setCookie;
 Vue.prototype.delCookie=delCookie;
+Vue.prototype.clearAllCookies=clearAllCookies;
 
 /* eslint-disable no-new */
 new Vue({

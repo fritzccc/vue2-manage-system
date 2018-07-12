@@ -10,69 +10,41 @@
         <section class="modal-card-body">
           <!-- Content ... -->
           <el-form v-for="(file,index) in uploadForm.files" :key="index" :model="uploadForm.form[index]" :rules="uploadFormRules" ref="uploadForm"
-            label-width="100px" class="demo-ruleForm">
+            label-width="115px"  class="demo-ruleForm">
             <h3 style="margin-top:20px;">第{{parseInt(index)+1}}件</h3>
             <el-form-item label="ファイル名" prop="fileinfo">
               <!-- <el-input disabled v-model="uploadForm.form[index].fileinfo"></el-input> -->
-              <span>{{uploadForm.form[index].filename}} ({{uploadForm.form[index].filesize}})</span>
+              <span>{{uploadForm.form[index].filename}} ({{uploadForm.form[index].filesize}}MB)</span>
             </el-form-item>
             <el-row class="warning-area">
-              <el-col :span="12">
-                <el-form-item label="業務区分" prop="business_kbn">
-                  <el-select v-model="uploadForm.form[index].business_kbn" placeholder="業務区分">
-                    <el-option label="受託" value="jutaku"></el-option>
-                    <el-option label="成約" value="seiyaku"></el-option>
-                    <el-option label="工事" value="kouji"></el-option>
-                    <el-option label="管理" value="kanri"></el-option>
-                    <el-option label="解約" value="kaiyaku"></el-option>
-                    <el-option label="指定なし" value=""></el-option>
-                  </el-select>
-                </el-form-item>
-              </el-col>
-              <el-col :span="12">
-                <el-form-item label="書類名" prop="doc_nm">
-                  <el-select v-model="uploadForm.form[index].doc_nm" placeholder="書類名">
-                    <el-option label="書類名１" value="書類名１"></el-option>
-                    <el-option label="書類名２" value="書類名２"></el-option>
-                    <el-option label="書類名３" value="書類名３"></el-option>
-                    <el-option label="指定なし" value=""></el-option>
-                  </el-select>
-                </el-form-item>
-              </el-col>
+              <el-form-item label="業務区分/書類" prop="business_doc">
+                <el-cascader
+                  style="width:285px"
+                  clearable
+                  :options="businessKbn"
+                  v-model="uploadForm.form[index].business_doc"
+                  @change="handleChange(index)">
+                </el-cascader>
+              </el-form-item>
             </el-row>
             <el-row>
               <el-col :span="12">
                 <el-form-item label="オーナー" prop="owner_cd">
-                  <el-input disabled v-model="uploadForm.form[index].owner_cd" placeholder="オーナー"></el-input>
+                  <el-input disabled v-model="uploadForm.form[index].owner_cd"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
                 <el-form-item label="入居者" prop="tenant_nm">
-                  <el-input disabled v-model="uploadForm.form[index].tenant_nm" placeholder="入居者"></el-input>
+                  <el-input disabled v-model="uploadForm.form[index].tenant_nm"></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
-            <el-form-item label="物件" prop="estate">
-              <el-input disabled v-model="uploadForm.form[index].estate" placeholder="物件"></el-input>
+            <el-form-item label="物件" prop="estate_nm">
+              <el-input disabled v-model="uploadForm.form[index].estate_nm"></el-input>
             </el-form-item>
-            <el-row>
-              <el-col :span="12">
-                <el-form-item label="営業担当" prop="sales_nm">
-                  <el-input disabled v-model="uploadForm.form[index].sales_nm" placeholder="営業担当者"></el-input>
-                </el-form-item>
-              </el-col>
-              <el-col :span="12">
-                <el-form-item label="管理担当" prop="manage_nm">
-                  <el-input disabled v-model="uploadForm.form[index].manage_nm" placeholder="管理担当者"></el-input>
-                </el-form-item>
-              </el-col>
-            </el-row>
             <el-form-item label="フリー" prop="free_format">
-              <el-input v-model="uploadForm.form[index].free_format" placeholder="フリー"></el-input>
+              <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" v-model="uploadForm.form[index].free_format" placeholder="フリー"></el-input>
             </el-form-item>
-            <!-- <el-form-item label="注釈" prop="text">
-              <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" placeholder="注釈" v-model="uploadForm.form[index].comment[0].text"></el-input>
-            </el-form-item> -->
             <el-form-item v-if="index==0 && uploadForm.files.length>1">
               <el-checkbox v-model="uploadForm.checked" label="2つ目以降も同じ内容をセット" name="type" @change="copySettings"></el-checkbox>
             </el-form-item>
@@ -114,25 +86,15 @@ h3{
             form:[]
         },
         uploadFormRules: {
-          business_kbn: [{
+          business_doc: [{
             required: true,
-            message: '業務区分未選択です',
+            message: '業務区分/書類未選択です',
             trigger: 'change'
-          }],
-          doc_nm: [{
-            required: true,
-            message: '書類名未選択です',
-            trigger: 'change'
-          }],
-          // sales_nm: [
-          //     { required: true, message: '営業担当未入力です', trigger: 'blur' },
-          // ],
-          // manage_nm: [
-          //     { required: true, message: '管理担当未入力です', trigger: 'blur' }
-          // ],
+          }]
         },
       }
     },
+    props:['businessKbn','currentTree'],
     methods: {
       close(formName) {
         this.resetForm(formName);
@@ -155,10 +117,10 @@ h3{
           }
         } else {
           for (let i = 1; i < me.uploadForm.files.length; i++) {
-            me.uploadForm.form[i].comment = [''];
             me.uploadForm.form[i].free_format= '';
-            me.uploadForm.form[i].service = '';
-            me.uploadForm.form[i].doc_nm = '';
+            me.uploadForm.form[i].doc_cd = '';
+            me.uploadForm.form[i].business_kbn= '';
+            me.uploadForm.form[i].business_doc=[];
           }
         }
       },
@@ -184,6 +146,10 @@ h3{
         me.close(formName);
         me.resetForm(formName);
       },
+      handleChange(index){
+        this.uploadForm.form[index].business_kbn=this.uploadForm.form[index].business_doc[0];
+        this.uploadForm.form[index].doc_cd=this.uploadForm.form[index].business_doc[1];
+      }
     },
     computed:{
       total(){
@@ -197,19 +163,21 @@ h3{
         this.uploadForm.files=files;
         for (let i = 0; i < files.length; i++) {
           let filesize = (files[i].size / (1024 * 1024)).toFixed(1);
-          filesize = (filesize == '0.0') ? '<0.1MB' : (filesize + 'MB');
+          filesize = (filesize == '0.0') ? '0.1' : filesize;
           let form={
-            doc_nm: '',
+            doc_cd: 0,
             filename:files[i].name,
             filesize:filesize,
             free_format: '',
             entry_nm: '',
             entry_date: moment().format("YYYY-MM-DD"),
-            owner_cd:'オーナーCD',
-            estate_cd:'物件CD',
-            tenant_nm:'入居者',
-            sales_nm: '営業担当',
-            manage_nm: '管理担当',
+            owner_cd:this.currentTree.owner_cd,
+            owner_nm:this.currentTree.owner_nm,
+            estate_cd:this.currentTree.estate_cd,
+            estate_nm:this.currentTree.estate_nm,
+            tenant_cd:this.currentTree.tenant_cd,
+            tenant_nm:this.currentTree.tenant_nm,
+            business_doc:[],
             business_kbn:currentTabName,
             isNew:true,
             filetype:files[i].name.split(".")[1],

@@ -3369,7 +3369,7 @@
     -webkit-transform: scale(0.8);
     transform: scale(0.8); }
   .el-pagination .el-select .el-input {
-    width: 100px;
+    width: 125px;
     margin: 0 5px; }
     .el-pagination .el-select .el-input .el-input__inner {
       padding-right: 25px;

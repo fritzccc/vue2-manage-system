@@ -22,4 +22,11 @@ export function getCookie(name) {
     if (cval != null)
     document.cookie = name + "=" + cval + ";expires=" + exp.toGMTString();
   };
-  
+
+	export function clearAllCookies() {
+    var keys = document.cookie.match(/[^ =;]+(?=\=)/g);
+    if(keys) {
+      for(var i = keys.length; i--;)
+        document.cookie = keys[i] + '=0;expires=' + new Date(0).toUTCString()
+    }
+  }

@@ -1,60 +1,45 @@
 <template>
-  <div>
-    <el-col class="change-pass-form" :span="8" :offset="8" style="width:480px;">
-        <h3>パスワード変更</h3>
-        <el-form :model="changePassForm" status-icon :rules="changePassFormRules" ref="changePassForm" label-width="150px" class="demo-ruleForm">
-          <el-form-item label="ユーザーID" prop="user">
-            <el-input id="username" v-model="changePassForm.user" clearable></el-input>
-          </el-form-item>
-          <el-form-item label="旧パスワード" prop="oldPass">
-            <el-input id="password" type="password" v-model="changePassForm.oldPass" clearable></el-input>
-          </el-form-item>
-          <el-form-item label="新パスワード" prop="newPass">
-            <el-input id="newpass" type="password" v-model="changePassForm.newPass" clearable>
-              <el-popover
-                slot="suffix"
-                placement="top-start"
-                title="パスワードは以下の条件を満たす必要があります:"
-                width="400"
-                trigger="hover">
-                <ul style="margin-left:20px;">
-                  <li>6～20文字で構成されている</li>
-                  <li>大文字、小文字、数字を含めている</li>
-                  <li>お使いいただける特殊文字は <b>!@#$%^&*?+=_-</b> です</li>
-                </ul>
-                <i slot="reference" class="el-icon-question"></i>
-              </el-popover>
-            </el-input>
-          </el-form-item>
-          <el-form-item label="新パスワード確認" prop="newPassConfirm">
-            <el-input id="newpass_confirm" type="password" :disabled="changePassForm.newPass==''" v-model="changePassForm.newPassConfirm" @keyup.enter.native="changePass('changePassForm')" clearable></el-input>
-          </el-form-item>
-          <el-form-item>
-            <el-button plain type="primary" @click="changePass('changePassForm')">確定</el-button>
-            <el-button plain @click="back">キャンセル</el-button>
-          </el-form-item>
-        </el-form>
-    </el-col>
+  <div class="login-form">
+    <p v-if="firstLogin" style="color:red">ログインパスワードの変更してください</p>
+    <h3>パスワード変更</h3>
+    <el-form :model="changePassForm" status-icon :rules="changePassFormRules" ref="changePassForm" label-width="150px" class="demo-ruleForm">
+      <el-form-item v-show="!firstLogin" label="ユーザーID" prop="user_id">
+        <el-input id="username" v-model="changePassForm.user_id" clearable></el-input>
+      </el-form-item>
+      <el-form-item v-show="!firstLogin" label="旧パスワード" prop="oldPass">
+        <el-input id="password" type="password" v-model="changePassForm.oldPass" clearable></el-input>
+      </el-form-item>
+      <el-form-item label="新パスワード" prop="newPass">
+        <el-input id="newpass" type="password" v-model="changePassForm.newPass" clearable>
+          <el-popover
+            slot="suffix"
+            placement="top-start"
+            title="パスワードは以下の条件を満たす必要があります:"
+            width="400"
+            trigger="hover">
+            <ul style="margin-left:20px;">
+              <li>6～20文字で構成されている</li>
+              <li>大文字、小文字、数字を含めている</li>
+              <li>お使いいただける特殊文字は <b>~`!@#$%^&*?+=_-()</b> です</li>
+            </ul>
+            <i slot="reference" class="el-icon-question"></i>
+          </el-popover>
+        </el-input>
+      </el-form-item>
+      <el-form-item label="新パスワード確認" prop="newPassConfirm">
+        <el-input id="newpass_confirm" type="password" :disabled="changePassForm.newPass==''" v-model="changePassForm.newPassConfirm" @keyup.enter.native="changePass('changePassForm')" clearable></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-button plain type="primary" @click="changePass('changePassForm')">確定</el-button>
+        <el-button plain @click="back">キャンセル</el-button>
+      </el-form-item>
+    </el-form>
 
-    <!-- <div class="register-wrap" v-show="showRegister">
-			<h3>注册</h3>
-			<p v-show="showTishi">{{tishi}}</p>
-			<input type="text" placeholder="请输入用户名" v-model="newUsername">
-			<input type="password" placeholder="请输入密码" v-model="newPassword">
-			<button v-on:click="register">注册</button>
-			<span v-on:click="ToLogin">已有账号？马上登录</span>
-		</div> -->
   </div>
 </template>
 <style scoped>
-  h3 {
+  h3,p {
     text-align: center;
-  }
-
-  .change-pass-form {
-    margin-top: 50px;
-    padding: 20px;
-    border: 1px solid rgba(99, 99, 99, .3);
   }
 
 </style>
@@ -64,7 +49,7 @@
   import loading from '../components/Loading.vue'
   export default {
     data() {
-      let len = /^[!@#$%^&*?+=_\(\)\w-]{6,20}$/;
+      let len = /^[~`!@#$%^&*?+=_\(\)\w-]{6,20}$/;
       let lower=/^.*(?=.*[a-z]).*$/;
       let upper=/^.*(?=.*[A-Z]).*$/
       let num=/^.*(?=.*\d).*$/;
@@ -99,14 +84,15 @@
         }
       };
       return {
+        firstLogin:false,
         changePassForm: {
-          user: '',
+          user_id: '',
           oldPass:'',
           newPass:'',
           newPassConfirm:''
         },
         changePassFormRules:{
-          user: [{
+          user_id: [{
             required: true,
             message: 'ユーザーID未入力です',
             trigger: 'blur'
@@ -130,8 +116,14 @@
       }
     },
     mounted() {
+      this.firstLogin=this.$route.params.firstLogin;
+      if (this.firstLogin) {
+        this.changePassForm.user_id=this.$route.params.user_id;
+        this.changePassForm.oldPass=this.$route.params.password;
+      }
+
       // if(getCookie('username')){
-      // 	this.$router.push('/home')
+      // 	this.$router.push('/main')
       // }
     },
     methods: {
@@ -140,7 +132,7 @@
         me.$refs[formName].validate((valid) => {
           if (valid) {
             //TODO
-            if (me.loginForm.user == 'admin' && me.loginForm.pass == 'admin') {
+            if (me.loginForm.user_id == 'admin' && me.loginForm.pass == 'admin') {
               me.$router.push('/main');
             } else {
               me.$message.error('入力されたアカウントまたはパスワードに誤りがあります。');
@@ -178,7 +170,7 @@
         // }
       },
       back(){
-        this.$router.push("/");
+        this.$router.push("/login");
       }
     }
   }

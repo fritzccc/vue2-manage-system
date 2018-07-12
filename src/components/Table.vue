@@ -1,19 +1,28 @@
 <template>
   <div>
-    <el-row>
-      <el-select v-model="recordsPerPage.value" placeholder="選択してください" style="width: 100px;">
+      <!-- <el-select v-model="recordsPerPage.value" placeholder="選択してください" style="width: 100px;">
         <el-option v-for="option in recordsPerPage.options" :key="option.value" :label="option.label" :value="option.value">
         </el-option>
-      </el-select>
-      <el-button type="primary" @click="multiPreview" plain :disabled="cantPrev" style="margin-left: 3px">一括PV</el-button>
-      <!-- <el-button type="primary" plain style="margin-left: 3px">公開/非公開</el-button> -->
-      <el-button type="primary" @click="multiDownload" plain :disabled="cantDwld" style="margin-left: 3px">一括DL</el-button>
-      <el-button type="primary" @click="multiDelete" plain :disabled="cantDel" style="margin-left: 3px">削除</el-button>
-    </el-row>
-    <div class="pagination-span">
+      </el-select> -->
+    <el-button type="primary" @click="multiPreview" plain :disabled="cantPrev" style="margin-left: 3px">一括PV</el-button>
+    <!-- <el-button type="primary" plain style="margin-left: 3px">公開/非公開</el-button> -->
+    <el-button type="primary" @click="multiDownload" plain :disabled="cantDwld" style="margin-left: 3px">一括DL</el-button>
+    <el-button type="primary" @click="multiDelete" plain :disabled="cantDel" style="margin-left: 3px">削除</el-button>
+    <el-pagination
+      background
+      style="display:inline-block;margin-left:60px;"
+      @size-change="sizeChange"
+      @current-change="currentChange"
+
+      :page-sizes="[50, 100, 200, 500]"
+      :page-size="50"
+      layout="total, sizes, prev, pager, next,->"
+      :total="totalRecords">
+    </el-pagination>
+    <!-- <div class="pagination-span">
       <el-pagination background layout="prev, pager, next" :total="200" style="display:inline-block;"></el-pagination>
       <span>（{{ totalRecords }}件中1-{{ totalRecords }}件表示）</span>
-    </div>
+    </div> -->
 
     <el-table 
       :row-class-name="tableRowClass" 
@@ -22,7 +31,7 @@
       :default-sort="{prop: 'entry_date', order: 'descending'}"
       border fit v-loading="isLoading"
       @selection-change="select"
-      style="width: 100%">
+      style="width: 100%;margin-top:5px;">
       <el-table-column type="selection" min-width=40>
       </el-table-column>
       <el-table-column align="center" fixed prop="comment" min-width=50>
@@ -50,6 +59,9 @@
         </template>
       </el-table-column>
       <el-table-column sortable prop="filesize" label="サイズ" min-width=90>
+        <template slot-scope="scope">
+          {{scope.row.filesize}}MB
+        </template>
       </el-table-column>
       <el-table-column sortable show-overflow-tooltip prop="free_format" label="フリー" min-width=180>
       </el-table-column>
@@ -104,6 +116,8 @@
     },
     props: ['tableData'],
     methods: {
+      sizeChange(){},
+      currentChange(){},
       select(selection,row){
         this.selectedItems=selection;
       },

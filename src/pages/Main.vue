@@ -2,116 +2,69 @@
   <div class="bg-main">
     <el-container class="bg-color" style="margin:0 0 5px 0;">
       <el-aside>
-        <img src="../assets/logo.png" width="280px" height="70px" style="margin-top:10px">
+        <img src="../assets/logo.png" width="280px" height="70px" style="margin-top:5px">
       </el-aside>
       <el-main>
-        <el-form :inline="true" :model="reqData.queryFormTop" class="demo-form-inline">
-          <el-row type="flex" justify="space-between">
-            <el-col :sm="17" :md="18" :lg="18" :xl="18">
-            <el-form-item>
-              <el-radio-group v-model="reqData.queryFormTop.area" size="small">
-                <el-radio-button :label="1">東京</el-radio-button>
-                <el-radio-button :label="2">大阪</el-radio-button>
-                <el-radio-button :label="3">名古屋</el-radio-button>
-                <el-radio-button :label="0">指定なし</el-radio-button>
-              </el-radio-group>
-            </el-form-item>
-            <!-- <el-form-item>
-              <el-radio-group v-model="reqData.queryFormTop.openStatus" size="small">
+        <el-row type="flex" justify="space-between" style="margin-bottom:5px;">
+          <el-col :sm="17" :md="19" :lg="19" :xl="18">
+            <el-radio-group v-model="reqData.queryFormTop.area" size="small" style="margin-right:5px;">
+              <el-radio-button :label="1">東京</el-radio-button>
+              <el-radio-button :label="2">大阪</el-radio-button>
+              <el-radio-button :label="3">名古屋</el-radio-button>
+              <el-radio-button :label="0">指定なし</el-radio-button>
+            </el-radio-group>
+
+            <!-- <el-radio-group v-model="reqData.queryFormTop.openStatus" size="small" style="margin-right:5px;">
                 <el-radio-button :label="1">非公開</el-radio-button>
                 <el-radio-button :label="2">公開中</el-radio-button>
                 <el-radio-button :label="0">指定なし</el-radio-button>
-              </el-radio-group>
-            </el-form-item> -->
-            <el-form-item>
-              <el-radio-group v-model="reqData.queryFormTop.dateKbn" style="padding-right: 0px;" size="small">
-                <el-radio-button :label="1">登録日</el-radio-button>
-                <el-radio-button :label="0">指定なし</el-radio-button>
-              </el-radio-group>
-            </el-form-item>
-            <!-- <el-form-item>
-              <el-select style="width: 150px;" v-model="reqData.queryFormTop.date.value" @change="dataSelect" placeholder="期間">
-                <el-option v-for="option in reqData.queryFormTop.date.options" :key="option.value" :label="option.label" :value="option.value">
-                </el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item>
-                <el-date-picker style="width: 250px;" v-if="reqData.queryFormTop.date.value=='0'" v-model="reqData.queryFormTop.date.range"
-                  type="daterange" value-format="yyyy-MM-dd" range-separator="～" start-placeholder="From" end-placeholder="To">
-                </el-date-picker>
-            </el-form-item> -->
-            <el-form-item>
-              <el-date-picker style="width: 250px;"
-                v-model="reqData.queryFormTop.dateRange"
-                :picker-options="pageConfig.pickerOptions"
-                unlink-panels
-                align="left"
-                type="daterange"
-                value-format="yyyy-MM-dd"
-                range-separator="～"
-                start-placeholder="From"
-                end-placeholder="To">
-              </el-date-picker>
-            </el-form-item>
-            </el-col>
-            <el-col :sm="7" :md="6" :lg="5" :xl="2" style="text-align:right">
-              <span style="padding-right:5px;">{{pageConfig.user.user_nm}} さん</span>
-              <el-button @click="logout" type="primary" size="mini" circle><i class="fas fa-sign-out-alt"></i></el-button>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :sm="3" :md="3" :lg="3" :xl="3">
-              <el-form-item>
-                <el-input v-model="reqData.queryFormTop.doc" placeholder="書類名"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :sm="3" :md="3" :lg="5" :xl="5" style="margin-right:5px;">
-              <el-form-item class="top-query-free">
-                <el-input v-model="reqData.queryFormTop.free_format" placeholder="フリー"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :sm="9" :md="9" :lg="7" :xl="7">
-              <el-row>
-                <el-col :span="8">
-                  <el-form-item>
-                    <el-input v-model="reqData.queryFormTop.entry_nm" placeholder="登録者"></el-input>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="8">
-                  <el-form-item>
-                    <el-input v-model="reqData.queryFormTop.sales_nm" placeholder="営業担当"></el-input>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="8">
-                  <el-form-item>
-                    <el-input v-model="reqData.queryFormTop.manage_nm" placeholder="管理担当"></el-input>
-                  </el-form-item>
-                </el-col>
-              </el-row>
-            </el-col>
-            <!-- <el-col :sm="3" :md="3" :lg="2" :xl="2">
-              <el-form-item>
+              </el-radio-group> -->
+            <el-radio-group v-model="reqData.queryFormTop.dateKbn" size="small" style="margin-right:5px;">
+              <el-radio-button :label="1">登録日</el-radio-button>
+              <el-radio-button :label="0">指定なし</el-radio-button>
+            </el-radio-group>
+
+            <el-date-picker style="width: 250px;padding:0 10px" v-model="reqData.queryFormTop.dateRange" :picker-options="pageConfig.pickerOptions"
+              unlink-panels align="left" type="daterange" value-format="yyyy-MM-dd" range-separator="～" start-placeholder="From"
+              end-placeholder="To">
+            </el-date-picker>
+            <el-button type="primary" plain style="margin-left:5px;">操作ログ</el-button>
+          </el-col>
+          <el-col :sm="7" :md="5" :lg="5" :xl="2" style="text-align:right">
+            <span style="padding-right:5px;">{{pageConfig.user.user_nm}} さん</span>
+            <el-button @click="logout" type="primary" size="mini" circle>
+              <i class="fas fa-sign-out-alt"></i>
+            </el-button>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :sm="3" :md="3" :lg="3" :xl="3" style="padding-right:5px;">
+            <el-input v-model="reqData.queryFormTop.doc" placeholder="書類名"></el-input>
+          </el-col>
+          <el-col :sm="3" :md="3" :lg="5" :xl="5" style="padding-right:5px;">
+            <el-input v-model="reqData.queryFormTop.free_format" placeholder="フリー"></el-input>
+          </el-col>
+          <el-col :sm="9" :md="9" :lg="7" :xl="7">
+            <el-row>
+              <el-col :span="8" style="padding-right:5px;">
+                <el-input v-model="reqData.queryFormTop.entry_nm" placeholder="登録者"></el-input>
+              </el-col>
+              <el-col :span="8" style="padding-right:5px;">
                 <el-input v-model="reqData.queryFormTop.sales_nm" placeholder="営業担当"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :sm="3" :md="3" :lg="2" :xl="2">
-              <el-form-item>
+              </el-col>
+              <el-col :span="8" style="padding-right:5px;">
                 <el-input v-model="reqData.queryFormTop.manage_nm" placeholder="管理担当"></el-input>
-              </el-form-item>
-            </el-col> -->
-            <el-col :sm="3" :md="3" :lg="3" :xl="3">
-              <el-form-item>
-                <el-input v-model="reqData.queryFormTop.comment" placeholder="コメント"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :sm="12" :md="6" :lg="5" :xl="4">
-              <el-form-item>
-                <el-button type="primary" plain @click="submitQueryFormTop" style="margin-left:10px;">検索</el-button>
-                <el-button type="primary" plain style="margin-left:5px;">CSV出力</el-button>
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </el-form>
+              </el-col>
+            </el-row>
+          </el-col>
+          <el-col :sm="3" :md="3" :lg="3" :xl="3" style="padding-right:5px;">
+            <el-input v-model="reqData.queryFormTop.comment" placeholder="コメント"></el-input>
+          </el-col>
+          <el-col :sm="12" :md="6" :lg="5" :xl="4">
+            <el-button type="primary" plain @click="submitQueryFormTop" style="margin-left:10px;">検索</el-button>
+            <el-button type="primary" plain style="margin-left:5px;">CSV出力</el-button>
+          </el-col>
+        </el-row>
       </el-main>
     </el-container>
 
@@ -121,17 +74,17 @@
           <el-form :inline="true" ref="queryFormAside" :model="reqData.queryFormAside">
             <el-row class="query-aside-input">
               <el-form-item prop="sOwner">
-              <el-input v-model="reqData.queryFormAside.sOwner" placeholder="オーナーCD、オーナー名"></el-input>
+                <el-input v-model="reqData.queryFormAside.sOwner" placeholder="オーナーCD、オーナー名"></el-input>
               </el-form-item>
             </el-row>
             <el-row class="query-aside-input">
               <el-form-item prop="sEstate">
-              <el-input v-model="reqData.queryFormAside.sEstate" placeholder="物件CD、物件名"></el-input>
+                <el-input v-model="reqData.queryFormAside.sEstate" placeholder="物件CD、物件名"></el-input>
               </el-form-item>
             </el-row>
             <el-row class="query-aside-input">
               <el-form-item prop="sTenant">
-              <el-input v-model="reqData.queryFormAside.sTenant" placeholder="テナントCD、入居者名"></el-input>
+                <el-input v-model="reqData.queryFormAside.sTenant" placeholder="テナントCD、入居者名"></el-input>
               </el-form-item>
             </el-row>
             <el-row>
@@ -142,7 +95,11 @@
             </el-row>
           </el-form>
         </div>
-        <el-tree :class="'bg-color'" :data="respData.treeData" accordion highlight-current node-key="id">
+        <el-tree ref="tree" 
+          :class="'bg-color'"
+          :data="respData.treeData" 
+          accordion highlight-current
+          node-key="id">
           <span slot-scope="nodeData">
             <span class="tree-mark" v-if="nodeData.node.label[0]=='A'">
               <b>オ</b>
@@ -153,9 +110,9 @@
             <span class="tree-mark" v-if="nodeData.node.label[0]=='T'">
               <b>入</b>
             </span>
-            <span class="tree-wrap">
+            <el-button type="text" @click="nodeClick($event,nodeData.node)" class="tree-wrap" style="padding:0">
               {{nodeData.node.label}}
-            </span>
+            </el-button>
           </span>
         </el-tree>
       </el-aside>
@@ -175,24 +132,14 @@
               </li>
             </ul>
           </div> -->
-            <el-radio-group v-model="pageConfig.currentTabName" @change="switchTab" style="margin: 5px 0;">
-              <el-radio-button label="jutaku">受託</el-radio-button>
-              <el-radio-button label="seiyaku">成約</el-radio-button>
-              <el-radio-button label="kouji">工事</el-radio-button>
-              <el-radio-button label="kanri">管理</el-radio-button>
-              <el-radio-button label="kaiyaku">解約</el-radio-button>
-              <el-radio-button label="">指定なし</el-radio-button>
-              <el-radio-button label="downloadList">ダウンロードリスト</el-radio-button>
-            </el-radio-group>
+          <el-radio-group v-model="pageConfig.currentTabName" @change="switchTab" style="margin: 5px 0;">
+            <el-radio-button v-for="option in respData.business_kbn" :label="option.value" :key="option.id">{{option.label}}</el-radio-button>
+            <el-radio-button label="">指定なし</el-radio-button>
+            <el-radio-button label="downloadList">ダウンロードリスト</el-radio-button>
+          </el-radio-group>
           <transition name="component-fade" mode="out-in">
-              <download-list v-if="pageConfig.currentTabName=='downloadList'"
-              key="downloadList"
-              :download-list="respData.downloadList"></download-list>
-              <main-table v-else :table-data="tableData"
-                :key="pageConfig.currentTabName"
-                @preview="previewFiles"
-                @delete="deleteFiles">
-              </main-table>
+            <download-list v-if="pageConfig.currentTabName=='downloadList'" key="downloadList" :download-list="respData.downloadList"></download-list>
+            <main-table v-else :table-data="tableData" :key="pageConfig.currentTabName" @preview="previewFiles" @delete="deleteFiles"></main-table>
           </transition>
         </el-main>
       </el-container>
@@ -201,14 +148,8 @@
       <div v-if="pageConfig.isUpload || pageConfig.isPreview" class="modal-background"></div>
     </transition>
     <transition name="component-fade" mode="out-in">
-      <upload v-if="pageConfig.isUpload" @upload="uploadFile" @close="close">
-      </upload>
-      <preview v-if="pageConfig.isPreview" 
-        :user="pageConfig.user" 
-        @add-comment="addComment"
-        @del-comment="delComment"
-        @close="close">
-      </preview>
+      <upload v-if="pageConfig.isUpload" :business-kbn="respData.business_kbn" :current-tree="respData.currentTree" @upload="uploadFile" @close="close"></upload>
+      <preview v-if="pageConfig.isPreview" :user="pageConfig.user" @add-comment="addComment" @del-comment="delComment" @close="close"></preview>
     </transition>
   </div>
 </template>
@@ -229,14 +170,16 @@
   .query-aside-input {
     margin-right: 15px;
   }
+
   .el-row .el-form-item {
     margin-bottom: 0px;
     padding: 2px;
-}
+  }
 
-  .top-query-free{
+  .top-query-free {
     width: 100%;
   }
+
 </style>
 
 <script>
@@ -280,9 +223,51 @@
     //   }
     // },
     methods: {
-      addKey(data){
-        data.forEach(d=>{
-          d.key=Math.random();
+      getCurrentTree(id){
+        this.respData.currentTree={};
+        let data=this.respData.treeData;
+        for (let i = 0; i < data.length; i++) {
+          let owner=data[i];
+          if (owner.id ==id ) {
+            this.respData.currentTree.owner_cd=owner.label.split('_')[0];
+            this.respData.currentTree.owner_nm=owner.label.split('_')[1];
+            return;
+          }else if (owner.children != undefined && owner.children.length > 0) {
+            for (let j = 0; j < owner.children.length; j++) {
+              let estate=owner.children[j];
+              if (estate.id ==id ) {
+                this.respData.currentTree.owner_cd=owner.label.split('_')[0];
+                this.respData.currentTree.owner_nm=owner.label.split('_')[1];
+                this.respData.currentTree.estate_cd=estate.label.split('_')[0];
+                this.respData.currentTree.estate_nm=estate.label.split('_')[1];
+                return;
+              }else if(estate.children != undefined && estate.children.length > 0){
+                for (let k = 0; k < estate.children.length; k++) {
+                  let tenant=estate.children[j];
+                  if (tenant.id ==id ) {
+                    this.respData.currentTree.owner_cd=owner.label.split('_')[0];
+                    this.respData.currentTree.owner_nm=owner.label.split('_')[1];
+                    this.respData.currentTree.estate_cd=estate.label.split('_')[0];
+                    this.respData.currentTree.estate_nm=estate.label.split('_')[1];
+                    this.respData.currentTree.tenant_cd=tenant.label.split('_')[0];
+                    this.respData.currentTree.tenant_nm=tenant.label.split('_')[1];
+                    return;
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      nodeClick(e, node) {
+        e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);
+        e.preventDefault ? e.preventDefault() : (e.returnValue = false);
+        this.$refs.tree.setCurrentKey(node.key);
+        this.getCurrentTree(node.key);
+      },
+      addKey(data) {
+        data.forEach(d => {
+          d.key = Math.random();
         })
       },
       mouseDown(e) {
@@ -302,12 +287,23 @@
         }
         return false;
       },
+      genNodeKey(data) {
+        let me = this;
+        for (let i = 0; i < data.length; i++) {
+          data[i].id = Math.random();
+          if (data[i].children != undefined && data[i].children.length > 0) {
+            me.genNodeKey(data[i].children)
+          }
+        }
+      },
       queryAside() {
         let me = this;
         let data = {};
         me.$http.post('tree', data)
           .then(resp => {
-            me.respData.treeData = resp.data.treeData;
+            let temp = JSON.parse(JSON.stringify(resp.data.treeData));
+            me.genNodeKey(temp)
+            me.respData.treeData = temp;
           })
           .catch(err => {
             this.$message({
@@ -317,39 +313,15 @@
             console.log("err: ", err);
           });
       },
-      resetQueryAside(){
-        
+      resetQueryAside() {
+
       },
       submitQueryFormTop() {
         console.log(this.searchForm);
       },
-      treeNodeClick(a,b,c){
-        console.log(a);
-        console.log(b);
-        console.log(c);
-      },
       switchTab(tabname) {
         evtBus.$emit('switch-tab')
       },
-      // dataSelect(val){
-      //   switch (val) {
-      //     case 0://期間指定
-      //       this.reqData.queryFormTop.date.range=[];
-      //       break;
-      //     case 1://過去1週
-      //       this.reqData.queryFormTop.date.range[0]=moment().subtract(7,'days').format("YYYY-MM-DD");
-      //       this.reqData.queryFormTop.date.range[1]=moment().format("YYYY-MM-DD");
-      //       break;
-      //     case 2://過去1ヶ月
-      //       this.reqData.queryFormTop.date.range[0]=moment().subtract(1,'month').format("YYYY-MM-DD");
-      //       this.reqData.queryFormTop.date.range[1]=moment().format("YYYY-MM-DD");
-      //       break;
-      //     case 3://過去1年
-      //       this.reqData.queryFormTop.date.range[0]=moment().subtract(1,'year').format("YYYY-MM-DD");
-      //       this.reqData.queryFormTop.date.range[1]=moment().format("YYYY-MM-DD");
-      //       break;
-      //   }
-      // },
       onDrag(e) {
         e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);
         e.preventDefault ? e.preventDefault() : (e.returnValue = false);
@@ -360,7 +332,9 @@
       onDrop(e) {
         e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);
         e.preventDefault ? e.preventDefault() : (e.returnValue = false);
-        let {files} = e.dataTransfer;
+        let {
+          files
+        } = e.dataTransfer;
         if (files.length < 1) return;
         for (let i = 0; i < files.length; i++) {
           if (files[i].type == "") {
@@ -369,8 +343,8 @@
           }
         }
         this.pageConfig.isUpload = true;
-        Vue.nextTick(()=>{
-          evtBus.$emit('upload-files',files,this.pageConfig.currentTabName)
+        Vue.nextTick(() => {
+          evtBus.$emit('upload-files', files, this.pageConfig.currentTabName)
         })
       },
       uploadFile(uploadForm) {
@@ -383,41 +357,41 @@
           console.log(me.respData.tableData.unshift(newData));
         }
       },
-      previewFiles(){
-        this.pageConfig.isPreview=true;
+      previewFiles() {
+        this.pageConfig.isPreview = true;
       },
-      deleteFiles(selectedItems){
-        let flag=false;
-        selectedItems.forEach(item=>{
-          this.respData.tableData.forEach((data,index)=>{
-            if(item.key==data.key){
-              this.respData.tableData.splice(index,1);
+      deleteFiles(selectedItems) {
+        let flag = false;
+        selectedItems.forEach(item => {
+          this.respData.tableData.forEach((data, index) => {
+            if (item.key == data.key) {
+              this.respData.tableData.splice(index, 1);
             }
           })
         })
         //AJAX
-        flag=true;
-        if(flag){
+        flag = true;
+        if (flag) {
           this.$message({
             type: 'success',
             message: '削除されました！'
           });
-        }else{
+        } else {
           this.$message({
             type: 'error',
             message: 'エラーが発生しました！'
           });
         }
       },
-      addComment(previewData,newComment) {
+      addComment(previewData, newComment) {
         previewData.comment.unshift(JSON.parse(JSON.stringify(newComment)));
         // AJAX
       },
-      delComment(previewData,index){
+      delComment(previewData, index) {
         // console.log('index: ', index);
-        this.respData.tableData.forEach(data=>{
-          if(data.key===previewData.key){
-            data.comment.splice(index,1);
+        this.respData.tableData.forEach(data => {
+          if (data.key === previewData.key) {
+            data.comment.splice(index, 1);
           }
         })
         // previewData.comment.splice(index,1);
@@ -428,33 +402,32 @@
       },
       reset(formName) {
         this.$refs[formName].resetFields();
-        this.respData.treeData=[];
+        this.respData.treeData = [];
+        this.respData.currentTree={};
       },
-      logout(){
-        this.delCookie('session');
-        this.delCookie('username');
-        this.delCookie('u_uuid');
+      logout() {
+        this.clearAllCookies();
         this.$router.push('/login');
       }
     },
     mounted() {
       let me = this;
-      document.addEventListener("dragstart",(e)=>{
-        e.dataTransfer.setData('text/plain',null);        
-      }, false);      
+      document.addEventListener("dragstart", (e) => {
+        e.dataTransfer.setData('text/plain', null);
+      }, false);
       document.addEventListener("dragenter", me.onDrag, false);
       document.addEventListener("dragover", me.onDrag, false);
       document.addEventListener("drop", me.onDrop, false);
       me.respData.tableData.forEach(data => {
         data.filetype = data.doc_nm.split(".")[1];
-        data.key=Math.random();
+        data.key = Math.random();
       }); //need to adjust later...should do when AJAX get the data,not in mounted
     },
-    computed:{
-      tableData(){
-        return this.respData.tableData.filter(data=>{
-          return (this.pageConfig.currentTabName=='') ? true : data.business_kbn==this.pageConfig.currentTabName
-        }) 
+    computed: {
+      tableData() {
+        return this.respData.tableData.filter(data => {
+          return (this.pageConfig.currentTabName == '') ? true : data.business_kbn == this.pageConfig.currentTabName
+        })
       },
     }
   };

@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import {post,fetch,patch,put} from '@/assets/http'
-import {getCookie, setCookie, delCookie} from '@/assets/util'
+import {getCookie, setCookie, delCookie,clearAllCookies} from '@/assets/util'
 Vue.use(Router)
 
 const routes = [{
@@ -23,6 +23,10 @@ const routes = [{
     name: 'Main',
     meta:{requireAuth: true },
     component: resolve => require(['../pages/Main.vue'], resolve)
+  },{
+    path: '/error',
+    name: 'Error',
+    component: resolve => require(['../pages/Error.vue'], resolve)
   }, ]
 
 const router = new Router({
@@ -30,24 +34,30 @@ const router = new Router({
 });
 //demo
 router.beforeEach((to, from, next) => {
-  if(to.meta.requireAuth) {
-    if(getCookie('session')){
+  if(to.fullPath=='/main') {
+    console.log('​to', from);
+    if(getCookie('status')==0){
+      next({
+        path: from.fullPath
+      });
+    }else if(getCookie('session')){
       next();
     }else{
+      clearAllCookies();
       next({
         path: '/login'
       });
     }
-  }else if(to.fullPath!='/main'){
-    if(getCookie('session')){
+  }else if(to.fullPath=="/error"){
+    next();
+  }else{
+    if(getCookie('session') && !getCookie('status')){
       next({
         path: '/main'
       });
     }else{
       next();
     }
-  } else {
-    next();
   }
 });
 
@@ -58,15 +68,7 @@ router.beforeEach((to, from, next) => {
 //       if(resp.statusCode == 200) {
 //         next();
 //       } else {
-//         if(getCookie('session')) {
-//           delCookie('session');
-//         }
-//         if(getCookie('u_uuid')) {
-//           delCookie('u_uuid');
-//         }
-//         if(getCookie('username')) {
-//           delCookie('username');
-//         }
+//         clearAllCookies()
 //         next({
 //           path: '/login'
 //         });

@@ -26,7 +26,7 @@
 }
 
 .modal-background {
-  background-color: rgba(10, 10, 10, 0.86);
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 .modal-card {
@@ -528,4 +528,11 @@ a.panel-block:hover {
 }
 html,body,#app{
   height: 100%;
+}
+
+.login-form {
+  width: 500px;
+  margin: 50px auto;
+  padding: 20px;
+  border: 1px solid rgba(99, 99, 99, .3);
 }
