@@ -23,6 +23,7 @@ export function getCookie(name) {
     document.cookie = name + "=" + cval + ";expires=" + exp.toGMTString();
   };
 
+  //clear all cookies
 	export function clearAllCookies() {
     var keys = document.cookie.match(/[^ =;]+(?=\=)/g);
     if(keys) {

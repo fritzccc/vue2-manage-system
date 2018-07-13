@@ -3,9 +3,8 @@
     <img src="../assets/pain.png" height="200px" width="200px">
     <!-- <i class="far fa-meh"></i> -->
     <h2>申し訳ございません！</h2>
-    <h4>エラーメッセージ</h4>
-    <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Officia nostrum dolores necessitatibus voluptate asperiores error earum aliquam commodi iste magnam iure consequuntur placeat fugiat, dicta, saepe accusantium suscipit consectetur hic!</p>
-    <span>your page will automatically redirect to <a a href="javascript:void(0);" @click="backToLogin" class="warning">ログイン画面</a> in <span class="warning">{{count}}</span> seconds</span>
+    <h4>システム管理者に連絡してください</h4>
+    <span><span class="warning">{{count}}</span>秒後<a a href="javascript:void(0);" @click="backToLogin" class="warning">ログイン画面</a>へ遷移します</span>
   </div>
 </template>
 <style scoped>

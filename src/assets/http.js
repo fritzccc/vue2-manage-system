@@ -9,7 +9,6 @@ axios.defaults.baseURL = 'https://nyl0e196gg.execute-api.ap-northeast-1.amazonaw
 
 // http request interceptor，pass cookie to backend
 axios.interceptors.request.use(config => {
-    console.log('​config', config);
     const token = getCookie('session'); //get cookie
     config.data = JSON.stringify(config.data);
     // config.headers = {

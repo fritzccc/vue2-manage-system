@@ -63,15 +63,15 @@
 
 
 <style scoped>
-.el-form-item{
-  margin-bottom:10px;
-}
-.warning-area .el-form-item{
-  margin-bottom: 20px;
-}
-h3{
-  margin-top: 0;
-}
+  .el-form-item{
+    margin-bottom:10px;
+  }
+  .warning-area .el-form-item{
+    margin-bottom: 20px;
+  }
+  h3{
+    margin-top: 0;
+  }
 </style>
 
 <script>

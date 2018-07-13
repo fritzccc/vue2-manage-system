@@ -30,7 +30,17 @@
 
 
 <script>
+  import AWS from 'aws-sdk'
+  import evtBus from '../assets/evtBus';
+  import apigClientFactory from 'aws-api-gateway-client';
   import loading from '../components/Loading.vue'
+  AWS.config.region='ap-northeast-1';
+  AWS.config.credentials=new AWS.CognitoIdentityCredentials({
+    IdentityPoolId: 'ap-northeast-1:b5a84a4d-1673-498f-b245-7952da648408'
+  });
+  var apigClient = apigClientFactory.newClient({
+    invokeUrl:'https://nyl0e196gg.execute-api.ap-northeast-1.amazonaws.com/isp/'
+  });
   export default {
     data() {
       return {
@@ -68,38 +78,88 @@
           if (valid) {
             this.clearAllCookies();
             //DEMO
-            if (me.loginForm.user_id == 'admin' && me.loginForm.password == 'admin') {
-              this.isLoading=true;              
-              let expireDays=1000*60*60;
-              this.setCookie('session','blablablablabla...', expireDays);
-              this.setCookie('username',me.loginForm.user_id,expireDays);
-              setTimeout(() => {
-                this.$router.push({
-                  name:'Main',
-                  params:{
-                    msg:'param test'
-                  }
-                });
-              }, 1800);
-            } else if (me.loginForm.user_id == 'test' && me.loginForm.password == 'test') {
-              this.isLoading=true;              
-              let expireDays=1000*60*60;
-              this.setCookie('session','blablablablabla...', expireDays);
-              this.setCookie('username',me.loginForm.user_id,expireDays);
-              this.setCookie('status',0,expireDays)
-              setTimeout(() => {
-                this.$router.push({
-                  name:'ChangePass',
-                  params:{
-                    firstLogin:true,
-                    user_id:this.loginForm.user_id,
-                    password:this.loginForm.password
-                  }
-                });
-              }, 1800);
-            }else {
-              this.$message.error('入力されたアカウントまたはパスワードに誤りがあります。');
-            }
+            // if (me.loginForm.user_id == 'admin' && me.loginForm.password == 'admin') {
+            //   this.isLoading=true;              
+            //   let expireDays=1000*60*60;
+            //   this.setCookie('session','blablablablabla...', expireDays);
+            //   this.setCookie('username',me.loginForm.user_id,expireDays);
+            //   setTimeout(() => {
+            //     this.$router.push({
+            //       name:'Main',
+            //       params:{
+            //         msg:'param test'
+            //       }
+            //     });
+            //   }, 1800);
+            // } else if (me.loginForm.user_id == 'test' && me.loginForm.password == 'test') {
+            //   this.isLoading=true;              
+            //   let expireDays=1000*60*60;
+            //   this.setCookie('session','blablablablabla...', expireDays);
+            //   this.setCookie('username',me.loginForm.user_id,expireDays);
+            //   this.setCookie('status',0,expireDays)
+            //   setTimeout(() => {
+            //     this.$router.push({
+            //       name:'ChangePass',
+            //       params:{
+            //         firstLogin:true,
+            //         user_id:this.loginForm.user_id,
+            //         password:this.loginForm.password
+            //       }
+            //     });
+            //   }, 1800);
+            // }else {
+            //   this.$message.error('入力されたアカウントまたはパスワードに誤りがあります。');
+            // }
+
+            //20180713
+            evtBus.apigClient=apigClient;
+            let me = this;
+            me.isLoading=true;
+            let params = {};
+            let body = {items:this.loginForm};
+            let pathTemplate='signin';
+            let method='POST';
+            let additionalParams={};
+            apigClient.invokeApi(params, pathTemplate, method, additionalParams, body)
+              .then(res=>{
+                console.log('​login -> res', res);
+                me.isLoading=false;
+                if(res.data.error){
+                  //failed
+                  this.$message.error(res.data.errmsg);
+                  return false;
+                }else{
+                  //success
+                  //cognito
+                  AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+                    IdentityId: result.data.identity_id,
+                    Logins: {
+                      'cognito-identity.amazonaws.com' : result.data.token
+                    }
+                  });
+                  AWS.config.credentials.get((error) => {
+                    if (error) {
+                      console.log('error submit!! '+ string(result));
+                      this.$message.error(string(result));
+                    } else {
+                      //TODO
+                      apigClient = apigClientFactory.newClient({
+                        invokeUrl:'https://nyl0e196gg.execute-api.ap-northeast-1.amazonaws.com/isp/',
+                        accessKey: AWS.config.credentials.accessKeyId,
+                        secretKey: AWS.config.credentials.secretAccessKey,
+                        sessionToken: AWS.config.credentials.sessionToken,
+                        region: AWS.config.region
+                      });
+                    }
+                  });
+                }
+              })
+              .catch(err=>{
+                //network err
+                me.isLoading=false;
+                console.log('​login err -> ',err );
+              })
+
             //TODO 20180708
             // this.$http.post('ver1.0.0/signin',{items:this.loginForm})
             //   .then(resp=>{

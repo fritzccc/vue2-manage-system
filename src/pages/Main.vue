@@ -96,9 +96,11 @@
           </el-form>
         </div>
         <el-tree ref="tree" 
+          :expand-on-click-node="false"
           :class="'bg-color'"
           :data="respData.treeData" 
           accordion highlight-current
+          @node-click="nodeClick"
           node-key="id">
           <span slot-scope="nodeData">
             <span class="tree-mark" v-if="nodeData.node.label[0]=='A'">
@@ -110,9 +112,9 @@
             <span class="tree-mark" v-if="nodeData.node.label[0]=='T'">
               <b>入</b>
             </span>
-            <el-button type="text" @click="nodeClick($event,nodeData.node)" class="tree-wrap" style="padding:0">
+            <span class="tree-wrap" style="padding:0">
               {{nodeData.node.label}}
-            </el-button>
+            </span>
           </span>
         </el-tree>
       </el-aside>
@@ -160,26 +162,21 @@
     z-index: 4;
     transition: opacity .2s ease;
   }
-
   .component-fade-enter,
   .component-fade-leave-to {
     z-index: 4;
     opacity: 0;
   }
-
   .query-aside-input {
     margin-right: 15px;
   }
-
   .el-row .el-form-item {
     margin-bottom: 0px;
     padding: 2px;
   }
-
   .top-query-free {
     width: 100%;
   }
-
 </style>
 
 <script>
@@ -195,7 +192,6 @@
     demo
   } from "../assets/demoData";
   import evtBus from '../assets/evtBus';
-
   export default {
     name: "Main",
     data() {
@@ -223,47 +219,27 @@
     //   }
     // },
     methods: {
-      getCurrentTree(id){
+      setCurrentTree(id){
+        console.log('​getCurrentTree -> id', id);
+        let [owner,estate,tenant]=id.split('_');
+        let tree=this.respData.treeData;
         this.respData.currentTree={};
-        let data=this.respData.treeData;
-        for (let i = 0; i < data.length; i++) {
-          let owner=data[i];
-          if (owner.id ==id ) {
-            this.respData.currentTree.owner_cd=owner.label.split('_')[0];
-            this.respData.currentTree.owner_nm=owner.label.split('_')[1];
-            return;
-          }else if (owner.children != undefined && owner.children.length > 0) {
-            for (let j = 0; j < owner.children.length; j++) {
-              let estate=owner.children[j];
-              if (estate.id ==id ) {
-                this.respData.currentTree.owner_cd=owner.label.split('_')[0];
-                this.respData.currentTree.owner_nm=owner.label.split('_')[1];
-                this.respData.currentTree.estate_cd=estate.label.split('_')[0];
-                this.respData.currentTree.estate_nm=estate.label.split('_')[1];
-                return;
-              }else if(estate.children != undefined && estate.children.length > 0){
-                for (let k = 0; k < estate.children.length; k++) {
-                  let tenant=estate.children[j];
-                  if (tenant.id ==id ) {
-                    this.respData.currentTree.owner_cd=owner.label.split('_')[0];
-                    this.respData.currentTree.owner_nm=owner.label.split('_')[1];
-                    this.respData.currentTree.estate_cd=estate.label.split('_')[0];
-                    this.respData.currentTree.estate_nm=estate.label.split('_')[1];
-                    this.respData.currentTree.tenant_cd=tenant.label.split('_')[0];
-                    this.respData.currentTree.tenant_nm=tenant.label.split('_')[1];
-                    return;
-                  }
-                }
-              }
-            }
-          }
+        this.respData.currentTree.owner_cd=tree[owner].label.split('_')[0];
+        this.respData.currentTree.owner_nm=tree[owner].label.split('_')[1];
+        if(estate!=undefined){
+          this.respData.currentTree.estate_cd=tree[owner].children[estate].label.split('_')[0];
+          this.respData.currentTree.estate_nm=tree[owner].children[estate].label.split('_')[1];
+        }
+        if(tenant!=undefined){
+          this.respData.currentTree.tenant_cd=tree[owner].children[estate].children[tenant].label.split('_')[0];
+          this.respData.currentTree.tenant_nm=tree[owner].children[estate].children[tenant].label.split('_')[1];
         }
       },
-      nodeClick(e, node) {
-        e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);
-        e.preventDefault ? e.preventDefault() : (e.returnValue = false);
-        this.$refs.tree.setCurrentKey(node.key);
-        this.getCurrentTree(node.key);
+      nodeClick(nodeData,node,ele) {
+        console.log('​nodeClick -> ele', ele);
+        console.log('​nodeClick -> node', node);
+        console.log('​nodeClick -> nodeData', nodeData);
+        this.setCurrentTree(nodeData.id);
       },
       addKey(data) {
         data.forEach(d => {
@@ -287,12 +263,16 @@
         }
         return false;
       },
-      genNodeKey(data) {
+      genNodeKey(data,id_bef) {
         let me = this;
         for (let i = 0; i < data.length; i++) {
-          data[i].id = Math.random();
+          if(id_bef==undefined){
+            data[i].id=i+'';
+          }else{
+            data[i].id=id_bef+('_'+i).repeat(1);
+          }
           if (data[i].children != undefined && data[i].children.length > 0) {
-            me.genNodeKey(data[i].children)
+            me.genNodeKey(data[i].children,data[i].id);
           }
         }
       },
@@ -314,7 +294,6 @@
           });
       },
       resetQueryAside() {
-
       },
       submitQueryFormTop() {
         console.log(this.searchForm);
@@ -332,13 +311,15 @@
       onDrop(e) {
         e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);
         e.preventDefault ? e.preventDefault() : (e.returnValue = false);
-        let {
-          files
-        } = e.dataTransfer;
-        if (files.length < 1) return;
+        let {files} = e.dataTransfer;
+        if (files.length < 1 || this.respData.currentTree.owner_cd==undefined)
+          return false;
         for (let i = 0; i < files.length; i++) {
           if (files[i].type == "") {
-            alert("cannot upload a folder or such type is not supported!");
+            this.$message({
+              type: 'warning',
+              message: 'このファイル形式又はフォルダのアプロードは制限されています'
+            });
             return false;
           }
         }
@@ -431,7 +412,6 @@
       },
     }
   };
-
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

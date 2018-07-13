@@ -32,16 +32,16 @@
       border fit v-loading="isLoading"
       @selection-change="select"
       style="width: 100%;margin-top:5px;">
-      <el-table-column type="selection" min-width=40>
+      <el-table-column type="selection" width=35>
       </el-table-column>
-      <el-table-column align="center" fixed prop="comment" min-width=50>
+      <el-table-column align="center" fixed prop="comment" width=45>
         <template slot-scope="scope">
           <el-popover	v-if="scope.row.comment.length>0" trigger="hover" placement="right-end" :open-delay=500>
             <div :class="{'hover-text-after':(scope.row.comment[0].text.length>=100)}" class="hover-text">
               <strong>計{{scope.row.comment.length}}件:</strong> {{ scope.row.comment[0].text }}
             </div>
             <div slot="reference" class="name-wrapper">
-              <i class="far fa-comment" style="font-size: 20px"></i>
+              <i class="far fa-comment" style="font-size: 20px;"></i>
             </div>
           </el-popover>
         </template>

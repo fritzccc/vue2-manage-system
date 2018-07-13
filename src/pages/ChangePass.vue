@@ -18,7 +18,7 @@
             width="400"
             trigger="hover">
             <ul style="margin-left:20px;">
-              <li>6～20文字で構成されている</li>
+              <li>8～20文字で構成されている</li>
               <li>大文字、小文字、数字を含めている</li>
               <li>お使いいただける特殊文字は <b>~`!@#$%^&*?+=_-()</b> です</li>
             </ul>
@@ -49,24 +49,21 @@
   import loading from '../components/Loading.vue'
   export default {
     data() {
-      let len = /^[~`!@#$%^&*?+=_\(\)\w-]{6,20}$/;
+      let len = /^[~`!@#$%^&*?+=_\(\)\w-]{8,20}$/;
       let lower=/^.*(?=.*[a-z]).*$/;
       let upper=/^.*(?=.*[A-Z]).*$/
       let num=/^.*(?=.*\d).*$/;
-      let pattern = /^.*(?=.{6,20})(?=.*\d)(?=.*[A-Z])(?=.*[a-z]).*$/;
       let validatePass = (rule, value, callback) => {
         if (value === '') {
           callback(new Error('新しいパスワード入力してください'));
         } else if(!len.test(value)){
-          callback(new Error('6-20桁でお願いします'))
+          callback(new Error('有効な文字で、8-20桁でお願いします'))
         }else if(!lower.test(value)){
-          callback(new Error('小文字を含めていない'))
+          callback(new Error('小文字を含めてください'))
         }else if(!upper.test(value)){
-          callback(new Error('大文字を含めていない'))
+          callback(new Error('大文字を含めてください'))
         }else if(!num.test(value)){
-          callback(new Error('数字を含めていない'))
-        }else if(!pattern.test(value)){
-          callback(new Error('パスワードポリシーを満たしていない'))
+          callback(new Error('数字を含めてください'))
         }else {
           if (this.changePassForm.newPassConfirm !== '') {
             this.$refs.changePassForm.validateField('newPassConfirm');

@@ -30,6 +30,7 @@
 
 
 <script>
+  import evtBus from '../assets/evtBus';
   import loading from '@/components/Loading.vue'
   export default {
     data() {

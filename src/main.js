@@ -35,26 +35,11 @@ Vue.prototype.setCookie=setCookie;
 Vue.prototype.delCookie=delCookie;
 Vue.prototype.clearAllCookies=clearAllCookies;
 
+
 /* eslint-disable no-new */
 new Vue({
     el: '#app',
     router,
     components: { App },
     template: '<App/>',
-    // watch:{
-    //   "$route" : 'checkLogin'
-    // },
-    // created() {
-    //   this.checkLogin();
-    // },
-    // methods:{
-    //   checkLogin(){
-    //     //check if session exists
-    //     if(!this.getCookie('session')){
-    //       this.$router.push('/login');
-    //     }else{
-    //       this.$router.push('/main');
-    //     }
-    //   }
-    // }
 })

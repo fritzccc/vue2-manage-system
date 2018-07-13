@@ -35,7 +35,7 @@ const router = new Router({
 //demo
 router.beforeEach((to, from, next) => {
   if(to.fullPath=='/main') {
-    console.log('​to', from);
+    console.log('from', from);
     if(getCookie('status')==0){
       next({
         path: from.fullPath
