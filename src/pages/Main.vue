@@ -1,12 +1,12 @@
 <template>
   <div class="bg-main">
     <el-container class="bg-color" style="margin:0 0 5px 0;">
-      <el-aside>
-        <img src="../assets/logo.png" width="280px" height="70px" style="margin-top:5px">
+      <el-aside style="width:260px;">
+        <img src="../assets/logo.png" width="240px" height="60px" style="margin-top:5px">
       </el-aside>
       <el-main>
         <el-row type="flex" justify="space-between" style="margin-bottom:5px;">
-          <el-col :sm="17" :md="19" :lg="19" :xl="18">
+          <el-col :sm="17" :md="19" :lg="20" :xl="18">
             <el-radio-group v-model="reqData.queryFormTop.area" size="small" style="margin-right:5px;">
               <el-radio-button :label="1">東京</el-radio-button>
               <el-radio-button :label="2">大阪</el-radio-button>
@@ -19,19 +19,21 @@
                 <el-radio-button :label="2">公開中</el-radio-button>
                 <el-radio-button :label="0">指定なし</el-radio-button>
               </el-radio-group> -->
-            <el-radio-group v-model="reqData.queryFormTop.dateKbn" size="small" style="margin-right:5px;">
+            <el-radio-group v-model="reqData.queryFormTop.date_kbn" size="small" style="margin-right:5px;">
               <el-radio-button :label="1">登録日</el-radio-button>
               <el-radio-button :label="0">指定なし</el-radio-button>
             </el-radio-group>
 
-            <el-date-picker style="width: 250px;padding:0 10px" v-model="reqData.queryFormTop.dateRange" :picker-options="pageConfig.pickerOptions"
+            <el-date-picker :disabled="reqData.queryFormTop.date_kbn==0" style="width: 250px;padding:0 10px" v-model="reqData.queryFormTop.dateRange" :picker-options="pageConfig.pickerOptions"
               unlink-panels align="left" type="daterange" value-format="yyyy-MM-dd" range-separator="～" start-placeholder="From"
               end-placeholder="To">
             </el-date-picker>
-            <el-button type="primary" plain style="margin-left:5px;">操作ログ</el-button>
+            <el-button type="primary" size="small" plain style="margin-left:5px;">操作ログ</el-button>
+            <el-button type="primary" @click="queryTop('csv')" size="small" plain style="margin-left:5px;">CSV出力</el-button>
+
           </el-col>
-          <el-col :sm="7" :md="5" :lg="5" :xl="2" style="text-align:right">
-            <span style="padding-right:5px;">{{pageConfig.user.user_nm}} さん</span>
+          <el-col :sm="7" :md="5" :lg="4" :xl="2" style="text-align:right">
+            <span style="padding-right:5px;font-size:13px;">{{pageConfig.user.user_nm}} さん</span>
             <el-button @click="logout" type="primary" size="mini" circle>
               <i class="fas fa-sign-out-alt"></i>
             </el-button>
@@ -39,7 +41,7 @@
         </el-row>
         <el-row>
           <el-col :sm="3" :md="3" :lg="3" :xl="3" style="padding-right:5px;">
-            <el-input v-model="reqData.queryFormTop.doc" placeholder="書類名"></el-input>
+            <el-input v-model="reqData.queryFormTop.doc_nm" placeholder="書類名"></el-input>
           </el-col>
           <el-col :sm="3" :md="3" :lg="5" :xl="5" style="padding-right:5px;">
             <el-input v-model="reqData.queryFormTop.free_format" placeholder="フリー"></el-input>
@@ -47,7 +49,7 @@
           <el-col :sm="9" :md="9" :lg="7" :xl="7">
             <el-row>
               <el-col :span="8" style="padding-right:5px;">
-                <el-input v-model="reqData.queryFormTop.entry_nm" placeholder="登録者"></el-input>
+                <el-input v-model="reqData.queryFormTop.file_entry_user" placeholder="登録者"></el-input>
               </el-col>
               <el-col :span="8" style="padding-right:5px;">
                 <el-input v-model="reqData.queryFormTop.sales_nm" placeholder="営業担当"></el-input>
@@ -61,8 +63,8 @@
             <el-input v-model="reqData.queryFormTop.comment" placeholder="コメント"></el-input>
           </el-col>
           <el-col :sm="12" :md="6" :lg="5" :xl="4">
-            <el-button type="primary" plain @click="submitQueryFormTop" style="margin-left:10px;">検索</el-button>
-            <el-button type="primary" plain style="margin-left:5px;">CSV出力</el-button>
+            <el-button type="primary" size="small" @click="queryTop('search')" style="margin-left:5px;">検索</el-button>
+            <el-button type="primary" size="small" plain @click="resetTop" style="margin-left:5px;">リセット</el-button>
           </el-col>
         </el-row>
       </el-main>
@@ -89,8 +91,8 @@
             </el-row>
             <el-row>
               <el-form-item>
-                <el-button type="primary" @click="queryAside" style="margin-left: 3px">検索</el-button>
-                <el-button type="primary" @click="reset('queryFormAside')" plain style="margin-left: 3px">リセット</el-button>
+                <el-button type="primary" size="small" @click="queryAside" style="margin-left: 3px">検索</el-button>
+                <el-button type="primary" size="small" @click="resetAside" plain style="margin-left: 3px">リセット</el-button>
               </el-form-item>
             </el-row>
           </el-form>
@@ -124,7 +126,6 @@
       </label>
       <el-container :class="'bg-color bg-shadow'" style="margin-top: 0px;margin-bottom: 0px;margin-right:0px;">
         <el-main style="height: auto;">
-
           <!-- <div class="tabs is-toggle is-fullwidth is-large">
             <ul>
               <li v-for="tab in pageConfig.tabs" :key="tab.id" :class="{ 'is-active':tab.isSelected }">
@@ -141,7 +142,13 @@
           </el-radio-group>
           <transition name="component-fade" mode="out-in">
             <download-list v-if="pageConfig.currentTabName=='downloadList'" key="downloadList" :download-list="respData.downloadList"></download-list>
-            <main-table v-else :table-data="tableData" :key="pageConfig.currentTabName" @preview="previewFiles" @delete="deleteFiles"></main-table>
+            <main-table v-else 
+              :table-data="tableData" 
+              :key="pageConfig.currentTabName" 
+              @preview="previewFiles" 
+              @delete="deleteFiles"
+              @error="error">
+            </main-table>
           </transition>
         </el-main>
       </el-container>
@@ -150,8 +157,19 @@
       <div v-if="pageConfig.isUpload || pageConfig.isPreview" class="modal-background"></div>
     </transition>
     <transition name="component-fade" mode="out-in">
-      <upload v-if="pageConfig.isUpload" :business-kbn="respData.business_kbn" :current-tree="respData.currentTree" @upload="uploadFile" @close="close"></upload>
-      <preview v-if="pageConfig.isPreview" :user="pageConfig.user" @add-comment="addComment" @del-comment="delComment" @close="close"></preview>
+      <upload v-if="pageConfig.isUpload" 
+        :business-kbn="respData.business_kbn" 
+        :current-tree="respData.currentTree" 
+        @upload="uploadFile" 
+        @error="error"
+        @close="close">
+      </upload>
+      <preview v-if="pageConfig.isPreview"  
+        @add-comment="addComment" 
+        @del-comment="delComment" 
+        @error="error"
+        @close="close">
+      </preview>
     </transition>
   </div>
 </template>
@@ -185,17 +203,20 @@
   import downloadList from '@/components/DownloadList.vue'
   import upload from '@/components/Upload.vue'
   import loading from '@/components/Loading.vue'
-  // import preview from '@/components/Preview.vue'
   import preview from '@/components/MultiPreview.vue'
+  import evtBus from '@/assets/evtBus';
   import moment from "moment";
-  import {
-    demo
-  } from "../assets/demoData";
-  import evtBus from '../assets/evtBus';
+  import {demo} from "@/assets/demoData";
+
   export default {
     name: "Main",
     data() {
+      //demo
       return demo;
+      //TODO
+      // return {
+
+      // }
     },
     components: {
       mainTable,
@@ -218,33 +239,42 @@
     //     require(["../components/Upload.vue"], resolve);
     //   }
     // },
+    mounted() {
+      let me = this;
+      document.addEventListener("dragstart", e => {
+        e.dataTransfer.setData('text/plain', null);
+      }, false);
+      document.addEventListener("dragenter", me.onDrag, false);
+      document.addEventListener("dragover", me.onDrag, false);
+      document.addEventListener("drop", me.onDrop, false);
+      
+      if(!evtBus.apigClient){
+        let {check,accessKeyId,secretAccessKey,sessionToken,region}=me.getAWSCookies();
+        if(check){
+          //logged in
+          evtBus.apigClient=me.sessionApigClient(accessKeyId,secretAccessKey,sessionToken,region);
+        }else{
+          //login status error
+          //TODO
+          console.log('​mounted -> login status error');
+        }
+      }
+      evtBus.headers={
+        Authorization:me.getCookie('sessionToken'),
+        // 'user-id':me.getCookie('user_id')
+      };
+    },
     methods: {
       setCurrentTree(id){
-        console.log('​getCurrentTree -> id', id);
         let [owner,estate,tenant]=id.split('_');
         let tree=this.respData.treeData;
-        this.respData.currentTree={};
         this.respData.currentTree.owner_cd=tree[owner].label.split('_')[0];
-        this.respData.currentTree.owner_nm=tree[owner].label.split('_')[1];
-        if(estate!=undefined){
-          this.respData.currentTree.estate_cd=tree[owner].children[estate].label.split('_')[0];
-          this.respData.currentTree.estate_nm=tree[owner].children[estate].label.split('_')[1];
-        }
-        if(tenant!=undefined){
-          this.respData.currentTree.tenant_cd=tree[owner].children[estate].children[tenant].label.split('_')[0];
-          this.respData.currentTree.tenant_nm=tree[owner].children[estate].children[tenant].label.split('_')[1];
-        }
+        this.respData.currentTree.estate_no=estate==undefined ? '' : tree[owner].children[estate].label.split('_')[0];
+        this.respData.currentTree.tenant_cd=tenant==undefined ? '' : tree[owner].children[estate].children[tenant].label.split('_')[0];
       },
       nodeClick(nodeData,node,ele) {
-        console.log('​nodeClick -> ele', ele);
-        console.log('​nodeClick -> node', node);
-        console.log('​nodeClick -> nodeData', nodeData);
         this.setCurrentTree(nodeData.id);
-      },
-      addKey(data) {
-        data.forEach(d => {
-          d.key = Math.random();
-        })
+        this.queryTop();
       },
       mouseDown(e) {
         let me = this;
@@ -278,25 +308,95 @@
       },
       queryAside() {
         let me = this;
-        let data = {};
-        me.$http.post('tree', data)
-          .then(resp => {
-            let temp = JSON.parse(JSON.stringify(resp.data.treeData));
-            me.genNodeKey(temp)
-            me.respData.treeData = temp;
+        let num=/^.*(?=.*[0-9]).*$/;
+        let {sOwner,sEstate,sTenant}=me.reqData.queryFormAside;
+        if(!sOwner && !sEstate && !sTenant){
+          me.$message.warning("検索条件を入力してください")
+          return false;
+        }
+        let items = {
+          owner_cd:'',
+          owner_nm:'',
+          estate_no:'',
+          estate_nm:'',
+          tenant_cd:'',
+          tenant_nm:'',
+        };
+        num.test(sOwner) ? items.owner_cd=sOwner : items.owner_nm=sOwner;
+        num.test(sEstate) ? items.estate_no=sEstate : items.estate_nm=sEstate;
+        num.test(sTenant) ? items.tenant_cd=sTenant : items.tenant_nm=sTenant;
+        evtBus.apigClient.invokeApi({},'ver1.0.0/tree','POST',{headers:evtBus.headers},{items:items})
+          .then(res => {
+            if(!res.error){
+              //success
+              let temp = JSON.parse(JSON.stringify(res.data.treeData));
+              me.genNodeKey(temp);
+              me.respData.treeData = temp;
+              return true;
+            }else{
+              //get treedata failed
+              this.$message.error('エラーが発生しました！'+res.error.message);
+              console.log('​queryAside -> res.error', res.error);
+            }
           })
           .catch(err => {
-            this.$message({
-              message: '通信エラーが発生しました！',
-              type: 'error'
-            })
+            this.$message.error('通信エラーが発生しました！');
             console.log("err: ", err);
           });
+        this.error();
       },
-      resetQueryAside() {
-      },
-      submitQueryFormTop() {
-        console.log(this.searchForm);
+      queryTop(from) {
+        let me = this;
+        let items=JSON.parse(JSON.stringify(me.respData.currentTree));
+        if (from=='csv') {
+          //CSV出力ボタン
+          Object.assign(items,me.reqData.queryFormTop);
+          let {date_kbn,dateRange}=me.reqData.queryFormTop;
+          let date_flag=(date_kbn!=0 && dateRange.length>0);
+          items.from_date=date_flag ? items.dateRange[0] : '';
+          items.to_date=date_flag ? items.dateRange[1] : '';
+        }else{
+          //検索ボタン
+          if (items.owner_cd==undefined){
+            me.$message.warning('ツリーからデータを選択してください');
+            return false;
+          }else if(from=='search' && me.reqData.queryFormTop.comment==''){
+            me.$message.warning('コメントの検索条件を入力してください');
+            return false;
+          }else{
+            let temp={
+              area: "",
+              doc_nm: "",
+              free_format: "",
+              file_entry_user: "",
+              sales_nm: "",
+              manage_nm: "",
+              from_date:"",
+              to_date:"",
+            };
+            Object.assign(items,temp);
+            items.comment=me.reqData.queryFormTop.comment;
+          }
+        }
+        evtBus.apigClient.invokeApi({},'ver1.0.0/files/list','POST',{headers:evtBus.headers},{items:items})
+          .then(res => {
+            if(!res.error){
+              //success
+              let temp = JSON.parse(JSON.stringify(res.data.items));
+              me.respData.tableData = temp;
+              return true;
+            }else{
+              //get tableData failed
+              this.$message.error('エラーが発生しました！'+res.error.message);
+              console.log('queryTop -> res.error', res.error);
+            }
+          })
+          .catch(err => {
+            me.$message.error('通信エラーが発生しました！');
+            console.log("err: ", err);
+          });
+        console.log('​queryTop -> items', items);
+        this.error();
       },
       switchTab(tabname) {
         evtBus.$emit('switch-tab')
@@ -312,14 +412,13 @@
         e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);
         e.preventDefault ? e.preventDefault() : (e.returnValue = false);
         let {files} = e.dataTransfer;
-        if (files.length < 1 || this.respData.currentTree.owner_cd==undefined)
+        if (files.length < 1 || this.respData.currentTree.owner_cd==undefined){
+          this.$message.warning('アプロードするには、まずツリーにデータを選択してください！');
           return false;
+        }
         for (let i = 0; i < files.length; i++) {
           if (files[i].type == "") {
-            this.$message({
-              type: 'warning',
-              message: 'このファイル形式又はフォルダのアプロードは制限されています'
-            });
+            this.$message.warning('このファイル形式又はフォルダのアプロードは制限されています！');
             return false;
           }
         }
@@ -334,35 +433,46 @@
           let newData = JSON.parse(
             JSON.stringify(uploadForm.form[i])
           );
-          newData.entry_nm = me.pageConfig.user.user_nm;
+          newData.file_entry_user = me.pageConfig.user.user_nm;
           console.log(me.respData.tableData.unshift(newData));
         }
       },
       previewFiles() {
         this.pageConfig.isPreview = true;
       },
-      deleteFiles(selectedItems) {
-        let flag = false;
-        selectedItems.forEach(item => {
-          this.respData.tableData.forEach((data, index) => {
-            if (item.key == data.key) {
-              this.respData.tableData.splice(index, 1);
+      deleteFiles(items) {
+        console.log('​deleteFiles -> items', items);
+        evtBus.apigClient.invokeApi({},'ver1.0.0/files/delete','POST',{headers:evtBus.headers},{items:items})
+          .then(res => {
+            if(!res.error){
+              //success
+              if(res.data.result_flg==0){
+                //delete success
+                items.forEach(item => {
+                  this.respData.tableData.forEach((data, index) => {
+                    if (data.file_id==item.file_id) {
+                      this.respData.tableData.splice(index, 1);
+                    }
+                  });
+                });
+                this.$message.success('削除されました！');
+                return true;
+              }else{
+                //delete failed
+                this.$message.error('ファイル削除は失敗しました！もう一度試してください！');
+                return false;
+              }
+            }else{
+              //failed
+              this.$message.error('エラーが発生しました！'+res.error.message);
+              console.log('​deleteFiles -> res.error', res.error);
             }
           })
-        })
-        //AJAX
-        flag = true;
-        if (flag) {
-          this.$message({
-            type: 'success',
-            message: '削除されました！'
+          .catch(err => {
+            this.$message.error('通信エラーが発生しました！');
+            console.log("err: ", err);
           });
-        } else {
-          this.$message({
-            type: 'error',
-            message: 'エラーが発生しました！'
-          });
-        }
+        this.error();
       },
       addComment(previewData, newComment) {
         previewData.comment.unshift(JSON.parse(JSON.stringify(newComment)));
@@ -381,33 +491,88 @@
         this.pageConfig.isUpload = false;
         this.pageConfig.isPreview = false;
       },
-      reset(formName) {
-        this.$refs[formName].resetFields();
+      resetAside() {
+        this.reqData.queryFormAside={
+          sOwner:'',
+          sEstate:'',
+          sTenant:''
+        };
         this.respData.treeData = [];
-        this.respData.currentTree={};
+        this.respData.currentTree={
+          owner_cd:'',
+          estate_no:'',
+          tenant_cd:'',
+        };
+      },
+      resetTop(){
+        this.reqData.queryFormTop={
+          area: 0,
+          public_kbn: 0,
+          doc_nm: "",
+          free_format: "",
+          file_entry_user: "",
+          sales_nm: "",
+          manage_nm: "",
+          comment: "",
+          dateRange:[],
+          date_kbn:0
+        }
+      },
+      error(){
+        this.clearAllCookies();
+        setTimeout(() => {
+          this.resetAside();
+          this.resetTop();
+          this.pageConfig.isUpload=false;
+          this.pageConfig.isPreview=false;
+          this.$router.push('/error').bind(this);
+        }, 2000);
       },
       logout() {
+        let items={
+          // user_id:this.getCookie('user_id'),
+          identityId:this.getCookie('identityId')
+        };
+        evtBus.apigClient.invokeApi({},'signout','POST',{headers:evtBus.headers},{items:items})
+          .then(res => {
+            if(!res.error){
+              //success
+              this.clearAllCookies();
+              this.$router.push('/login');
+            }else{
+              //logout failed
+              this.$message.error('エラーが発生しました！'+res.error.message);
+              console.log('logout -> res.error', res.error);
+            }
+          })
+          .catch(err => {
+            this.$message.error('通信エラーが発生しました！');
+            console.log("err: ", err);
+          });
+        //TODO demo
         this.clearAllCookies();
         this.$router.push('/login');
       }
     },
-    mounted() {
-      let me = this;
-      document.addEventListener("dragstart", (e) => {
-        e.dataTransfer.setData('text/plain', null);
-      }, false);
-      document.addEventListener("dragenter", me.onDrag, false);
-      document.addEventListener("dragover", me.onDrag, false);
-      document.addEventListener("drop", me.onDrop, false);
-      me.respData.tableData.forEach(data => {
-        data.filetype = data.doc_nm.split(".")[1];
-        data.key = Math.random();
-      }); //need to adjust later...should do when AJAX get the data,not in mounted
-    },
     computed: {
       tableData() {
         return this.respData.tableData.filter(data => {
-          return (this.pageConfig.currentTabName == '') ? true : data.business_kbn == this.pageConfig.currentTabName
+          let tab = (this.pageConfig.currentTabName == '') ? true : data.business_kbn == this.pageConfig.currentTabName;
+          let {area,public_kbn,doc_nm,free_format,file_entry_user,sales_nm,manage_nm,comment,dateRange,date_kbn}=this.reqData.queryFormTop;
+          area=area==0 ? true : data.area==area;
+          public_kbn=public_kbn==0 ? true : data.public_kbn==public_kbn;
+          doc_nm=doc_nm=='' ? true : data.doc_nm.indexOf(doc_nm)>-1;
+          free_format=free_format=='' ? true : data.free_format.indexOf(free_format)>-1;
+          file_entry_user=file_entry_user=='' ? true : data.file_entry_user.indexOf(file_entry_user)>-1;
+          sales_nm=sales_nm=='' ? true : data.sales_nm.indexOf(sales_nm)>-1;
+          manage_nm=manage_nm=='' ? true : data.manage_nm.indexOf(manage_nm)>-1;
+          let date=true;
+          if(date_kbn!=0 && dateRange.length>0){
+            let start=moment(dateRange[0]).subtract(1,'day');
+            let end=moment(dateRange[1]).subtract(-1,'day');
+            date=moment(data.file_entry_date).isBetween(start,end);
+          }
+          return (tab&&area&&public_kbn&&doc_nm&&free_format&&file_entry_user&&sales_nm&&manage_nm&&date)
         })
       },
     }

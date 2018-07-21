@@ -14,7 +14,7 @@
             <h3 style="margin-top:20px;">第{{parseInt(index)+1}}件</h3>
             <el-form-item label="ファイル名" prop="fileinfo">
               <!-- <el-input disabled v-model="uploadForm.form[index].fileinfo"></el-input> -->
-              <span>{{uploadForm.form[index].filename}} ({{uploadForm.form[index].filesize}}MB)</span>
+              <span>{{uploadForm.form[index].filename}} ({{uploadForm.form[index].file_entry_user}}MB)</span>
             </el-form-item>
             <el-row class="warning-area">
               <el-form-item label="業務区分/書類" prop="business_doc">
@@ -29,18 +29,18 @@
             </el-row>
             <el-row>
               <el-col :span="12">
-                <el-form-item label="オーナー" prop="owner_cd">
+                <el-form-item label="オーナーCD" prop="owner_cd">
                   <el-input disabled v-model="uploadForm.form[index].owner_cd"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="入居者" prop="tenant_nm">
-                  <el-input disabled v-model="uploadForm.form[index].tenant_nm"></el-input>
+                <el-form-item label="入居者CD" prop="tenant_cd">
+                  <el-input disabled v-model="uploadForm.form[index].tenant_cd"></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
-            <el-form-item label="物件" prop="estate_nm">
-              <el-input disabled v-model="uploadForm.form[index].estate_nm"></el-input>
+            <el-form-item label="物件No." prop="estate_no">
+              <el-input disabled v-model="uploadForm.form[index].estate_no"></el-input>
             </el-form-item>
             <el-form-item label="フリー" prop="free_format">
               <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" v-model="uploadForm.form[index].free_format" placeholder="フリー"></el-input>
@@ -76,7 +76,7 @@
 
 <script>
   import moment from 'moment'
-  import evtBus from '../assets/evtBus';
+  import evtBus from '@/assets/evtBus';
   export default {
     data() {
       return {
@@ -112,7 +112,7 @@
             let filetype = me.uploadForm.form[i].filetype;
             me.uploadForm.form[i] = JSON.parse(JSON.stringify(me.uploadForm.form[0]));
             me.uploadForm.form[i].filename = filename;
-            me.uploadForm.form[i].filesize = filesize;
+            me.uploadForm.form[i].file_size = filesize;
             me.uploadForm.form[i].filetype = filetype;
           }
         } else {
@@ -138,6 +138,8 @@
           })
         });
         if (checkflag) {
+          //TODO AJAX
+          
           me.$emit('upload',me.uploadForm);
         } else {
           console.log('submit failed');
@@ -167,16 +169,13 @@
           let form={
             doc_cd: 0,
             filename:files[i].name,
-            filesize:filesize,
+            file_size:filesize,
             free_format: '',
-            entry_nm: '',
-            entry_date: moment().format("YYYY-MM-DD"),
+            file_entry_user: '',
+            file_entry_date: moment().format("YYYY-MM-DD"),
             owner_cd:this.currentTree.owner_cd,
-            owner_nm:this.currentTree.owner_nm,
-            estate_cd:this.currentTree.estate_cd,
-            estate_nm:this.currentTree.estate_nm,
+            estate_no:this.currentTree.estate_no,
             tenant_cd:this.currentTree.tenant_cd,
-            tenant_nm:this.currentTree.tenant_nm,
             business_doc:[],
             business_kbn:currentTabName,
             isNew:true,

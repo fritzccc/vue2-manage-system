@@ -4,18 +4,17 @@
         <el-option v-for="option in recordsPerPage.options" :key="option.value" :label="option.label" :value="option.value">
         </el-option>
       </el-select> -->
-    <el-button type="primary" @click="multiPreview" plain :disabled="cantPrev" style="margin-left: 3px">一括PV</el-button>
+    <el-button size="small" type="primary" @click="multiPreview" plain :disabled="cantPrev" style="margin-left: 3px">一括PV</el-button>
     <!-- <el-button type="primary" plain style="margin-left: 3px">公開/非公開</el-button> -->
-    <el-button type="primary" @click="multiDownload" plain :disabled="cantDwld" style="margin-left: 3px">一括DL</el-button>
-    <el-button type="primary" @click="multiDelete" plain :disabled="cantDel" style="margin-left: 3px">削除</el-button>
+    <el-button size="small" type="primary" @click="multiDownload" plain :disabled="cantDwld" style="margin-left: 3px">一括DL</el-button>
+    <el-button size="small" type="primary" @click="multiDelete" plain :disabled="cantDel" style="margin-left: 3px">削除</el-button>
     <el-pagination
       background
       style="display:inline-block;margin-left:60px;"
       @size-change="sizeChange"
       @current-change="currentChange"
-
-      :page-sizes="[50, 100, 200, 500]"
-      :page-size="50"
+      :page-sizes="[1, 2, 3, 4]"
+      :page-size="1"
       layout="total, sizes, prev, pager, next,->"
       :total="totalRecords">
     </el-pagination>
@@ -26,11 +25,15 @@
 
     <el-table 
       :row-class-name="tableRowClass" 
-      :data="tableData"
+      ref="table"
+      :data="table"
       :max-height="maxHeight"
-      :default-sort="{prop: 'entry_date', order: 'descending'}"
+      :default-sort="{prop: 'file_entry_date', order: 'descending'}"
       border fit v-loading="isLoading"
       @selection-change="select"
+      @sort-change="handleSortChange"
+      reserve-selection
+      row-key="file_id"
       style="width: 100%;margin-top:5px;">
       <el-table-column type="selection" width=35>
       </el-table-column>
@@ -46,7 +49,7 @@
           </el-popover>
         </template>
       </el-table-column>
-      <el-table-column sortable prop="doc_nm" label="書類名" min-width=280 fixed>
+      <el-table-column sortable="custom" prop="doc_nm" label="書類名" min-width=280 fixed>
         <template slot-scope="scope">
           <el-button type="text" size="medium" @click="previewFile(scope.row)">
             <i v-if="['xls','xlsx'].indexOf(scope.row.filetype)>-1" class="far fa-file-excel" style="font-size: 16px;"></i>
@@ -58,20 +61,20 @@
           </el-button>
         </template>
       </el-table-column>
-      <el-table-column sortable prop="filesize" label="サイズ" min-width=90>
+      <el-table-column sortable="custom" prop="file_size" label="サイズ" min-width=90>
         <template slot-scope="scope">
-          {{scope.row.filesize}}MB
+          {{scope.row.file_size}}MB
         </template>
       </el-table-column>
-      <el-table-column sortable show-overflow-tooltip prop="free_format" label="フリー" min-width=180>
+      <el-table-column sortable="custom" show-overflow-tooltip prop="free_format" label="フリー" min-width=180>
       </el-table-column>
-      <el-table-column sortable prop="entry_date" label="登録日" min-width=120>
+      <el-table-column sortable="custom" prop="file_entry_date" label="登録日" min-width=120>
       </el-table-column>
-      <el-table-column sortable prop="entry_nm" label="登録者" min-width=100>
+      <el-table-column sortable="custom" prop="file_entry_user" label="登録者" min-width=100>
       </el-table-column>
-      <el-table-column sortable prop="sales_nm" label="営業担当" min-width=110>
+      <el-table-column sortable="custom" prop="sales_nm" label="営業担当" min-width=110>
       </el-table-column>
-      <el-table-column sortable prop="manage_nm" label="管理担当" min-width=110>
+      <el-table-column sortable="custom" prop="manage_nm" label="管理担当" min-width=110>
       </el-table-column>
       <el-table-column prop="owner_nm" label="オーナー" min-width=110>
       </el-table-column>
@@ -98,10 +101,12 @@
 
 <script>
   import Vue from 'vue'
-  import evtBus from '../assets/evtBus'
+  import evtBus from '@/assets/evtBus'
   export default {
     data() {
       return {
+        perPage:1,
+        currentPage:1,
         isLoading: false,
         selectedItems:[],
         maxHeight:window.innerHeight-260,
@@ -116,8 +121,55 @@
     },
     props: ['tableData'],
     methods: {
-      sizeChange(){},
-      currentChange(){},
+      handleSortChange(stat){
+        if(stat.order=="descending"){
+          //sort
+          if (stat.prop=='file_size') {
+            //num
+            this.tableData=this.tableData.sort((a,b)=>{
+              return b.file_size-a.file_size;
+            })
+          }else{
+            //str
+            this.tableData=this.tableData.sort((a,b)=>{
+              if (a[stat.prop] < b[stat.prop]) {
+                  return -1;
+                }
+                if (a[stat.prop] > b[stat.prop]) {
+                  return 1;
+                }
+                return 0;
+            })
+          }
+        }else if(stat.order=="ascending"){
+          //sort
+          if (stat.prop=='file_size') {
+            //num
+            this.tableData=this.tableData.sort((a,b)=>{
+              return a.file_size-b.file_size;
+            })
+          }else{
+            //str
+            this.tableData=this.tableData.sort((a,b)=>{
+              if (a[stat.prop] < b[stat.prop]) {
+                  return 1;
+                }
+                if (a[stat.prop] > b[stat.prop]) {
+                  return -1;
+                }
+                return 0;
+            })
+          }
+        }
+      },
+      sizeChange(perPage){
+        console.log('​sizeChange -> perPage', perPage);
+        this.perPage=perPage;
+      },
+      currentChange(currentPage){
+        console.log('​currentChange -> currentPage', currentPage);
+        this.currentPage=currentPage;
+      },
       select(selection,row){
         this.selectedItems=selection;
       },
@@ -126,36 +178,33 @@
           return 'success-row';
         }
       },
-      setRowKey(row){
-        return row.key;
+      previewFile(row) {
+        console.log('​previewFile -> row', row);
+        this.$emit('preview');
+        Vue.nextTick(()=>evtBus.$emit('preview',[row.file_id]));
       },
-      
       multiPreview(){
         let me=this;
         me.$emit('preview');
-        Vue.nextTick(()=>evtBus.$emit('preview',me.selectedItems));
+        Vue.nextTick(()=>evtBus.$emit('preview',me.selectedFileId));
       },
       multiDownload(){
 
       },
       multiDelete(){
-        this.$confirm('選択した項目を削除してもよろしいですか？', 'Warning', {
+        this.$confirm('選択した項目を削除してもよろしいですか？', '注意', {
           confirmButtonText: '確定',
           cancelButtonText: 'キャンセル',
           type: 'warning'
         }).then(() => {
-          this.$emit('delete',this.selectedItems);
+          this.$emit('delete',this.selectedFileId);
         }).catch(() => {
           //canceled
           // this.$message({
           //   type: 'info',
           //   message: 'Delete canceled'
-          // });          
+          // });
         });
-      },
-      previewFile(data) {
-        this.$emit('preview');
-        Vue.nextTick(()=>evtBus.$emit('preview',[data]));
       }
     },
     mounted(){
@@ -165,17 +214,27 @@
     },
     computed: {
       totalRecords () {
-          return this.tableData.length;
+        return this.tableData.length;
+      },
+      table(){
+        return this.tableData.slice((this.currentPage-1)*this.perPage,this.currentPage*this.perPage);
       },
       cantDel(){
-        return (this.selectedItems.length)? !(this.selectedItems.length>0 && this.selectedItems.length<=10):true
+        return (this.selectedItems.length)? !(this.selectedItems.length>0 && this.selectedItems.length<=10):true;
       },
       cantPrev(){
-        return (this.selectedItems.length)? !(this.selectedItems.length>1 && this.selectedItems.length<=10):true
+        return (this.selectedItems.length)? !(this.selectedItems.length>1 && this.selectedItems.length<=10):true;
       },
       cantDwld(){
-        return (this.selectedItems.length)? !(this.selectedItems.length>0 && this.selectedItems.length<=10):true
+        return (this.selectedItems.length)? !(this.selectedItems.length>0 && this.selectedItems.length<=10):true;
       },
+      selectedFileId(){
+        let items=[];
+        this.selectedItems.forEach(item=>{
+          items.push({file_id:item.file_id});
+        });
+        return items;
+      }
     },
   }
 

@@ -30,8 +30,8 @@
         <el-input id="newpass_confirm" type="password" :disabled="changePassForm.newPass==''" v-model="changePassForm.newPassConfirm" @keyup.enter.native="changePass('changePassForm')" clearable></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button plain type="primary" @click="changePass('changePassForm')">確定</el-button>
-        <el-button plain @click="back">キャンセル</el-button>
+        <el-button size="small" plain type="primary" @click="changePass('changePassForm')">確定</el-button>
+        <el-button size="small" plain @click="back">キャンセル</el-button>
       </el-form-item>
     </el-form>
 
@@ -46,16 +46,16 @@
 
 
 <script>
-  import loading from '../components/Loading.vue'
+  import loading from '@/components/Loading.vue'
   export default {
     data() {
       let len = /^[~`!@#$%^&*?+=_\(\)\w-]{8,20}$/;
       let lower=/^.*(?=.*[a-z]).*$/;
-      let upper=/^.*(?=.*[A-Z]).*$/
+      let upper=/^.*(?=.*[A-Z]).*$/;
       let num=/^.*(?=.*\d).*$/;
       let validatePass = (rule, value, callback) => {
         if (value === '') {
-          callback(new Error('新しいパスワード入力してください'));
+          callback(new Error('新しいパスワードを入力してください'));
         } else if(!len.test(value)){
           callback(new Error('有効な文字で、8-20桁でお願いします'))
         }else if(!lower.test(value)){
@@ -73,9 +73,9 @@
       };
       let validatePass2 = (rule, value, callback) => {
         if (value === '') {
-          callback(new Error('もう一度新しいパスワード入力してください'));
+          callback(new Error('もう一度新しいパスワードを入力してください'));
         } else if (value !== this.changePassForm.newPass) {
-          callback(new Error('新しいパスワード一致しませんでした'));
+          callback(new Error('新しいパスワードが一致しませんでした'));
         } else {
           callback();
         }
@@ -91,12 +91,12 @@
         changePassFormRules:{
           user_id: [{
             required: true,
-            message: 'ユーザーID未入力です',
+            message: 'ユーザーIDを入力してください',
             trigger: 'blur'
           }, ],
           oldPass: [{
             required: true,
-            message: '旧パスワード未入力です',
+            message: '旧パスワードを入力してください',
             trigger: 'blur'
           }],
           newPass:[{
@@ -113,15 +113,13 @@
       }
     },
     mounted() {
+      
+      console.log('​mounted -> ', this.$route.params);
       this.firstLogin=this.$route.params.firstLogin;
       if (this.firstLogin) {
         this.changePassForm.user_id=this.$route.params.user_id;
         this.changePassForm.oldPass=this.$route.params.password;
       }
-
-      // if(getCookie('username')){
-      // 	this.$router.push('/main')
-      // }
     },
     methods: {
       changePass(formName) {
@@ -129,42 +127,42 @@
         me.$refs[formName].validate((valid) => {
           if (valid) {
             //TODO
-            if (me.loginForm.user_id == 'admin' && me.loginForm.pass == 'admin') {
-              me.$router.push('/main');
-            } else {
-              me.$message.error('入力されたアカウントまたはパスワードに誤りがあります。');
-              return false;
-            }
+            let items={
+              user_id:me.changePassForm.user_id,
+              password_old:me.changePassForm.oldPass,
+              password_new:me.changePassForm.newPass,
+            };
+            if (this.firstLogin) items.status = 0;
+            //headers => APIKey? TODO
+            evtBus.apigClient.invokeApi({},'ver1.0.0/changepass','POST',{},{items:items})
+              .then(res => {
+                if(!res.error){
+                  //success
+                  me.$message.success('パスワード変更しました！');
+                  setTimeout(() => {
+                    me.$router.push('/login').bind(me);
+                  }, 2000);
+                }else if(res.error.code==204){
+                  //incorrect user&pass
+                  me.$message.warning('入力されたアカウントまたはパスワードに誤りがあります！');
+                  console.log('changePass -> res.error', res.error);
+                  return false;
+                }else{
+                  me.$message.error('エラーが発生しました！'+res.error.message);
+                  setTimeout(() => {
+                    me.$router.push('/error').bind(me);
+                  }, 2000);
+                }
+              })
+              .catch(err => {
+                me.$message.error('通信エラーが発生しました！');
+                console.log("err: ", err);
+              });
           } else {
             console.log('error submit!!');
             return false;
           }
         });
-        // if(me.username == "" || me.password == ""){
-        // 	alert("请输入用户名或密码")
-        // }else{
-        // 	let data = {'username':me.username,'password':me.password}
-
-        // 	me.$http.post('http://localhost/vueapi/index.php/Home/user/login',data).then((res)=>{
-        // 		console.log(res)
-        // 		if(res.data == -1){
-        // 			me.tishi = "该用户不存在"
-        // 			me.showTishi = true
-        // 		}else if(res.data == 0){
-        // 			me.tishi = "密码输入错误"
-        // 			me.showTishi = true
-        // 		}else if(res.data == 'admin'){
-        // 			me.$router.push('/main')
-        // 		}else{
-        // 			me.tishi = "登录成功"
-        // 			me.showTishi = true
-        // 			setCookie('username',me.username,1000*60)
-        // 			setTimeout(function(){
-        // 				me.$router.push({path:'home',query:{id:1}})
-        // 			}.bind(me),1000)
-        // 		}
-        // 	})
-        // }
       },
       back(){
         this.$router.push("/login");

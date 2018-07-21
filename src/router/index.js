@@ -21,7 +21,10 @@ const routes = [{
   },{
     path: '/main',
     name: 'Main',
-    meta:{requireAuth: true },
+    meta:{
+      requireAuth: true,
+      keepAlive: false
+    },
     component: resolve => require(['../pages/Main.vue'], resolve)
   },{
     path: '/error',
@@ -40,7 +43,7 @@ router.beforeEach((to, from, next) => {
       next({
         path: from.fullPath
       });
-    }else if(getCookie('session')){
+    }else if(getCookie('user_id')){
       next();
     }else{
       clearAllCookies();
@@ -51,7 +54,7 @@ router.beforeEach((to, from, next) => {
   }else if(to.fullPath=="/error"){
     next();
   }else{
-    if(getCookie('session') && !getCookie('status')){
+    if(getCookie('user_id') && !getCookie('status')){
       next({
         path: '/main'
       });

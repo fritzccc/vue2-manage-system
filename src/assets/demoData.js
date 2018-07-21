@@ -1,7 +1,7 @@
 import moment from 'moment'
 var demo={
     pageConfig:{
-        asideWidth:300,
+        asideWidth:260,
         dragbarHeight: window.innerHeight-120,
         user:{
           user_id:Math.random(),
@@ -74,27 +74,31 @@ var demo={
         }]
     },
     reqData:{
-        queryFormTop: {
-            area: 0,
-            public_kbn: 0,
-            doc: "",
-            free_format: "",
-            entry_nm: "",
-            sales_nm: "",
-            manage_nm: "",
-            comment: "",
-            dateRange:[],
-            dateKbn:0
-        },
-        queryFormAside:{
-            sOwner:"",
-            sEstate:"",
-            sTenant:""
-        },
+      queryFormTop: {
+        area: 0,
+        public_kbn: 0,
+        doc_nm: "",
+        free_format: "",
+        file_entry_user: "",
+        sales_nm: "",
+        manage_nm: "",
+        comment: "",
+        dateRange:[],
+        date_kbn:0
+      },
+      queryFormAside:{
+        sOwner:"",
+        sEstate:"",
+        sTenant:""
+      },
     },
     respData:{
         treeData: [],
-        currentTree:{},
+        currentTree:{
+          owner_cd:'',
+          estate_no:'',
+          tenant_cd:'',
+        },
         business_kbn:[{
           label:'受託',
           value:'jutaku',
@@ -160,10 +164,11 @@ var demo={
             url:"https://www.yahoo.co.jp"
           }],
         tableData: [{
-            entry_date: '2018-04-03',
+            file_entry_date: '2018-04-03',
             doc_nm: '2018-rd-aaabbbcccddd.xls',
-            filesize:'0.2',
-            entry_nm: '登録太郎',
+            file_size:'0.2',
+            file_id:Math.random(),
+            file_entry_user: '登録太郎',
             business_kbn:'jutaku',
             comment:[{
                 user_nm:'テスト秀吉',
@@ -176,12 +181,13 @@ var demo={
             owner_nm: "オーナー",
             estate_no: "1234567890",
             estate_nm: "物件名",
-            isNew: false,
+            
         }, {
-            entry_date: '2018-02-03',
+            file_entry_date: '2018-02-03',
             doc_nm: '2018-rd-aaabbbcccddd.xls',
-            filesize:'0.3',
-            entry_nm: '登録太郎',
+            file_size:'0.3',
+            file_id:Math.random(),
+            file_entry_user: '登録太郎',
             business_kbn:'jutaku',
             comment:[{
                 user_nm:'テスト太郎',
@@ -200,12 +206,13 @@ var demo={
             owner_nm: "オーナー",
             estate_no: "1234567890",
             estate_nm: "物件名",
-            isNew: false,
+            
         }, {
-            entry_date: '2018-02-03',
+            file_entry_date: '2018-06-03',
             doc_nm: '2018-rd-aaabbbcccddd.xls',
-            filesize:'0.4',
-            entry_nm: '登録太郎',
+            file_size:'0.4',
+            file_id:Math.random(),
+            file_entry_user: '登録太郎',
             business_kbn:'seiyaku',
             comment:[{
                 user_nm:'テスト太郎',
@@ -224,12 +231,13 @@ var demo={
             owner_nm: "オーナー",
             estate_no: "1234567890",
             estate_nm: "物件名",
-            isNew: false,
+            
         }, {
-            entry_date: '2018-02-03',
+            file_entry_date: '2018-02-03',
             doc_nm: '2017-rd-aaabbbcccddd.pdf',
-            filesize:'0.5',
-            entry_nm: '登録太郎',
+            file_size:'0.5',
+            file_id:Math.random(),
+            file_entry_user: '登録太郎',
             business_kbn:'kouji',
             comment:[{
                 user_nm:'テスト花子',
@@ -258,12 +266,13 @@ var demo={
             owner_nm: "オーナー",
             estate_no: "1234567890",
             estate_nm: "物件名",
-            isNew: false,
+            
         }, {
-            entry_date: '2018-02-03',
+            file_entry_date: '2018-02-03',
             doc_nm: '2018-rd-aaabbbcccddd.xls',
-            filesize:'0.8',
-            entry_nm: '登録太郎',
+            file_size:'0.8',
+            file_id:Math.random(),
+            file_entry_user: '登録太郎',
             business_kbn:'kanri',
             comment:[{
                 user_nm:'テスト花子',
@@ -292,12 +301,13 @@ var demo={
             owner_nm: "オーナー",
             estate_no: "1234567890",
             estate_nm: "物件名",
-            isNew: false,
+            
         }, {
-            entry_date: '2018-02-03',
+            file_entry_date: '2018-02-03',
             doc_nm: '2018-rd-aaabbbcccddd.xls',
-            filesize:'1.3',
-            entry_nm: '登録太郎',
+            file_size:'1.3',
+            file_id:Math.random(),
+            file_entry_user: '登録太郎',
             business_kbn:'seiyaku',
             comment:[{
                 user_nm:'テスト英二',
@@ -321,12 +331,13 @@ var demo={
             owner_nm: "オーナー",
             estate_no: "1234567890",
             estate_nm: "物件名",
-            isNew: false,
+            
         }, {
-            entry_date: '2018-02-03',
+            file_entry_date: '2018-02-03',
             doc_nm: '2018-rd-aaabbbcccddd.xls',
-            filesize:'2.3',
-            entry_nm: '登録太郎',
+            file_size:'2.3',
+            file_id:Math.random(),
+            file_entry_user: '登録太郎',
             business_kbn:'jutaku',
             comment:[{
                 user_nm:'テスト英二',
@@ -350,12 +361,13 @@ var demo={
             owner_nm: "オーナー",
             estate_no: "1234567890",
             estate_nm: "物件名",
-            isNew: false,
+            
         }, {
-            entry_date: '2018-02-03',
+            file_entry_date: '2018-02-03',
             doc_nm: '2018-rd-aaabbbcccddd.xls',
-            filesize:'0.9',
-            entry_nm: '登録太郎',
+            file_size:'0.9',
+            file_id:Math.random(),
+            file_entry_user: '登録太郎',
             business_kbn:'kouji',
             comment:[],
             free_format:'フリーテキスト',
@@ -364,12 +376,13 @@ var demo={
             owner_nm: "オーナー",
             estate_no: "1234567890",
             estate_nm: "物件名",
-            isNew: false,
+            
         }, {
-            entry_date: '2018-02-03',
+            file_entry_date: '2018-02-03',
             doc_nm: '2018-rd-aaabbbcccddd.xls',
-            filesize:'0.1',
-            entry_nm: '登録太郎',
+            file_size:'0.1',
+            file_id:Math.random(),
+            file_entry_user: '登録太郎',
             business_kbn:'kaiyaku',
             comment:[{
                 user_nm:'テスト花子',
@@ -398,12 +411,13 @@ var demo={
             owner_nm: "オーナー",
             estate_no: "1234567890",
             estate_nm: "物件名",
-            isNew: false,
+            
         }, {
-            entry_date: '2018-02-03',
+            file_entry_date: '2018-02-03',
             doc_nm: '2018-rd-aaabbbcccddd.xls',
-            filesize:'1.7',
-            entry_nm: '登録太郎',
+            file_size:'1.7',
+            file_id:Math.random(),
+            file_entry_user: '登録太郎',
             business_kbn:'kaiyaku',
             comment:[],
             free_format:'フリーテキスト',
@@ -412,12 +426,13 @@ var demo={
             owner_nm: "オーナー",
             estate_no: "1234567890",
             estate_nm: "物件名",
-            isNew: false,
+            
         }, {
-            entry_date: '2018-02-03',
+            file_entry_date: '2018-02-03',
             doc_nm: '2018-rd-aaabbbcccddd.xls',
-            filesize:'0.3',
-            entry_nm: '登録太郎',
+            file_size:'0.3',
+            file_id:Math.random(),
+            file_entry_user: '登録太郎',
             business_kbn:'kanri',
             comment:[],
             free_format:'フリーテキスト',
@@ -426,12 +441,13 @@ var demo={
             owner_nm: "オーナー",
             estate_no: "1234567890",
             estate_nm: "物件名",
-            isNew: false,
+            
         }, {
-            entry_date: '2017-02-03',
+            file_entry_date: '2017-02-03',
             doc_nm: '2018-rd-aaabbbcccddd.jpg',
-            filesize:'2.2',
-            entry_nm: '登録太郎',
+            file_size:'2.2',
+            file_id:Math.random(),
+            file_entry_user: '登録太郎',
             business_kbn:'kanri',
             comment:[],
             free_format:'フリーテキスト',
@@ -440,7 +456,7 @@ var demo={
             owner_nm: "オーナー",
             estate_no: "1234567890",
             estate_nm: "物件名",
-            isNew: false,
+            
         }, ],
     }
 }
