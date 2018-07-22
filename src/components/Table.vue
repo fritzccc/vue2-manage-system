@@ -11,11 +11,13 @@
     <el-pagination
       background
       style="display:inline-block;margin-left:60px;"
+      layout="total, sizes, prev, pager, next, jumper"
       @size-change="sizeChange"
       @current-change="currentChange"
-      :page-sizes="[1, 2, 3, 4]"
-      :page-size="1"
-      layout="total, sizes, prev, pager, next,->"
+      :current-page="currentPage"
+      :page-sizes="[50, 100, 200, 500]"
+      :page-size="perPage"
+      :pager-count="7"
       :total="totalRecords">
     </el-pagination>
     <!-- <div class="pagination-span">
@@ -24,20 +26,19 @@
     </div> -->
 
     <el-table 
-      :row-class-name="tableRowClass" 
       ref="table"
-      :data="table"
+      :row-class-name="tableRowClass" 
+      :data="showTableData"
       :max-height="maxHeight"
       :default-sort="{prop: 'file_entry_date', order: 'descending'}"
       border fit v-loading="isLoading"
       @selection-change="select"
       @sort-change="handleSortChange"
       reserve-selection
-      row-key="file_id"
       style="width: 100%;margin-top:5px;">
       <el-table-column type="selection" width=35>
       </el-table-column>
-      <el-table-column align="center" fixed prop="comment" width=45>
+      <el-table-column align="center"  prop="comment" width=45 fixed>
         <template slot-scope="scope">
           <el-popover	v-if="scope.row.comment.length>0" trigger="hover" placement="right-end" :open-delay=500>
             <div :class="{'hover-text-after':(scope.row.comment[0].text.length>=100)}" class="hover-text">
@@ -105,70 +106,48 @@
   export default {
     data() {
       return {
-        perPage:1,
+        perPage:50,
         currentPage:1,
         isLoading: false,
+        slicedTableData:[],
+        showTableData:[],
         selectedItems:[],
         maxHeight:window.innerHeight-260,
-        recordsPerPage: {
-          value: 500,
-          options: [{ value: 30, label: '30件' },
-            { value: 100, label: '100件' },
-            { value: 200, label: '200件' },
-            { value: 500, label: '500件' }]
-        },
+        windowWidth:window.innerWidth
       }
     },
     props: ['tableData'],
     methods: {
       handleSortChange(stat){
-        if(stat.order=="descending"){
-          //sort
-          if (stat.prop=='file_size') {
-            //num
-            this.tableData=this.tableData.sort((a,b)=>{
-              return b.file_size-a.file_size;
-            })
-          }else{
-            //str
-            this.tableData=this.tableData.sort((a,b)=>{
-              if (a[stat.prop] < b[stat.prop]) {
-                  return -1;
-                }
-                if (a[stat.prop] > b[stat.prop]) {
-                  return 1;
-                }
-                return 0;
-            })
-          }
-        }else if(stat.order=="ascending"){
-          //sort
-          if (stat.prop=='file_size') {
-            //num
-            this.tableData=this.tableData.sort((a,b)=>{
-              return a.file_size-b.file_size;
-            })
-          }else{
-            //str
-            this.tableData=this.tableData.sort((a,b)=>{
-              if (a[stat.prop] < b[stat.prop]) {
-                  return 1;
-                }
-                if (a[stat.prop] > b[stat.prop]) {
-                  return -1;
-                }
-                return 0;
-            })
-          }
-        }
+        this.$emit('sort-change',stat);
       },
       sizeChange(perPage){
-        console.log('​sizeChange -> perPage', perPage);
+        this.isLoading=true;
         this.perPage=perPage;
+        this.sliceTableData(this.tableData,this.perPage);
+        this.showTableData=this.slicedTableData[0];
+        var maxPage = Math.ceil(this.totalRecords / perPage);
+        if (this.currentPage > maxPage)
+          this.currentPage = maxPage;
+        else
+          this.showTableData=this.slicedTableData[this.currentPage-1];
+        this.isLoading=false;        
+      },
+      sliceTableData(tableData,perPage){
+        this.slicedTableData=[];
+        for (let i=0;i<Math.ceil(tableData.length/perPage);i++) {
+            let start = i*perPage;
+            let end = start + perPage;
+            this.slicedTableData.push(tableData.slice(start,end));
+        }
+        
+        console.log('​sliceTableData -> done' );
       },
       currentChange(currentPage){
-        console.log('​currentChange -> currentPage', currentPage);
+        this.isLoading=true;
         this.currentPage=currentPage;
+        this.showTableData=this.slicedTableData[this.currentPage-1];
+        this.isLoading=false;
       },
       select(selection,row){
         this.selectedItems=selection;
@@ -209,16 +188,26 @@
     },
     mounted(){
       window.onresize = () => {
-        this.maxHeight = window.innerHeight - 260;
+        this.maxHeight = window.innerHeight - 220;
+        this.windowWidth=window.innerWidth;
       };
+    },
+    watch:{
+      tableData:function(newVal,oldVal){
+        this.currentPage=1;
+        this.sliceTableData(this.tableData,this.perPage)
+        this.showTableData=this.slicedTableData[0]
+        console.log('tableData changed​');
+      }
     },
     computed: {
       totalRecords () {
         return this.tableData.length;
       },
-      table(){
-        return this.tableData.slice((this.currentPage-1)*this.perPage,this.currentPage*this.perPage);
-      },
+      // showTableData(){
+      //   let offset = (this.currentPage-1)*this.perPage;
+      //   return (offset + this.perPage >= this.tableData.length) ? this.tableData.slice(offset, this.tableData.length) : this.tableData.slice(offset, offset + this.perPage);
+      // },
       cantDel(){
         return (this.selectedItems.length)? !(this.selectedItems.length>0 && this.selectedItems.length<=10):true;
       },

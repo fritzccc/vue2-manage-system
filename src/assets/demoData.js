@@ -43,35 +43,6 @@ var demo={
             }
           }]
         },
-        tabs:[{
-            label:'受託',
-            isSelected:false,
-            name:'jutaku',
-        },{
-            label:'成約',
-            isSelected:false,
-            name:'seiyaku',
-        },{
-            label:'工事',
-            isSelected:false,
-            name:'kouji',
-        },{
-            label:'管理',
-            isSelected:false,
-            name:'kanri',
-        },{
-            label:'解約',
-            isSelected:false,
-            name:'kaiyaku',
-        },{
-            label:'指定なし',
-            isSelected:true,
-            name:'',
-        },{
-            label:'ダウンロードリスト',
-            isSelected:false,
-            name:'downloadList',
-        }]
     },
     reqData:{
       queryFormTop: {

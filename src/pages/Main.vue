@@ -41,21 +41,21 @@
         </el-row>
         <el-row>
           <el-col :sm="3" :md="3" :lg="3" :xl="3" style="padding-right:5px;">
-            <el-input v-model="reqData.queryFormTop.doc_nm" placeholder="書類名"></el-input>
+            <el-input v-model="doc_nm_delay" placeholder="書類名"></el-input>
           </el-col>
           <el-col :sm="3" :md="3" :lg="5" :xl="5" style="padding-right:5px;">
-            <el-input v-model="reqData.queryFormTop.free_format" placeholder="フリー"></el-input>
+            <el-input v-model="free_format_delay" placeholder="フリー"></el-input>
           </el-col>
           <el-col :sm="9" :md="9" :lg="7" :xl="7">
             <el-row>
               <el-col :span="8" style="padding-right:5px;">
-                <el-input v-model="reqData.queryFormTop.file_entry_user" placeholder="登録者"></el-input>
+                <el-input v-model="file_entry_user_delay" placeholder="登録者"></el-input>
               </el-col>
               <el-col :span="8" style="padding-right:5px;">
-                <el-input v-model="reqData.queryFormTop.sales_nm" placeholder="営業担当"></el-input>
+                <el-input v-model="sales_nm_delay" placeholder="営業担当"></el-input>
               </el-col>
               <el-col :span="8" style="padding-right:5px;">
-                <el-input v-model="reqData.queryFormTop.manage_nm" placeholder="管理担当"></el-input>
+                <el-input v-model="manage_nm_delay" placeholder="管理担当"></el-input>
               </el-col>
             </el-row>
           </el-col>
@@ -145,6 +145,7 @@
             <main-table v-else 
               :table-data="tableData" 
               :key="pageConfig.currentTabName" 
+              @sort-change="sortChange"
               @preview="previewFiles" 
               @delete="deleteFiles"
               @error="error">
@@ -199,6 +200,7 @@
 
 <script>
   import Vue from 'vue'
+  import _ from 'lodash'
   import mainTable from '@/components/Table.vue'
   import downloadList from '@/components/DownloadList.vue'
   import upload from '@/components/Upload.vue'
@@ -241,6 +243,7 @@
     // },
     mounted() {
       let me = this;
+      //bind drag event for FF,Chrm,IE
       document.addEventListener("dragstart", e => {
         e.dataTransfer.setData('text/plain', null);
       }, false);
@@ -259,12 +262,89 @@
           console.log('​mounted -> login status error');
         }
       }
+      //set headers
       evtBus.headers={
         Authorization:me.getCookie('sessionToken'),
-        // 'user-id':me.getCookie('user_id')
+        'user-id':me.getCookie('user_id')
       };
+      //get user info
+      me.pageConfig.user.user_id=me.getCookie('user_id');
+      me.pageConfig.user.user_nm=unescape(me.getCookie('user_nm'));
+      me.pageConfig.user.company_nm=unescape(me.getCookie('company_nm'));
+      me.pageConfig.user.auth_ptn=me.getCookie('auth_ptn');
+      me.pageConfig.user.mail=me.getCookie('mail');
+      me.pageConfig.user.control=me.getCookie('control');
+      me.pageConfig.user.status=me.getCookie('status');
+
+      //tableData
+      // me.respData.tableData=[];
+
+      //TODO load business_kbn tab
+      // let items={
+      //   auth_ptn:me.getCookie('auth_ptn')
+      // }
+      // evtBus.apigClient.invokeApi({},'ver1.0.0/files/load','POST',{headers:evtBus.headers},{items:items})
+      //   .then(res => {
+      //     if(!res.error){
+      //       //success
+      //       let temp = JSON.parse(JSON.stringify(res.data.treeData));
+      //       me.genNodeKey(temp);
+      //       me.respData.treeData = temp;
+      //       return true;
+      //     }else{
+      //       //get treedata failed
+      //       this.$message.error('エラーが発生しました！'+res.error.message);
+      //       console.log('​queryAside -> res.error', res.error);
+      //     }
+      //   })
+      //   .catch(err => {
+      //     this.$message.error('通信エラーが発生しました！');
+      //     console.log("err: ", err);
+      //   });
     },
     methods: {
+      sortChange(stat){
+        let me = this;
+        if(stat.order=="descending"){
+          //sort
+          if (stat.prop=='file_size') {
+            //num
+            me.respData.tableData=me.respData.tableData.sort((a,b)=>{
+              return b.file_size-a.file_size;
+            })
+          }else{
+            //str
+            me.respData.tableData=me.respData.tableData.sort((a,b)=>{
+              if (a[stat.prop] < b[stat.prop]) {
+                return 1;
+              }
+              if (a[stat.prop] > b[stat.prop]) {
+                return -1;
+              }
+              return 0;
+            })
+          }
+        }else if(stat.order=="ascending"){
+          //sort
+          if (stat.prop=='file_size') {
+            //num
+            me.respData.tableData=me.respData.tableData.sort((a,b)=>{
+              return a.file_size-b.file_size;
+            })
+          }else{
+            //str
+            me.respData.tableData=me.respData.tableData.sort((a,b)=>{
+              if (a[stat.prop] < b[stat.prop]) {
+                return -1;
+                }
+              if (a[stat.prop] > b[stat.prop]) {
+                return 1;
+              }
+              return 0;
+            })
+          }
+        }
+      },
       setCurrentTree(id){
         let [owner,estate,tenant]=id.split('_');
         let tree=this.respData.treeData;
@@ -337,13 +417,15 @@
               //get treedata failed
               this.$message.error('エラーが発生しました！'+res.error.message);
               console.log('​queryAside -> res.error', res.error);
+              this.error();
             }
           })
           .catch(err => {
             this.$message.error('通信エラーが発生しました！');
             console.log("err: ", err);
+            this.error();
           });
-        this.error();
+        
       },
       queryTop(from) {
         let me = this;
@@ -382,6 +464,7 @@
           .then(res => {
             if(!res.error){
               //success
+              console.log(res)
               let temp = JSON.parse(JSON.stringify(res.data.items));
               me.respData.tableData = temp;
               return true;
@@ -389,14 +472,16 @@
               //get tableData failed
               this.$message.error('エラーが発生しました！'+res.error.message);
               console.log('queryTop -> res.error', res.error);
+              this.error();
             }
           })
           .catch(err => {
             me.$message.error('通信エラーが発生しました！');
             console.log("err: ", err);
+            this.error();
           });
         console.log('​queryTop -> items', items);
-        this.error();
+        
       },
       switchTab(tabname) {
         evtBus.$emit('switch-tab')
@@ -555,6 +640,46 @@
       }
     },
     computed: {
+      doc_nm_delay:{
+        get() {
+          return this.reqData.queryFormTop.doc_nm;
+        },
+        set: _.debounce(function(newVal){
+          this.reqData.queryFormTop.doc_nm = newVal;
+        }, 600)
+      },
+      free_format_delay:{
+        get() {
+          return this.reqData.queryFormTop.free_format;
+        },
+        set: _.debounce(function(newVal){
+          this.reqData.queryFormTop.free_format = newVal;
+        }, 600)
+      },
+      file_entry_user_delay:{
+        get() {
+          return this.reqData.queryFormTop.file_entry_user;
+        },
+        set: _.debounce(function(newVal){
+          this.reqData.queryFormTop.file_entry_user = newVal;
+        }, 600)
+      },
+      sales_nm_delay:{
+        get() {
+          return this.reqData.queryFormTop.sales_nm;
+        },
+        set: _.debounce(function(newVal){
+          this.reqData.queryFormTop.sales_nm = newVal;
+        }, 600)
+      },
+      manage_nm_delay:{
+        get() {
+          return this.reqData.queryFormTop.manage_nm;
+        },
+        set: _.debounce(function(newVal){
+          this.reqData.queryFormTop.manage_nm = newVal;
+        }, 600)
+      },
       tableData() {
         return this.respData.tableData.filter(data => {
           let tab = (this.pageConfig.currentTabName == '') ? true : data.business_kbn == this.pageConfig.currentTabName;
@@ -573,7 +698,7 @@
             date=moment(data.file_entry_date).isBetween(start,end);
           }
           return (tab&&area&&public_kbn&&doc_nm&&free_format&&file_entry_user&&sales_nm&&manage_nm&&date)
-        })
+        });
       },
     }
   };
