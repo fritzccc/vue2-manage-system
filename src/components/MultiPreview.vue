@@ -5,7 +5,7 @@
       <header class="modal-card-head">
         <img src="../assets/logo.png" width="140px" height="35px" style="margin-right:10px;">
         <p class="modal-card-title">{{previewDatas[0].doc_nm | no_ext}}</p>
-        <el-button type="primary" @click="multiDownload">ダウンロード</el-button>
+        <el-button v-if="authPtn.file_dl==1" type="primary" @click="multiDownload">ダウンロード</el-button>
         <el-button type="danger" icon="el-icon-close" circle @click="close"></el-button>
       </header>
       <section class="modal-card-body">
@@ -69,7 +69,7 @@
       <header class="modal-card-head">
         <img src="../assets/logo.png" width="140px" height="35px" style="margin-right:10px;">
         <p class="modal-card-title">プレビュー（計{{total}}件）</p>
-        <el-button type="primary" @click="multiDownload">一括ダウンロード</el-button>
+        <el-button v-if="authPtn.file_bulk_dl==1" type="primary" @click="multiDownload">一括ダウンロード</el-button>
         <el-button type="danger" icon="el-icon-close" circle @click="close"></el-button>
       </header>
       <section class="modal-card-body">
@@ -197,6 +197,7 @@
         },
       }
     },
+    props:['authPtn'],
     methods: {
       backToPreview(){
         this.previewIndex=-1;

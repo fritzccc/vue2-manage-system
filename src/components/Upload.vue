@@ -14,7 +14,7 @@
             <h3 style="margin-top:20px;">第{{parseInt(index)+1}}件</h3>
             <el-form-item label="ファイル名" prop="fileinfo">
               <!-- <el-input disabled v-model="uploadForm.form[index].fileinfo"></el-input> -->
-              <span>{{uploadForm.form[index].filename}} ({{uploadForm.form[index].file_entry_user}}MB)</span>
+              <span>{{uploadForm.form[index].filename}} ({{uploadForm.form[index].file_size}}MB)</span>
             </el-form-item>
             <el-row class="warning-area">
               <el-form-item label="業務区分/書類" prop="business_doc">
@@ -94,7 +94,7 @@
         },
       }
     },
-    props:['businessKbn','currentTree'],
+    props:['businessKbn','authPtn','currentTree'],
     methods: {
       close(formName) {
         this.resetForm(formName);
@@ -108,7 +108,7 @@
         if (me.uploadForm.checked) {
           for (let i = 1; i < me.uploadForm.files.length; i++) {
             let filename = me.uploadForm.form[i].filename;
-            let filesize = me.uploadForm.form[i].filesize;
+            let filesize = me.uploadForm.form[i].file_size;
             let filetype = me.uploadForm.form[i].filetype;
             me.uploadForm.form[i] = JSON.parse(JSON.stringify(me.uploadForm.form[0]));
             me.uploadForm.form[i].filename = filename;
@@ -139,7 +139,6 @@
         });
         if (checkflag) {
           //TODO AJAX
-          
           me.$emit('upload',me.uploadForm);
         } else {
           console.log('submit failed');
@@ -161,6 +160,7 @@
       }
     },
     created(){
+      //TODO
       evtBus.$on('upload-files',(files,currentTabName)=>{
         this.uploadForm.files=files;
         for (let i = 0; i < files.length; i++) {

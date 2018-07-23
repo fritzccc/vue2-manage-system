@@ -24,12 +24,26 @@
               <el-radio-button :label="0">指定なし</el-radio-button>
             </el-radio-group>
 
-            <el-date-picker :disabled="reqData.queryFormTop.date_kbn==0" style="width: 250px;padding:0 10px" v-model="reqData.queryFormTop.dateRange" :picker-options="pageConfig.pickerOptions"
-              unlink-panels align="left" type="daterange" value-format="yyyy-MM-dd" range-separator="～" start-placeholder="From"
+            <el-date-picker 
+              :disabled="reqData.queryFormTop.date_kbn==0 && respData.auth_ptn.ope_log_csv!=1" 
+              :picker-options="pageConfig.pickerOptions"
+              style="width: 250px;padding:0 10px" 
+              v-model="reqData.queryFormTop.dateRange" 
+              unlink-panels 
+              align="left" 
+              type="daterange" 
+              value-format="yyyy-MM-dd" 
+              range-separator="～" 
+              start-placeholder="From"
               end-placeholder="To">
             </el-date-picker>
-            <el-button type="primary" size="small" plain style="margin-left:5px;">操作ログ</el-button>
-            <el-button type="primary" @click="queryTop('csv')" size="small" plain style="margin-left:5px;">CSV出力</el-button>
+            <el-button v-if="respData.auth_ptn.ope_log_csv==1"
+              :disabled="!reqData.queryFormTop.dateRange"
+              type="primary" 
+              @click="getOpeLog" 
+              size="small" 
+              plain style="margin-left:5px;">操作ログ</el-button>
+            <el-button v-if="respData.auth_ptn.result_dl==1" type="primary" @click="queryTop('csv')" size="small" plain style="margin-left:5px;">CSV出力</el-button>
 
           </el-col>
           <el-col :sm="7" :md="5" :lg="4" :xl="2" style="text-align:right">
@@ -126,24 +140,20 @@
       </label>
       <el-container :class="'bg-color bg-shadow'" style="margin-top: 0px;margin-bottom: 0px;margin-right:0px;">
         <el-main style="height: auto;">
-          <!-- <div class="tabs is-toggle is-fullwidth is-large">
-            <ul>
-              <li v-for="tab in pageConfig.tabs" :key="tab.id" :class="{ 'is-active':tab.isSelected }">
-                <a @click="switchTab(tab.name)">
-                  <span>{{tab.label}}</span>
-                </a>
-              </li>
-            </ul>
-          </div> -->
-          <el-radio-group v-model="pageConfig.currentTabName" @change="switchTab" style="margin: 5px 0;">
+          <el-radio-group v-model="pageConfig.currentTabName" @change="getDownloadList" style="margin: 5px 0;">
             <el-radio-button v-for="option in respData.business_kbn" :label="option.value" :key="option.id">{{option.label}}</el-radio-button>
             <el-radio-button label="">指定なし</el-radio-button>
             <el-radio-button label="downloadList">ダウンロードリスト</el-radio-button>
           </el-radio-group>
           <transition name="component-fade" mode="out-in">
-            <download-list v-if="pageConfig.currentTabName=='downloadList'" key="downloadList" :download-list="respData.downloadList"></download-list>
+            <download-list v-if="pageConfig.currentTabName=='downloadList'" 
+              key="downloadList" 
+              @download="getDownloadList"
+              :download-list="respData.downloadList">
+            </download-list>
             <main-table v-else 
               :table-data="tableData" 
+              :auth-ptn="respData.auth_ptn"
               :key="pageConfig.currentTabName" 
               @sort-change="sortChange"
               @preview="previewFiles" 
@@ -159,13 +169,15 @@
     </transition>
     <transition name="component-fade" mode="out-in">
       <upload v-if="pageConfig.isUpload" 
-        :business-kbn="respData.business_kbn" 
+        :business-kbn="respData.business_kbn"
+        :auth-ptn="respData.auth_ptn"
         :current-tree="respData.currentTree" 
         @upload="uploadFile" 
         @error="error"
         @close="close">
       </upload>
-      <preview v-if="pageConfig.isPreview"  
+      <preview v-if="pageConfig.isPreview"
+        :auth-ptn="respData.auth_ptn"
         @add-comment="addComment" 
         @del-comment="delComment" 
         @error="error"
@@ -241,7 +253,7 @@
     //     require(["../components/Upload.vue"], resolve);
     //   }
     // },
-    mounted() {
+    created() {
       let me = this;
       //bind drag event for FF,Chrm,IE
       document.addEventListener("dragstart", e => {
@@ -260,6 +272,7 @@
           //login status error
           //TODO
           console.log('​mounted -> login status error');
+          me.error();
         }
       }
       //set headers
@@ -276,33 +289,58 @@
       me.pageConfig.user.control=me.getCookie('control');
       me.pageConfig.user.status=me.getCookie('status');
 
-      //tableData
-      // me.respData.tableData=[];
-
       //TODO load business_kbn tab
-      // let items={
-      //   auth_ptn:me.getCookie('auth_ptn')
-      // }
-      // evtBus.apigClient.invokeApi({},'ver1.0.0/files/load','POST',{headers:evtBus.headers},{items:items})
-      //   .then(res => {
-      //     if(!res.error){
-      //       //success
-      //       let temp = JSON.parse(JSON.stringify(res.data.treeData));
-      //       me.genNodeKey(temp);
-      //       me.respData.treeData = temp;
-      //       return true;
-      //     }else{
-      //       //get treedata failed
-      //       this.$message.error('エラーが発生しました！'+res.error.message);
-      //       console.log('​queryAside -> res.error', res.error);
-      //     }
-      //   })
-      //   .catch(err => {
-      //     this.$message.error('通信エラーが発生しました！');
-      //     console.log("err: ", err);
-      //   });
+      let items={
+        auth_ptn:me.getCookie('auth_ptn')
+      }
+      evtBus.apigClient.invokeApi({},'ver1.0.0/files/load','POST',{headers:evtBus.headers},{items:items})
+        .then(res => {
+          if(!res.error){
+            //success
+            let {auth,business} = JSON.parse(JSON.stringify(res.data.data.items));
+            me.respData.business_kbn = business;
+            console.log('mounted -> set!');
+            auth.forEach(data=>{
+              me.respData.auth_ptn[data.auth_kbn]=data.auth_flg;
+            });
+            return true;
+          }else{
+            //get treedata failed
+            me.$message.error('エラーが発生しました！'+res.error.message);
+            console.log('​queryAside -> res.error', res.error);
+          }
+        })
+        .catch(err => {
+          me.$message.error('通信エラーが発生しました！');
+          console.log("err: ", err);
+        });
     },
     methods: {
+      getOpeLog(){
+        let me = this;
+        let items={
+          operation_logdate_from:me.queryFormTop.dateRange[0],
+          operation_logdate_to:me.queryFormTop.dateRange[1]
+        };
+        evtBus.apigClient.invokeApi({},'ver1.0.0/csv/logs','GET',{headers:evtBus.headers},{items:items})
+          .then(res => {
+            if(!res.error){
+              //success
+              this.$message.success('操作成功しました！');
+              return true;
+            }else{
+              //get treedata failed
+              this.$message.error('エラーが発生しました！'+res.error.message);
+              console.log('getOpeLog -> res.error', res.error);
+              this.error();
+            }
+          })
+          .catch(err => {
+            this.$message.error('通信エラーが発生しました！');
+            console.log("err: ", err);
+            this.error();
+          });
+      },
       sortChange(stat){
         let me = this;
         if(stat.order=="descending"){
@@ -470,21 +508,49 @@
               return true;
             }else{
               //get tableData failed
-              this.$message.error('エラーが発生しました！'+res.error.message);
+              me.$message.error('エラーが発生しました！'+res.error.message);
               console.log('queryTop -> res.error', res.error);
-              this.error();
+              me.error();
             }
           })
           .catch(err => {
             me.$message.error('通信エラーが発生しました！');
             console.log("err: ", err);
-            this.error();
+            me.error();
           });
         console.log('​queryTop -> items', items);
         
       },
-      switchTab(tabname) {
-        evtBus.$emit('switch-tab')
+      getDownloadList(tab){
+        
+        console.log('​getDownloadList -> ', );
+        let me = this;
+        if(tab!="downloadList") return false;
+        let items={
+          bucket_nm:evtBus.download_bucket_name,
+          user_id:me.getCookie('user_id')
+        }
+        evtBus.apigClient.invokeApi({},'ver1.0.0/downloads/list','POST',{headers:evtBus.headers},{items:items})
+          .then(res => {
+            if(!res.error){
+              //success
+              
+              console.log('​getDownloadList -> ', res);
+              let {data} = JSON.parse(JSON.stringify(res));
+              me.respData.downloadList = data;
+              return true;
+            }else{
+              //get tableData failed
+              me.$message.error('エラーが発生しました！'+res.error.message);
+              console.log('queryTop -> res.error', res.error);
+              me.error();
+            }
+          })
+          .catch(err => {
+            me.$message.error('通信エラーが発生しました！');
+            console.log("err: ", err);
+            me.error();
+          });
       },
       onDrag(e) {
         e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);
@@ -496,8 +562,12 @@
       onDrop(e) {
         e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);
         e.preventDefault ? e.preventDefault() : (e.returnValue = false);
+        if (this.respData.auth_ptn.file_upload!=1){
+          this.$message.warning('このアカウントにはアップロードする権限はありません！')
+          return false;
+        }
         let {files} = e.dataTransfer;
-        if (files.length < 1 || this.respData.currentTree.owner_cd==undefined){
+        if (files.length < 1 || this.respData.currentTree.owner_cd==""){
           this.$message.warning('アプロードするには、まずツリーにデータを選択してください！');
           return false;
         }
@@ -610,7 +680,7 @@
           this.resetTop();
           this.pageConfig.isUpload=false;
           this.pageConfig.isPreview=false;
-          this.$router.push('/error').bind(this);
+          this.$router.push('/error');
         }, 2000);
       },
       logout() {
@@ -636,6 +706,10 @@
           });
         //TODO demo
         this.clearAllCookies();
+        this.resetAside();
+        this.resetTop();
+        this.pageConfig.isUpload=false;
+        this.pageConfig.isPreview=false;
         this.$router.push('/login');
       }
     },

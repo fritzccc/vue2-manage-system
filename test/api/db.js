@@ -1,33 +1,43 @@
-const faker = require('faker')
+const faker = require('faker/locale/ja');
 const moment = require('moment')
-faker.locale='ja'
 function genTableData () {
-    let data = {
-      items:[]
-    };
-    for (let i = 0; i < 5000; i++) {
-      data.items.push({
-        file_entry_date: moment(faker.date.past()).format('YYYY-MM-DD'),
-        doc_nm: faker.system.commonFileName(),
-        file_size:Math.random().toFixed(1),
-        file_id:Math.random(),
-        file_entry_user: faker.name.findName(),
-        business_kbn:'jutaku',
-        comment:[{
-            user_nm:faker.name.findName(),
-            update_date:moment(faker.date.past()).format('YYYY-MM-DD'),
-            text:faker.lorem.paragraph()
-        }],
-        free_format:faker.lorem.text(),
-        sales_nm: faker.name.findName(),
-        manage_nm: faker.name.findName(),
-        owner_nm: faker.name.findName(),
-        estate_no: (1000000000*Math.random()).toFixed(0),
-        estate_nm: "物件名"+(100000*Math.random()).toFixed(0),
-      });
-    }
-    return data;
+  let data = {
+    items:[]
+  };
+  for (let i = 0; i < 2233; i++) {
+    data.items.push({
+      file_entry_date: moment(faker.date.past()).format('YYYY-MM-DD'),
+      doc_nm: faker.system.commonFileName(),
+      file_size:(Math.random()*20).toFixed(1),
+      file_id:Math.random(),
+      file_entry_user: faker.name.findName(),
+      business_kbn:['jutaku','seiyaku','kouji','kanri','tsuika'][faker.random.number(4)],
+      comment:[{
+          user_nm:faker.name.findName(),
+          update_date:moment(faker.date.past()).format('YYYY-MM-DD'),
+          text:faker.lorem.paragraph()
+      }],
+      free_format:faker.lorem.text(),
+      sales_nm: faker.name.findName(),
+      manage_nm: faker.name.findName(),
+      owner_nm: faker.name.findName(),
+      estate_no: (1000000000*Math.random()).toFixed(0),
+      estate_nm: "物件名"+(100000*Math.random()).toFixed(0),
+    });
   }
+  return data;
+}
+
+function genDownloadList(){
+  let data = [];
+  for (let i = 0; i < faker.random.number(10); i++) {
+    data.push({
+      download_file_nm:faker.system.commonFileName()
+    });
+  }
+  return data;
+}
+
 const signin={
   data: {
     user: {
@@ -46,22 +56,111 @@ const signin={
   }
 }
 
-const file_load={
+const files_load={
   data:{
     items:{
       auth:[{
-        auth_kbn:'',
-        auth_flg:''
+        auth_kbn:'file_search',
+        auth_flg:'1'
       },{
-        auth_kbn:'',
-        auth_flg:''
+        auth_kbn:'file_delete',
+        auth_flg:'1'
+      },{
+        auth_kbn:'preview',
+        auth_flg:'1'
+      },{
+        auth_kbn:'bulk_preview',
+        auth_flg:'1'
+      },{
+        auth_kbn:'comment_reg',
+        auth_flg:'1'
+      },{
+        auth_kbn:'open_set',
+        auth_flg:'1'
+      },{
+        auth_kbn:'file_dl',
+        auth_flg:'1'
+      },{
+        auth_kbn:'file_bulk_dl',
+        auth_flg:'1'
+      },{
+        auth_kbn:'file_upload',
+        auth_flg:'1'
+      },{
+        auth_kbn:'result_dl',
+        auth_flg:'1'
+      },{
+        auth_kbn:'master_reg',
+        auth_flg:'1'
+      },{
+        auth_kbn:'ope_log_csv',
+        auth_flg:'1'
       }],
-      doc:[{
-        doc_cd:faker.random.number(100),
-        doc_nm:'',
-        business_kbn:'',
-        business_kbn_nm:'',
-        public_kbn:''
+      business:[{
+        label:'受託',
+        value:'jutaku',
+        children:[{
+          label:'受託１',
+          value:Math.random()
+        },{
+          label:'受託２',
+          value:Math.random()
+        },{
+          label:'受託３',
+          value:Math.random()
+        }],
+      },{
+        label:'成約',
+        value:'seiyaku',
+        children:[{
+          label:'成約１',
+          value:Math.random()
+        },{
+          label:'成約２',
+          value:Math.random()
+        },{
+          label:'成約３',
+          value:Math.random()
+        }],
+      },{
+        label:'工事',
+        value:'kouji',
+        children:[{
+          label:'工事１',
+          value:Math.random()
+        },{
+          label:'工事２',
+          value:Math.random()
+        },{
+          label:'工事３',
+          value:Math.random()
+        }],
+      },{
+        label:'管理',
+        value:'kanri',
+        children:[{
+          label:'管理１',
+          value:Math.random()
+        },{
+          label:'管理２',
+          value:Math.random()
+        },{
+          label:'管理３',
+          value:Math.random()
+        }],
+      },{
+        label:'追加',
+        value:'tsuika',
+        children:[{
+          label:'追加１',
+          value:Math.random()
+        },{
+          label:'追加２',
+          value:Math.random()
+        },{
+          label:'追加３',
+          value:Math.random()
+        }],
       }]
     }
   }
@@ -126,7 +225,8 @@ const tree={
 
 module.exports = {
   signin:signin,
-  file_load:file_load,//TODO
+  files_load:files_load,//TODO
   tableData:genTableData(),
+  downloadList:genDownloadList(),
   tree:tree
 }

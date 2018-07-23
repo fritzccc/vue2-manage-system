@@ -1,30 +1,22 @@
 <template>
   <div>
-      <!-- <el-select v-model="recordsPerPage.value" placeholder="選択してください" style="width: 100px;">
-        <el-option v-for="option in recordsPerPage.options" :key="option.value" :label="option.label" :value="option.value">
-        </el-option>
-      </el-select> -->
-    <el-button size="small" type="primary" @click="multiPreview" plain :disabled="cantPrev" style="margin-left: 3px">一括PV</el-button>
+    <el-button v-if="authPtn.bulk_preview==1" size="small" type="primary" @click="multiPreview" plain :disabled="cantPrev" style="margin-left: 3px">一括PV</el-button>
     <!-- <el-button type="primary" plain style="margin-left: 3px">公開/非公開</el-button> -->
-    <el-button size="small" type="primary" @click="multiDownload" plain :disabled="cantDwld" style="margin-left: 3px">一括DL</el-button>
-    <el-button size="small" type="primary" @click="multiDelete" plain :disabled="cantDel" style="margin-left: 3px">削除</el-button>
+    <el-button v-if="authPtn.file_bulk_dl==1" size="small" type="primary" @click="multiDownload" plain :disabled="cantDwld" style="margin-left: 3px">一括DL</el-button>
+    <el-button v-if="authPtn.file_delete==1" size="small" type="primary" @click="multiDelete" plain :disabled="cantDel" style="margin-left: 3px">削除</el-button>
     <el-pagination
-      background
-      style="display:inline-block;margin-left:60px;"
+      v-if="totalRecords>0"
+      background 
+      style="display:inline-block;margin-left:20px;"
       layout="total, sizes, prev, pager, next, jumper"
       @size-change="sizeChange"
       @current-change="currentChange"
       :current-page="currentPage"
-      :page-sizes="[50, 100, 200, 500]"
+      :page-sizes="[30, 50, 100, 200]"
       :page-size="perPage"
       :pager-count="7"
       :total="totalRecords">
     </el-pagination>
-    <!-- <div class="pagination-span">
-      <el-pagination background layout="prev, pager, next" :total="200" style="display:inline-block;"></el-pagination>
-      <span>（{{ totalRecords }}件中1-{{ totalRecords }}件表示）</span>
-    </div> -->
-
     <el-table 
       ref="table"
       :row-class-name="tableRowClass" 
@@ -88,15 +80,8 @@
 </template>
 
 <style scoped>
-  .el-pagination {
-    vertical-align: middle;
-  }
   strong{
     color:#102E54;
-  }
-  .pagination-span {
-    margin: 5px 0;
-    vertical-align: middle;
   }
 </style>
 
@@ -106,7 +91,7 @@
   export default {
     data() {
       return {
-        perPage:50,
+        perPage:30,
         currentPage:1,
         isLoading: false,
         slicedTableData:[],
@@ -116,7 +101,7 @@
         windowWidth:window.innerWidth
       }
     },
-    props: ['tableData'],
+    props: ['tableData','authPtn'],
     methods: {
       handleSortChange(stat){
         this.$emit('sort-change',stat);
@@ -188,16 +173,17 @@
     },
     mounted(){
       window.onresize = () => {
-        this.maxHeight = window.innerHeight - 220;
+        this.maxHeight = window.innerHeight - 240;
         this.windowWidth=window.innerWidth;
       };
     },
     watch:{
       tableData:function(newVal,oldVal){
+        this.isLoading=true;
         this.currentPage=1;
-        this.sliceTableData(this.tableData,this.perPage)
-        this.showTableData=this.slicedTableData[0]
-        console.log('tableData changed​');
+        this.sliceTableData(this.tableData,this.perPage);
+        this.showTableData=this.slicedTableData[0];
+        this.isLoading=false;
       }
     },
     computed: {
