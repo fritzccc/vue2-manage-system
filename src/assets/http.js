@@ -5,7 +5,7 @@ import {
 
 // axios settings
 axios.defaults.timeout = 5000;
-axios.defaults.baseURL = 'https://nyl0e196gg.execute-api.ap-northeast-1.amazonaws.com/isp/'; //default base url
+axios.defaults.baseURL = 'https://jfz42d0oyf.execute-api.ap-northeast-1.amazonaws.com/dev/'; //default base url
 
 // http request interceptor，pass cookie to backend
 axios.interceptors.request.use(config => {
@@ -14,11 +14,11 @@ axios.interceptors.request.use(config => {
     // config.headers = {
     //   'Content-Type': 'application/x-www-form-urlencoded' //headers setting
     // };
-    if (token) {
-      config.params = {
-        'token': token
-      }
-    }
+    // if (token) {
+    //   config.params = {
+    //     'token': token
+    //   }
+    // }
     return config;
   },
   err => {

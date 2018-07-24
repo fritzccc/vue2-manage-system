@@ -30,7 +30,7 @@ function genTableData () {
 
 function genDownloadList(){
   let data = [];
-  for (let i = 0; i < faker.random.number(10); i++) {
+  for (let i = 0; i < faker.random.number(15); i++) {
     data.push({
       download_file_nm:faker.system.commonFileName()
     });
@@ -222,11 +222,19 @@ const tree={
       }]
   }]
 }
+const signout={
+  data:{}
+}
+const changepass={
+  data:{}
+}
 
 module.exports = {
   signin:signin,
-  files_load:files_load,//TODO
+  files_load:files_load,
   tableData:genTableData(),
   downloadList:genDownloadList(),
-  tree:tree
+  tree:tree,
+  signout:signout,
+  changepass:changepass,
 }

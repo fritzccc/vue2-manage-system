@@ -10,17 +10,17 @@ AWS.config.credentials=new AWS.CognitoIdentityCredentials({
 export {AWS};
 
 //new apigClient instance
-export function newApigClient(){
+export function newApigClient(invokeUrl){
   let apigClient = apigClientFactory.newClient({
-    invokeUrl:InvokeUrl,
+    invokeUrl:invokeUrl || InvokeUrl,
   });
   return apigClient
 }
 
 //set session apigClient
-export function sessionApigClient(accessKey,secretKey,sessionToken,region){
+export function sessionApigClient(accessKey,secretKey,sessionToken,region,invokeUrl){
   let apigClient = apigClientFactory.newClient({
-    invokeUrl:InvokeUrl,
+    invokeUrl:invokeUrl || InvokeUrl,
     accessKey: accessKey,
     secretKey: secretKey,
     sessionToken: sessionToken,

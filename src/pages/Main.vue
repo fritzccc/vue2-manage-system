@@ -7,7 +7,7 @@
       <el-main>
         <el-row type="flex" justify="space-between" style="margin-bottom:5px;">
           <el-col :sm="17" :md="19" :lg="20" :xl="18">
-            <el-radio-group v-model="reqData.queryFormTop.area" size="small" style="margin-right:5px;">
+            <el-radio-group id="queryFormTop_area" v-model="reqData.queryFormTop.area" size="small" style="margin-right:5px;">
               <el-radio-button :label="1">東京</el-radio-button>
               <el-radio-button :label="2">大阪</el-radio-button>
               <el-radio-button :label="3">名古屋</el-radio-button>
@@ -19,7 +19,7 @@
                 <el-radio-button :label="2">公開中</el-radio-button>
                 <el-radio-button :label="0">指定なし</el-radio-button>
               </el-radio-group> -->
-            <el-radio-group v-model="reqData.queryFormTop.date_kbn" size="small" style="margin-right:5px;">
+            <el-radio-group id="queryFormTop_date_kbn" v-model="reqData.queryFormTop.date_kbn" size="small" style="margin-right:5px;">
               <el-radio-button :label="1">登録日</el-radio-button>
               <el-radio-button :label="0">指定なし</el-radio-button>
             </el-radio-group>
@@ -239,20 +239,6 @@
       preview,
       loading
     },
-    // components: {
-    //   mainTable: resolve => {
-    //     require(["../components/Table.vue"], resolve);
-    //   },
-    //   downloadList: resolve => {
-    //     require(["../components/DownloadList.vue"], resolve);
-    //   },
-    //   preview: resolve => {
-    //     require(["../components/Preview.vue"], resolve);
-    //   },
-    //   upload: resolve => {
-    //     require(["../components/Upload.vue"], resolve);
-    //   }
-    // },
     created() {
       let me = this;
       //bind drag event for FF,Chrm,IE
@@ -277,9 +263,11 @@
       }
       //set headers
       evtBus.headers={
-        Authorization:me.getCookie('sessionToken'),
+        'Content-Type': 'application/json',
+        'Authorization':me.getCookie('sessionToken'),
         'user-id':me.getCookie('user_id')
       };
+      console.log('​created -> evtBus.headers', evtBus.headers);
       //get user info
       me.pageConfig.user.user_id=me.getCookie('user_id');
       me.pageConfig.user.user_nm=unescape(me.getCookie('user_nm'));
@@ -292,7 +280,9 @@
       //TODO load business_kbn tab
       let items={
         auth_ptn:me.getCookie('auth_ptn')
-      }
+      };
+      console.log('​created -> items', items);
+      
       evtBus.apigClient.invokeApi({},'ver1.0.0/files/load','POST',{headers:evtBus.headers},{items:items})
         .then(res => {
           if(!res.error){
@@ -685,7 +675,7 @@
       },
       logout() {
         let items={
-          // user_id:this.getCookie('user_id'),
+          user_id:this.getCookie('user_id'),
           identityId:this.getCookie('identityId')
         };
         evtBus.apigClient.invokeApi({},'signout','POST',{headers:evtBus.headers},{items:items})

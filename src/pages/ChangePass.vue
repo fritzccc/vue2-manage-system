@@ -46,6 +46,7 @@
 
 
 <script>
+  import evtBus from '@/assets/evtBus'
   import loading from '@/components/Loading.vue'
   export default {
     data() {
@@ -139,8 +140,9 @@
                 if(!res.error){
                   //success
                   me.$message.success('パスワード変更しました！');
+                  me.$refs[formName].resetFields();
                   setTimeout(() => {
-                    me.$router.push('/login').bind(me);
+                    me.$router.push('/login');
                   }, 2000);
                 }else if(res.error.code==204){
                   //incorrect user&pass

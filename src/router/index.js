@@ -41,7 +41,7 @@ router.beforeEach((to, from, next) => {
     console.log('from', from);
     if(getCookie('status')==0){
       next({
-        path: from.fullPath
+        path: '/changepass'
       });
     }else if(getCookie('user_id')){
       next();

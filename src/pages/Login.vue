@@ -17,7 +17,6 @@
       </el-form-item>
     </el-form>
     <loading v-if="isLoading"></loading>
-
   </div>
 </template>
 <style scoped>
@@ -33,8 +32,6 @@
   import {AWS,setCognitoIdentityCredentials,newApigClient} from '@/assets/util'
   import evtBus from '@/assets/evtBus';
   import loading from '@/components/Loading.vue'
-
-  var apigClient = newApigClient();
 
   export default {
     data() {
@@ -68,15 +65,13 @@
     },
     methods: {
       login(formName) {
+        var apigClient = newApigClient();
+        //mock
+        // var apigClient = newApigClient('https://jfz42d0oyf.execute-api.ap-northeast-1.amazonaws.com/dev/');
         let me = this;
         this.$refs[formName].validate((valid) => {
           if (valid) {
             this.clearAllCookies();
-            //demo
-            // this.$router.push({
-            //   path: '/main', 
-            // });
-            // return;
 
             //for mock test
             let me = this;
@@ -126,15 +121,17 @@
 
 
 
-
-
             //本番
             // let me = this;
             // me.isLoading=true;
             // let params = {};
             // let pathTemplate='signin';
             // let method='POST';
-            // let additionalParams={};
+            // let additionalParams={
+            //   headers:{
+            //     'Content-Type': 'application/json'
+            //   }
+            // };
             // let body = {items:this.loginForm};
             // apigClient.invokeApi(params, pathTemplate, method, additionalParams, body)
             //   .then(res=>{
@@ -146,13 +143,9 @@
             //       return false;
             //     }else{
             //       //success cognito
-            //       //demo
-            //       let {identity_id,token}=res.data.data.items;
-            //       let identityId=identity_id;
-            //       let status=1;
             //       //本番
-            //       // let {identityId,token}=res.data.data.token;
-            //       // let {user_id,user_nm,mail,auth_ptn,company_nm,control,status}=res.data.data.user;
+            //       let {identityId,token}=res.data.data.token;
+            //       let {user_id,user_nm,mail,auth_ptn,company_nm,control,status}=res.data.data.user;
             //       AWS.config.credentials = setCognitoIdentityCredentials(identityId,token);
             //       AWS.config.credentials.get((err) => {
             //         if (err) {
@@ -163,18 +156,17 @@
             //           me.setAWSCookies(expireDays);//expire in 24hours
             //           me.setCookie('identityId',identityId,expireDays);
             //           //TODO 本番
-            //           // me.setCookie('user_id',user_id,expireDays);
-            //           // me.setCookie('user_nm',user_nm,expireDays);
-            //           // me.setCookie('auth_ptn',auth_ptn,expireDays);
-            //           // me.setCookie('mail',mail,expireDays);
-            //           // me.setCookie('company_nm',company_nm,expireDays);
-            //           // me.setCookie('control',control,expireDays);
-            //           // me.setCookie('status',status,expireDays);
+            //           me.setCookie('user_id',user_id,expireDays);
+            //           me.setCookie('user_nm',user_nm,expireDays);
+            //           me.setCookie('auth_ptn',auth_ptn,expireDays);
+            //           me.setCookie('mail',mail,expireDays);
+            //           me.setCookie('company_nm',company_nm,expireDays);
+            //           me.setCookie('control',control,expireDays);
+            //           me.setCookie('status',status,expireDays);
             //           let {check,accessKeyId,secretAccessKey,sessionToken,region}=me.getAWSCookies();
             //           apigClient=me.sessionApigClient(accessKeyId,secretAccessKey,sessionToken,region);
             //           //set GLOBAL apigClient
             //           evtBus.apigClient=apigClient;
-
             //           if (status==0) {
             //             //first login
             //             me.$router.push({
@@ -201,6 +193,7 @@
             //     this.$message.error('通信エラーが発生しました！');
             //     console.log('​login err -> ',err );
             //   })
+
           } else {
             console.log('error submit');
             return false;
