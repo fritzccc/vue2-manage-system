@@ -3,22 +3,27 @@ var demo={
     pageConfig:{
         asideWidth:260,
         dragbarHeight: window.innerHeight-120,
-        user:{
-          user_id:Math.random(),
-          user_nm:'テスト花子',
-          company_nm:'TEST株式会社',
-          control:'名古屋',
-          auth_ptn:{
-            
-          },
-          status:0
-        },
+        user:{},
         isUpload: false,
         isPreview:false,
         cantPrev:true,
         cantDwld:true,
         cantDel:true,
         currentTabName:'',
+        dropzoneOptions: {
+          url: 'https://httpbin.org/post',
+          thumbnailWidth: 150,
+          maxFilesize: 0.5,
+          headers: { "My-Awesome-Header": "header value" },
+          addRemoveLinks: true,
+          autoProcessQueue: false,
+          dictDefaultMessage: '<img width="240px" height="60px" title="ファイルアップロード" src="https://s1.ax1x.com/2018/07/26/PNAxit.png" border="0" style="margin-top:5px;" />',
+          previewTemplate: '<div style="display:none></div>',
+          accept(file, done) {
+            console.log(file);
+            done();
+          },
+        },
         pickerOptions: {
           shortcuts: [{
             text: '最近１週',

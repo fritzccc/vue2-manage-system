@@ -47,6 +47,8 @@
 
 <script>
   import evtBus from '@/assets/evtBus'
+  import {newApigClient} from '@/assets/util'
+  import {sha256} from 'js-sha256'
   import loading from '@/components/Loading.vue'
   export default {
     data() {
@@ -114,8 +116,7 @@
       }
     },
     mounted() {
-      
-      console.log('​mounted -> ', this.$route.params);
+      if(!evtBus.apigClient) evtBus.apigClient=newApigClient();
       this.firstLogin=this.$route.params.firstLogin;
       if (this.firstLogin) {
         this.changePassForm.user_id=this.$route.params.user_id;
@@ -130,27 +131,27 @@
             //TODO
             let items={
               user_id:me.changePassForm.user_id,
-              password_old:me.changePassForm.oldPass,
-              password_new:me.changePassForm.newPass,
+              password_old:sha256(me.changePassForm.oldPass),
+              password_new:sha256(me.changePassForm.newPass),
             };
             if (this.firstLogin) items.status = 0;
             //headers => APIKey? TODO
-            evtBus.apigClient.invokeApi({},'ver1.0.0/changepass','POST',{},{items:items})
+            evtBus.apigClient.invokeApi({},'changepass','POST',{},{items:items})
               .then(res => {
-                if(!res.error){
+                if(!res.data.error){
                   //success
                   me.$message.success('パスワード変更しました！');
                   me.$refs[formName].resetFields();
                   setTimeout(() => {
                     me.$router.push('/login');
                   }, 2000);
-                }else if(res.error.code==204){
+                }else if(res.data.error.code==204){
                   //incorrect user&pass
                   me.$message.warning('入力されたアカウントまたはパスワードに誤りがあります！');
-                  console.log('changePass -> res.error', res.error);
+                  console.log('changePass -> res.data.error', res.data.error);
                   return false;
                 }else{
-                  me.$message.error('エラーが発生しました！'+res.error.message);
+                  me.$message.error('エラーが発生しました！'+res.data.error.message);
                   setTimeout(() => {
                     me.$router.push('/error').bind(me);
                   }, 2000);

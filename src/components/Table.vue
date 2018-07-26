@@ -145,7 +145,7 @@
       previewFile(row) {
         console.log('​previewFile -> row', row);
         this.$emit('preview');
-        Vue.nextTick(()=>evtBus.$emit('preview',[row.file_id]));
+        Vue.nextTick(()=>evtBus.$emit('preview',{filelist:[{file_id:row.file_id}]}));
       },
       multiPreview(){
         let me=this;
@@ -204,9 +204,11 @@
         return (this.selectedItems.length)? !(this.selectedItems.length>0 && this.selectedItems.length<=10):true;
       },
       selectedFileId(){
-        let items=[];
+        let items={
+          filelist:[]
+        };
         this.selectedItems.forEach(item=>{
-          items.push({file_id:item.file_id});
+          items.filelist.push({file_id:item.file_id});
         });
         return items;
       }

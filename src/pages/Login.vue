@@ -30,7 +30,8 @@
 
 <script>
   import {AWS,setCognitoIdentityCredentials,newApigClient} from '@/assets/util'
-  import evtBus from '@/assets/evtBus';
+  import {sha256} from 'js-sha256'
+  import evtBus from '@/assets/evtBus'
   import loading from '@/components/Loading.vue'
 
   export default {
@@ -80,7 +81,10 @@
             let pathTemplate='signin';
             let method='POST';
             let additionalParams={};
-            let body = {items:this.loginForm};
+            let body = {items:{
+              user_id:this.loginForm.user_id,
+              password:sha256(this.loginForm.password)
+            }};
             apigClient.invokeApi(params, pathTemplate, method, additionalParams, body)
               .then(res=>{
                 console.log('​login -> res', res);
@@ -132,7 +136,10 @@
             //     'Content-Type': 'application/json'
             //   }
             // };
-            // let body = {items:this.loginForm};
+            // let body = {items:{
+            //   user_id:this.loginForm.user_id,
+            //   password:sha256(this.loginForm.password)
+            // }};
             // apigClient.invokeApi(params, pathTemplate, method, additionalParams, body)
             //   .then(res=>{
             //     console.log('​login -> res', res);

@@ -1,11 +1,12 @@
 <template>
   <div class="modal is-active">
     <!-- <div class="modal-background"></div> -->
+      <!-- SinglePreview -->
       <div v-if="previewDatas.length==1" class="modal-card" style="width: 1500px;">
       <header class="modal-card-head">
         <img src="../assets/logo.png" width="140px" height="35px" style="margin-right:10px;">
         <p class="modal-card-title">{{previewDatas[0].doc_nm | no_ext}}</p>
-        <el-button v-if="authPtn.file_dl==1" type="primary" @click="multiDownload">ダウンロード</el-button>
+        <el-button type="primary" @click="multiDownload">ダウンロード</el-button>
         <el-button type="danger" icon="el-icon-close" circle @click="close"></el-button>
       </header>
       <section class="modal-card-body">
@@ -31,7 +32,7 @@
                       required: true, message: 'コメントを入力してください', trigger: 'blur'
                     }"
                   >
-                    <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" v-model="newComment.coment"></el-input>
+                    <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" v-model="newComment.comment"></el-input>
                   </el-form-item>
                   <el-form-item>
                     <el-button plain type="primary" @click="addComment(index)">コメント追加</el-button>
@@ -41,9 +42,9 @@
                 <article v-for="(comment,idx) in previewData.comment" :key="idx" class="message is-info">
                   <div class="message-header" v-if="comment.user_id!=user_id">
                     <p>{{comment.user_nm}}</p>
-                    <span>{{comment.entry_date}}</span>
+                    <span>{{comment.comment_id | date}}</span>
                   </div>
-                  <div class="message-header" v-else style="background:#54677E">
+                  <div class="message-header" v-if="comment.user_id==user_id" style="background:#54677E">
                     <p class="comment-header">自分
                       <el-popover placement="top" width="160" v-model="comment.delPop">
                         <p>このコメントを削除してよろしいですか？</p>
@@ -54,9 +55,9 @@
                         <el-button slot="reference" size="mini" type="danger" style="padding: 6px 12px;">削除</el-button>
                       </el-popover>
                     </p>
-                    <span>{{comment.entry_date}}</span>
+                    <span>{{comment.comment_id | date}}</span>
                   </div>
-                  <div class="message-body">{{comment.coment}}</div>
+                  <div class="message-body">{{comment.comment}}</div>
                   <br>
                 </article>
               </div>
@@ -65,6 +66,8 @@
         </div>
       </section>
     </div>
+
+    <!-- MultiPreview -->
     <div v-if="previewDatas.length>1" class="modal-card" style="width: 1500px;">
       <header class="modal-card-head">
         <img src="../assets/logo.png" width="140px" height="35px" style="margin-right:10px;">
@@ -86,7 +89,6 @@
 
           <el-row v-show="previewIndex==-1 || previewIndex==index">
             <el-col :span="16">
-              <!-- demo -->
               <iframe :src="previewData.url" class="default" :class="{preview:previewIndex==index}" allowfullscreen></iframe>
             </el-col>
             <el-col :span="7" :offset="1">
@@ -100,7 +102,7 @@
                       required: true, message: 'コメントを入力してください', trigger: 'blur'
                     }"
                   >
-                    <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" v-model="newComment.coment"></el-input>
+                    <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" v-model="newComment.comment"></el-input>
                   </el-form-item>
                   <el-form-item>
                     <el-button plain type="primary" @click="addComment(index)">コメント追加</el-button>
@@ -110,9 +112,9 @@
                 <article v-for="(comment,idx) in previewData.comment" :key="idx" class="message is-info">
                   <div class="message-header" v-if="comment.user_id!=user_id">
                     <p>{{comment.user_nm}}</p>
-                    <span>{{comment.entry_date}}</span>
+                    <span>{{comment.comment_id | date}}</span>
                   </div>
-                  <div class="message-header" v-else style="background:#54677E;">
+                  <div class="message-header" v-if="comment.user_id==user_id" style="background:#54677E;">
                     <p class="comment-header">自分
                       <el-popover placement="top" width="160" v-model="comment.delPop">
                         <p>このコメントを削除してよろしいですか？</p>
@@ -123,9 +125,9 @@
                         <el-button slot="reference" type="danger" style="padding: 6px 12px;">削除</el-button>
                       </el-popover>
                     </p>
-                    <span>{{comment.entry_date}}</span>
+                    <span>{{comment.comment_id | date}}</span>
                   </div>
-                  <div class="message-body">{{comment.coment}}</div>
+                  <div class="message-body">{{comment.comment}}</div>
                   <br>
                 </article>
               </div>
@@ -133,9 +135,9 @@
                 <article v-if="previewData.comment.length" class="message is-info">
                   <div class="message-header">
                     <p class="comment-header">{{previewData.comment[0].user_nm}}</p>
-                    <span>{{previewData.comment[0].entry_date}}</span>
+                    <span>{{previewData.comment[0].comment_id | date}}</span>
                   </div>
-                  <div class="message-body">{{previewData.comment[0].coment}}</div>
+                  <div class="message-body">{{previewData.comment[0].comment}}</div>
                 </article>
               </div>
             </el-col>
@@ -188,10 +190,12 @@
     data() {
       return {
         previewIndex: -1,
-        previewDatas: {},
+        previewDatas: [],
+        user_id:this.getCookie('user_id'),
         newComment: {
           file_id:'',
-          user_id: this.getCookie('user_id'),
+          user_id: this.user_id,
+          user_nm: unescape(this.getCookie('user_nm')),
           comment: '',
           delPop:false,
         },
@@ -210,19 +214,20 @@
         console.log(this.previewDatas);
       },
       addComment(index) {
-        let me =this
-        me.newComment.file_id=me.previewDatas[index].file_id;
+        let me = this;
         me.$refs['newComment'][0].validate((valid) => {
           if (valid) {
-            me.newComment.file_id=me.previewFileId[index].file_id;
-            let items=newComment;
-            evtBus.apigClient.invokeApi({},'ver1.0.0/files/comments','POST',{headers:evtBus.headers},{items:items})
+            me.newComment.file_id=me.previewDatas[index].file_id;
+            let items=me.newComment;
+            evtBus.apigClient.invokeApi({},'files/comments','POST',{headers:evtBus.headers},{items:items})
               .then(res => {
-                if(!res.error){
+                if(!res.data.error){
                   //success
-                  if(res.data.result_flg==0){
+                  if(res.data.data.result_flg==0){
                     //add comment success
-                    me.previewDatas[index].comment.unshift(JSON.parse(JSON.stringify(newComment)));
+                    let temp = JSON.parse(JSON.stringify(me.newComment));
+                    temp.comment_id = res.data.data.comment_id;
+                    me.previewDatas[index].comment.unshift(temp);
                     //TODO if need to refresh the table tooltip comment
                     // me.$emit('addComment',newComment);
                     me.$refs['newComment'][0].resetFields();
@@ -236,16 +241,19 @@
                   }
                 }else{
                   //failed
-                  me.$message.error('エラーが発生しました！'+res.error.message);
-                  console.log('​deleteFiles -> res.error', res.error);
+                  me.$refs['newComment'][0].resetFields();
+                  me.$message.error('エラーが発生しました！'+res.data.error.message);
+                  console.log('​deleteFiles -> res.data.error', res.data.error);
+                  me.error();
+
                 }
               })
               .catch(err => {
+                me.$refs['newComment'][0].resetFields();
                 me.$message.error('通信エラーが発生しました！');
                 console.log("err: ", err);
+                me.error();
               });
-            me.$refs['newComment'][0].resetFields();
-            me.error();
           } else {
             console.log('error submit!!');
             return false;
@@ -253,12 +261,15 @@
         });
       },
       delComment(index,idx){
-        let items=this.previewDatas[index].comment[idx];
-        evtBus.apigClient.invokeApi({},'ver1.0.0/files/comments','POST',{headers:evtBus.headers},{items:items})
+        let me = this;
+        let items=JSON.parse(JSON.stringify(this.previewDatas[index].comment[idx]));
+        items.file_id=this.previewDatas[index].file_id;
+        evtBus.apigClient.invokeApi({},'files/comments/delete','POST',{headers:evtBus.headers},{items:items})
           .then(res => {
-            if(!res.error){
+            console.log('​delComment -> res', res);
+            if(!res.data.error){
               //success
-              if(res.data.result_flg==0){
+              if(res.data.data.result_flg==0){
                 //del comment success
                 me.previewDatas[index].comment.splice(idx, 1);
                 //TODO if need to refresh the table tooltip comment
@@ -273,8 +284,8 @@
               }
             }else{
               //failed
-              me.$message.error('エラーが発生しました！'+res.error.message);
-              console.log('​deleteFiles -> res.error', res.error);
+              me.$message.error('エラーが発生しました！'+res.data.error.message);
+              console.log('​deleteFiles -> res.data.error', res.data.error);
             }
           })
           .catch(err => {
@@ -288,9 +299,9 @@
       let me = this;
       evtBus.$on('preview', items => {
         me.previewFileId=items;
-        evtBus.apigClient.invokeApi({},'ver1.0.0/files/preview','POST',{headers:evtBus.headers},{items:items})
+        evtBus.apigClient.invokeApi({},'files/preview','POST',{headers:evtBus.headers},{items:items})
           .then(res => {
-            if(!res.error){
+            if(!res.data.error){
               //success
               let temp=JSON.parse(JSON.stringify(res.data));
               //add delPop prop
@@ -303,15 +314,17 @@
               return true;
             }else{
               //get treedata failed
-              this.$message.error('エラーが発生しました！'+res.error.message);
-              console.log('preview created -> res.error', res.error);
+              this.$message.error('エラーが発生しました！'+res.data.error.message);
+              console.log('preview created -> res.data.error', res.data.error);
+              this.$emit('error');
+
             }
           })
           .catch(err => {
             this.$message.error('通信エラーが発生しました！');
             console.log("preview created err: ", err);
+            this.$emit('error');
           });
-        this.$emit('error');
       })
     },
     computed: {

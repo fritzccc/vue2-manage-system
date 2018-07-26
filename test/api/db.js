@@ -4,7 +4,7 @@ function genTableData () {
   let data = {
     items:[]
   };
-  for (let i = 0; i < 2233; i++) {
+  for (let i = 0; i < 2333; i++) {
     data.items.push({
       file_entry_date: moment(faker.date.past()).format('YYYY-MM-DD'),
       doc_nm: faker.system.commonFileName(),
@@ -38,6 +38,32 @@ function genDownloadList(){
   return data;
 }
 
+function genComment(){
+  let comment=[];
+  for (let i = 0; i < faker.random.number(10); i++) {
+    comment.push({
+      comment_id:moment(faker.date.past()).format('YYYYMMDDhhmmss'),
+      user_id:faker.random.uuid(),
+      user_nm:faker.name.findName(),
+      comment:faker.lorem.words()
+    });
+  }
+  return comment;
+}
+
+function genFilesPreview(){
+  let data=[];
+  for (let i = 0; i < 5; i++) {
+    data.push({
+      file_id:faker.random.uuid(),
+      doc_nm:faker.system.commonFileName(),
+      url:'https://httpbin.org/',
+      comment:genComment()
+    });
+  }
+  return data;
+}
+
 const signin={
   data: {
     user: {
@@ -56,7 +82,7 @@ const signin={
   }
 }
 
-const files_load={
+const filesLoad={
   data:{
     items:{
       auth:[{
@@ -220,21 +246,399 @@ const tree={
           'label': 'T000011_渋谷三郎'
         }]
       }]
-  }]
+  },
+  {
+    'label': 'A000000_リロ次郎',
+    'children': [{
+      'label': 'yyyymm00000_新宿アパート',
+      'children': [{
+        'label': 'T000006_新宿太郎'
+      },
+      {
+        'label': 'T000007_新宿次郎'
+      },
+      {
+        'label': 'T000008_新宿三郎'
+      }]
+    },
+    {
+      'label': 'yyyymm00000_渋谷マンション',
+      'children': [{
+          'label': 'T000009_渋谷太郎'
+        },
+        {
+          'label': 'T000010_渋谷次郎'
+        },
+        {
+          'label': 'T000011_渋谷三郎'
+        }]
+      }]
+  },
+  {
+    'label': 'A000000_リロ次郎',
+    'children': [{
+      'label': 'yyyymm00000_新宿アパート',
+      'children': [{
+        'label': 'T000006_新宿太郎'
+      },
+      {
+        'label': 'T000007_新宿次郎'
+      },
+      {
+        'label': 'T000008_新宿三郎'
+      }]
+    },
+    {
+      'label': 'yyyymm00000_渋谷マンション',
+      'children': [{
+          'label': 'T000009_渋谷太郎'
+        },
+        {
+          'label': 'T000010_渋谷次郎'
+        },
+        {
+          'label': 'T000011_渋谷三郎'
+        }]
+      }]
+  },
+  {
+    'label': 'A000000_リロ次郎',
+    'children': [{
+      'label': 'yyyymm00000_新宿アパート',
+      'children': [{
+        'label': 'T000006_新宿太郎'
+      },
+      {
+        'label': 'T000007_新宿次郎'
+      },
+      {
+        'label': 'T000008_新宿三郎'
+      }]
+    },
+    {
+      'label': 'yyyymm00000_渋谷マンション',
+      'children': [{
+          'label': 'T000009_渋谷太郎'
+        },
+        {
+          'label': 'T000010_渋谷次郎'
+        },
+        {
+          'label': 'T000011_渋谷三郎'
+        }]
+      }]
+  },
+  {
+    'label': 'A000000_リロ次郎',
+    'children': [{
+      'label': 'yyyymm00000_新宿アパート',
+      'children': [{
+        'label': 'T000006_新宿太郎'
+      },
+      {
+        'label': 'T000007_新宿次郎'
+      },
+      {
+        'label': 'T000008_新宿三郎'
+      }]
+    },
+    {
+      'label': 'yyyymm00000_渋谷マンション',
+      'children': [{
+          'label': 'T000009_渋谷太郎'
+        },
+        {
+          'label': 'T000010_渋谷次郎'
+        },
+        {
+          'label': 'T000011_渋谷三郎'
+        }]
+      }]
+  },
+  {
+    'label': 'A000000_リロ次郎',
+    'children': [{
+      'label': 'yyyymm00000_新宿アパート',
+      'children': [{
+        'label': 'T000006_新宿太郎'
+      },
+      {
+        'label': 'T000007_新宿次郎'
+      },
+      {
+        'label': 'T000008_新宿三郎'
+      }]
+    },
+    {
+      'label': 'yyyymm00000_渋谷マンション',
+      'children': [{
+          'label': 'T000009_渋谷太郎'
+        },
+        {
+          'label': 'T000010_渋谷次郎'
+        },
+        {
+          'label': 'T000011_渋谷三郎'
+        }]
+      }]
+  },
+  {
+    'label': 'A000000_リロ次郎',
+    'children': [{
+      'label': 'yyyymm00000_新宿アパート',
+      'children': [{
+        'label': 'T000006_新宿太郎'
+      },
+      {
+        'label': 'T000007_新宿次郎'
+      },
+      {
+        'label': 'T000008_新宿三郎'
+      }]
+    },
+    {
+      'label': 'yyyymm00000_渋谷マンション',
+      'children': [{
+          'label': 'T000009_渋谷太郎'
+        },
+        {
+          'label': 'T000010_渋谷次郎'
+        },
+        {
+          'label': 'T000011_渋谷三郎'
+        }]
+      }]
+  },
+  {
+    'label': 'A000000_リロ次郎',
+    'children': [{
+      'label': 'yyyymm00000_新宿アパート',
+      'children': [{
+        'label': 'T000006_新宿太郎'
+      },
+      {
+        'label': 'T000007_新宿次郎'
+      },
+      {
+        'label': 'T000008_新宿三郎'
+      }]
+    },
+    {
+      'label': 'yyyymm00000_渋谷マンション',
+      'children': [{
+          'label': 'T000009_渋谷太郎'
+        },
+        {
+          'label': 'T000010_渋谷次郎'
+        },
+        {
+          'label': 'T000011_渋谷三郎'
+        }]
+      }]
+  },
+  {
+    'label': 'A000000_リロ次郎',
+    'children': [{
+      'label': 'yyyymm00000_新宿アパート',
+      'children': [{
+        'label': 'T000006_新宿太郎'
+      },
+      {
+        'label': 'T000007_新宿次郎'
+      },
+      {
+        'label': 'T000008_新宿三郎'
+      }]
+    },
+    {
+      'label': 'yyyymm00000_渋谷マンション',
+      'children': [{
+          'label': 'T000009_渋谷太郎'
+        },
+        {
+          'label': 'T000010_渋谷次郎'
+        },
+        {
+          'label': 'T000011_渋谷三郎'
+        }]
+      }]
+  },
+  {
+    'label': 'A000000_リロ次郎',
+    'children': [{
+      'label': 'yyyymm00000_新宿アパート',
+      'children': [{
+        'label': 'T000006_新宿太郎'
+      },
+      {
+        'label': 'T000007_新宿次郎'
+      },
+      {
+        'label': 'T000008_新宿三郎'
+      }]
+    },
+    {
+      'label': 'yyyymm00000_渋谷マンション',
+      'children': [{
+          'label': 'T000009_渋谷太郎'
+        },
+        {
+          'label': 'T000010_渋谷次郎'
+        },
+        {
+          'label': 'T000011_渋谷三郎'
+        }]
+      }]
+  },
+  {
+    'label': 'A000000_リロ次郎',
+    'children': [{
+      'label': 'yyyymm00000_新宿アパート',
+      'children': [{
+        'label': 'T000006_新宿太郎'
+      },
+      {
+        'label': 'T000007_新宿次郎'
+      },
+      {
+        'label': 'T000008_新宿三郎'
+      }]
+    },
+    {
+      'label': 'yyyymm00000_渋谷マンション',
+      'children': [{
+          'label': 'T000009_渋谷太郎'
+        },
+        {
+          'label': 'T000010_渋谷次郎'
+        },
+        {
+          'label': 'T000011_渋谷三郎'
+        }]
+      }]
+  },
+  {
+    'label': 'A000000_リロ次郎',
+    'children': [{
+      'label': 'yyyymm00000_新宿アパート',
+      'children': [{
+        'label': 'T000006_新宿太郎'
+      },
+      {
+        'label': 'T000007_新宿次郎'
+      },
+      {
+        'label': 'T000008_新宿三郎'
+      }]
+    },
+    {
+      'label': 'yyyymm00000_渋谷マンション',
+      'children': [{
+          'label': 'T000009_渋谷太郎'
+        },
+        {
+          'label': 'T000010_渋谷次郎'
+        },
+        {
+          'label': 'T000011_渋谷三郎'
+        }]
+      }]
+  },
+  {
+    'label': 'A000000_リロ次郎',
+    'children': [{
+      'label': 'yyyymm00000_新宿アパート',
+      'children': [{
+        'label': 'T000006_新宿太郎'
+      },
+      {
+        'label': 'T000007_新宿次郎'
+      },
+      {
+        'label': 'T000008_新宿三郎'
+      }]
+    },
+    {
+      'label': 'yyyymm00000_渋谷マンション',
+      'children': [{
+          'label': 'T000009_渋谷太郎'
+        },
+        {
+          'label': 'T000010_渋谷次郎'
+        },
+        {
+          'label': 'T000011_渋谷三郎'
+        }]
+      }]
+  },
+  {
+    'label': 'A000000_リロ次郎',
+    'children': [{
+      'label': 'yyyymm00000_新宿アパート',
+      'children': [{
+        'label': 'T000006_新宿太郎'
+      },
+      {
+        'label': 'T000007_新宿次郎'
+      },
+      {
+        'label': 'T000008_新宿三郎'
+      }]
+    },
+    {
+      'label': 'yyyymm00000_渋谷マンション',
+      'children': [{
+          'label': 'T000009_渋谷太郎'
+        },
+        {
+          'label': 'T000010_渋谷次郎'
+        },
+        {
+          'label': 'T000011_渋谷三郎'
+        }]
+      }]
+  },]
 }
 const signout={
   data:{}
 }
+
 const changepass={
   data:{}
 }
 
+const commentsDelete={
+  data:{
+    result_flg:0
+  }
+}
+
+const commentsAdd={
+  data:{
+    result_flg:0,
+    file_id:faker.random.uuid(),
+    user_id:faker.random.uuid(),
+    comment_id:moment().format('YYYYMMDDhhmmss'),
+    comment:faker.lorem.sentence(),
+  }
+}
+
+const filesFolder={
+  data:{
+    folder_id:faker.random.uuid()
+  }
+}
+
 module.exports = {
   signin:signin,
-  files_load:files_load,
+  filesLoad:filesLoad,
   tableData:genTableData(),
   downloadList:genDownloadList(),
+  filesPreview:genFilesPreview(),
+  filesFolder:filesFolder,
   tree:tree,
   signout:signout,
   changepass:changepass,
+  commentsDelete:commentsDelete,
+  commentsAdd:commentsAdd
 }

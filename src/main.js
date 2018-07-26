@@ -1,16 +1,17 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
+import 'normalize.css'
 import App from './App'
-import axios from './assets/http'
 import router from './router'
+import axios from './assets/http'
 import ElementUI from 'element-ui'
 import locale from 'element-ui/lib/locale/lang/ja'
 import {getCookie, setCookie, delCookie,clearAllCookies,sessionApigClient,setAWSCookies,getAWSCookies} from './assets/util'
-
+import moment from 'moment'
 import 'babel-polyfill'
-import 'normalize.css'
 // import 'element-ui/lib/theme-chalk/index.css'
+import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 import '../theme/index.css'
 import './assets/relo.css'
 Vue.config.productionTip = false
@@ -21,11 +22,15 @@ Vue.prototype.$http = axios
 Vue.filter('no_ext',(doc_nm)=>{
   if (!doc_nm)
     return '';
-  return doc_nm.replace(/\.\w+$/,'')
+  return doc_nm.replace(/\.\w+$/,'');
 })
 
 Vue.filter('comment',(length)=>{
-  return length > 0 ? ("合計"+length+"件あります") : "まだありません"
+  return length > 0 ? ("合計"+length+"件あります") : "まだありません";
+})
+
+Vue.filter('date',(comment_id)=>{
+  return moment(comment_id,'YYYYMMDDhhmmss').format('YYYY-MM-DD');
 })
 
 

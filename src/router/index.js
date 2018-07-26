@@ -30,7 +30,11 @@ const routes = [{
     path: '/error',
     name: 'Error',
     component: resolve => require(['../pages/Error.vue'], resolve)
-  }, ]
+  }, {
+    path: '/test',
+    name: 'Test',
+    component: resolve => require(['../pages/Test.vue'], resolve)
+  }]
 
 const router = new Router({
   routes

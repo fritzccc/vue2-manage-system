@@ -2,11 +2,24 @@
   <div class="bg-main">
     <el-container class="bg-color" style="margin:0 0 5px 0;">
       <el-aside style="width:260px;">
+        <!-- TODO -->
         <img src="../assets/logo.png" width="240px" height="60px" style="margin-top:5px">
+        <vue-dropzone 
+          ref="dropzone" 
+          id="dropzone" 
+          style="position:absolute;left:5px;top:5px;width:255px;height:78px;"
+          :includeStyling="true"
+          @mouseover.native="dzMouseEnter" @mouseout.native="dzMouseLeave"
+          @vdropzone-file-added="dzFileAdded" 
+          @vdropzone-drop="dzFileDropped"
+          @vdropzone-success="dzSuccess"
+          :options="pageConfig.dropzoneOptions">
+        </vue-dropzone>
+        <!-- TODO -->
       </el-aside>
       <el-main>
         <el-row type="flex" justify="space-between" style="margin-bottom:5px;">
-          <el-col :sm="17" :md="19" :lg="20" :xl="18">
+          <el-col :sm="17" :md="19" :lg="21" :xl="18">
             <el-radio-group id="queryFormTop_area" v-model="reqData.queryFormTop.area" size="small" style="margin-right:5px;">
               <el-radio-button :label="1">東京</el-radio-button>
               <el-radio-button :label="2">大阪</el-radio-button>
@@ -46,7 +59,7 @@
             <el-button v-if="respData.auth_ptn.result_dl==1" type="primary" @click="queryTop('csv')" size="small" plain style="margin-left:5px;">CSV出力</el-button>
 
           </el-col>
-          <el-col :sm="7" :md="5" :lg="4" :xl="2" style="text-align:right">
+          <el-col :sm="7" :md="5" :lg="3" :xl="2" style="text-align:right">
             <span style="padding-right:5px;font-size:13px;">{{pageConfig.user.user_nm}} さん</span>
             <el-button @click="logout" type="primary" size="mini" circle>
               <i class="fas fa-sign-out-alt"></i>
@@ -220,16 +233,96 @@
   import preview from '@/components/MultiPreview.vue'
   import evtBus from '@/assets/evtBus';
   import moment from "moment";
-  import {demo} from "@/assets/demoData";
+  import vue2Dropzone from 'vue2-dropzone'
 
   export default {
     name: "Main",
     data() {
       //demo
-      return demo;
+      return {
+        pageConfig:{
+          asideWidth:260,
+          dragbarHeight: window.innerHeight-120,
+          user:{},
+          isUpload: false,
+          isPreview:false,
+          cantPrev:true,
+          cantDwld:true,
+          cantDel:true,
+          currentTabName:'',
+          dropzoneOptions: {
+            url: 'https://httpbin.org/post',
+            thumbnailWidth: 150,
+            maxFilesize: 0.5,
+            headers: { "My-Awesome-Header": "header value" },
+            addRemoveLinks: true,
+            autoProcessQueue: false,
+            // dictDefaultMessage: '<img width="240px" height="60px" title="ファイルアップロード" src="https://s1.ax1x.com/2018/07/26/PNAxit.png" border="0" style="margin:5px 0 5px 0;" />',
+            dictDefaultMessage: '',
+            previewTemplate: this.previewTemplate(),
+            accept(file, done) {
+              console.log(file);
+              done();
+            },
+          },
+          pickerOptions: {
+            shortcuts: [{
+              text: '最近１週',
+              onClick(picker) {
+                let start=moment().subtract(7,'days').format("YYYY-MM-DD");
+                let end=moment().format("YYYY-MM-DD");
+                picker.$emit('pick', [start, end]);
+              }
+            }, {
+              text: '最近１ヶ月',
+              onClick(picker) {
+                let start=moment().subtract(1,'month').format("YYYY-MM-DD");
+                let end=moment().format("YYYY-MM-DD");
+                picker.$emit('pick', [start, end]);
+              }
+            }, {
+              text: '最近１年',
+              onClick(picker) {
+                let start=moment().subtract(1,'year').format("YYYY-MM-DD");
+                let end=moment().format("YYYY-MM-DD");
+                picker.$emit('pick', [start, end]);
+              }
+            }]
+          },
+        },
+        reqData:{
+          queryFormTop: {
+            area: 0,
+            public_kbn: 0,
+            doc_nm: "",
+            free_format: "",
+            file_entry_user: "",
+            sales_nm: "",
+            manage_nm: "",
+            comment: "",
+            date_kbn:0
+          },
+          queryFormAside:{
+            sOwner:"",
+            sEstate:"",
+            sTenant:""
+          },
+        },
+        respData:{
+          treeData: [],
+          currentTree:{
+            owner_cd:'',
+            estate_no:'',
+            tenant_cd:'',
+          },
+          auth_ptn:{},
+          business_kbn:[],
+          tableData: [],
+          downloadList:[],
+        }
+      };
       //TODO
       // return {
-
       // }
     },
     components: {
@@ -237,17 +330,18 @@
       downloadList,
       upload,
       preview,
-      loading
+      loading,
+      vueDropzone: vue2Dropzone
     },
-    created() {
+    mounted() {
       let me = this;
       //bind drag event for FF,Chrm,IE
-      document.addEventListener("dragstart", e => {
-        e.dataTransfer.setData('text/plain', null);
-      }, false);
-      document.addEventListener("dragenter", me.onDrag, false);
-      document.addEventListener("dragover", me.onDrag, false);
-      document.addEventListener("drop", me.onDrop, false);
+      // document.addEventListener("dragstart", e => {
+      //   e.dataTransfer.setData('text/plain', null);
+      // }, false);
+      // document.addEventListener("dragenter", me.onDrag, false);
+      // document.addEventListener("dragover", me.onDrag, false);
+      // document.addEventListener("drop", me.onDrop, false);
       
       if(!evtBus.apigClient){
         let {check,accessKeyId,secretAccessKey,sessionToken,region}=me.getAWSCookies();
@@ -267,7 +361,6 @@
         'Authorization':me.getCookie('sessionToken'),
         'user-id':me.getCookie('user_id')
       };
-      console.log('​created -> evtBus.headers', evtBus.headers);
       //get user info
       me.pageConfig.user.user_id=me.getCookie('user_id');
       me.pageConfig.user.user_nm=unescape(me.getCookie('user_nm'));
@@ -276,16 +369,14 @@
       me.pageConfig.user.mail=me.getCookie('mail');
       me.pageConfig.user.control=me.getCookie('control');
       me.pageConfig.user.status=me.getCookie('status');
-
-      //TODO load business_kbn tab
+      
+      //load business_kbn tab
       let items={
         auth_ptn:me.getCookie('auth_ptn')
       };
-      console.log('​created -> items', items);
-      
-      evtBus.apigClient.invokeApi({},'ver1.0.0/files/load','POST',{headers:evtBus.headers},{items:items})
+      evtBus.apigClient.invokeApi({},'files/load','POST',{headers:evtBus.headers},{items:items})
         .then(res => {
-          if(!res.error){
+          if(!res.data.error){
             //success
             let {auth,business} = JSON.parse(JSON.stringify(res.data.data.items));
             me.respData.business_kbn = business;
@@ -293,35 +384,102 @@
             auth.forEach(data=>{
               me.respData.auth_ptn[data.auth_kbn]=data.auth_flg;
             });
+            console.log('​main page mounted');
             return true;
           }else{
             //get treedata failed
-            me.$message.error('エラーが発生しました！'+res.error.message);
-            console.log('​queryAside -> res.error', res.error);
+            me.$message.error('エラーが発生しました！'+res.data.error.message);
+            console.log('​queryAside -> res.data.error', res.data.error);
           }
         })
         .catch(err => {
           me.$message.error('通信エラーが発生しました！');
           console.log("err: ", err);
         });
+        
     },
     methods: {
+      dzMouseEnter(){
+        this.pageConfig.dropzoneOptions.dictDefaultMessage="test";
+      },
+      dzMouseLeave(){
+        this.pageConfig.dropzoneOptions.dictDefaultMessage="";
+      },
+      previewTemplate(){
+        return `<div style="display:none">
+                </div>
+              `;
+      },
+      dzFileDropped(e){
+        let me = this;
+        e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);
+        e.preventDefault ? e.preventDefault() : (e.returnValue = false);
+        if (me.respData.auth_ptn.file_upload!=1){
+          me.$message.warning('このアカウントにはアップロードする権限はありません！')
+          return false;
+        }
+        let {files} = e.dataTransfer;
+        if (files.length < 1){
+          return false;
+        }        
+        if (me.respData.currentTree.owner_cd==""){
+          me.$message.warning('アプロードするには、まずツリーにデータを選択してください！');
+          return false;
+        }
+        if (me.pageConfig.isUpload) return false;
+        for (let i = 0; i < files.length; i++) {
+          if (files[i].type == "") {
+            me.$message.warning('このファイル形式又はフォルダのアプロードは制限されています！');
+            return false;
+          }
+        }
+        //get folder_id
+        let items = me.currentTree;
+        evtBus.apigClient.invokeApi({},'files/folder','POST',{headers:evtBus.headers},{items:items})
+          .then(res => {
+            if(!res.data.error){
+              //success
+              let {folder_id} = res.data.data;
+              me.pageConfig.isUpload = true;
+              Vue.nextTick(() => {
+                evtBus.$emit('upload-files', files, me.pageConfig.currentTabName,folder_id)
+              })
+              return true;
+            }else{
+              //get treedata failed
+              me.$message.error('エラーが発生しました！'+res.data.error.message);
+              console.log('upload -> res.data.error', res.data.error);
+              me.error();
+            }
+          })
+          .catch(err => {
+            me.$message.error('通信エラーが発生しました！');
+            console.log("err: ", err);
+            me.error();
+          });
+      },
+      dzFileAdded(file){
+        console.log('added')
+      },
+      dzSuccess(){
+        console.log('success')
+      },
       getOpeLog(){
         let me = this;
         let items={
           operation_logdate_from:me.queryFormTop.dateRange[0],
           operation_logdate_to:me.queryFormTop.dateRange[1]
         };
-        evtBus.apigClient.invokeApi({},'ver1.0.0/csv/logs','GET',{headers:evtBus.headers},{items:items})
+        evtBus.apigClient.invokeApi({},'csv/logs','GET',{headers:evtBus.headers},{items:items})
           .then(res => {
-            if(!res.error){
+            if(!res.data.error){
               //success
               this.$message.success('操作成功しました！');
               return true;
             }else{
               //get treedata failed
-              this.$message.error('エラーが発生しました！'+res.error.message);
-              console.log('getOpeLog -> res.error', res.error);
+              this.$message.error('エラーが発生しました！'+res.data.error.message);
+              console.log('getOpeLog -> res.data.error', res.data.error);
               this.error();
             }
           })
@@ -433,9 +591,9 @@
         num.test(sOwner) ? items.owner_cd=sOwner : items.owner_nm=sOwner;
         num.test(sEstate) ? items.estate_no=sEstate : items.estate_nm=sEstate;
         num.test(sTenant) ? items.tenant_cd=sTenant : items.tenant_nm=sTenant;
-        evtBus.apigClient.invokeApi({},'ver1.0.0/tree','POST',{headers:evtBus.headers},{items:items})
+        evtBus.apigClient.invokeApi({},'tree','POST',{headers:evtBus.headers},{items:items})
           .then(res => {
-            if(!res.error){
+            if(!res.data.error){
               //success
               let temp = JSON.parse(JSON.stringify(res.data.treeData));
               me.genNodeKey(temp);
@@ -443,8 +601,8 @@
               return true;
             }else{
               //get treedata failed
-              this.$message.error('エラーが発生しました！'+res.error.message);
-              console.log('​queryAside -> res.error', res.error);
+              this.$message.error('エラーが発生しました！'+res.data.error.message);
+              console.log('​queryAside -> res.data.error', res.data.error);
               this.error();
             }
           })
@@ -488,9 +646,9 @@
             items.comment=me.reqData.queryFormTop.comment;
           }
         }
-        evtBus.apigClient.invokeApi({},'ver1.0.0/files/list','POST',{headers:evtBus.headers},{items:items})
+        evtBus.apigClient.invokeApi({},'files/list','POST',{headers:evtBus.headers},{items:items})
           .then(res => {
-            if(!res.error){
+            if(!res.data.error){
               //success
               console.log(res)
               let temp = JSON.parse(JSON.stringify(res.data.items));
@@ -498,8 +656,8 @@
               return true;
             }else{
               //get tableData failed
-              me.$message.error('エラーが発生しました！'+res.error.message);
-              console.log('queryTop -> res.error', res.error);
+              me.$message.error('エラーが発生しました！'+res.data.error.message);
+              console.log('queryTop -> res.data.error', res.data.error);
               me.error();
             }
           })
@@ -520,9 +678,9 @@
           bucket_nm:evtBus.download_bucket_name,
           user_id:me.getCookie('user_id')
         }
-        evtBus.apigClient.invokeApi({},'ver1.0.0/downloads/list','POST',{headers:evtBus.headers},{items:items})
+        evtBus.apigClient.invokeApi({},'downloads/list','POST',{headers:evtBus.headers},{items:items})
           .then(res => {
-            if(!res.error){
+            if(!res.data.error){
               //success
               
               console.log('​getDownloadList -> ', res);
@@ -531,8 +689,8 @@
               return true;
             }else{
               //get tableData failed
-              me.$message.error('エラーが発生しました！'+res.error.message);
-              console.log('queryTop -> res.error', res.error);
+              me.$message.error('エラーが発生しました！'+res.data.error.message);
+              console.log('queryTop -> res.data.error', res.data.error);
               me.error();
             }
           })
@@ -550,27 +708,49 @@
         }
       },
       onDrop(e) {
+        let me = this;
         e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);
         e.preventDefault ? e.preventDefault() : (e.returnValue = false);
-        if (this.respData.auth_ptn.file_upload!=1){
-          this.$message.warning('このアカウントにはアップロードする権限はありません！')
+        if (me.respData.auth_ptn.file_upload!=1){
+          me.$message.warning('このアカウントにはアップロードする権限はありません！')
           return false;
         }
         let {files} = e.dataTransfer;
-        if (files.length < 1 || this.respData.currentTree.owner_cd==""){
-          this.$message.warning('アプロードするには、まずツリーにデータを選択してください！');
+        if (files.length < 1 || me.respData.currentTree.owner_cd==""){
+          me.$message.warning('アプロードするには、まずツリーにデータを選択してください！');
           return false;
         }
+        if (me.pageConfig.isUpload) return false;
         for (let i = 0; i < files.length; i++) {
           if (files[i].type == "") {
-            this.$message.warning('このファイル形式又はフォルダのアプロードは制限されています！');
+            me.$message.warning('このファイル形式又はフォルダのアプロードは制限されています！');
             return false;
           }
         }
-        this.pageConfig.isUpload = true;
-        Vue.nextTick(() => {
-          evtBus.$emit('upload-files', files, this.pageConfig.currentTabName)
-        })
+        //get folder_id
+        let items = me.currentTree;
+        evtBus.apigClient.invokeApi({},'files/folder','POST',{headers:evtBus.headers},{items:items})
+          .then(res => {
+            if(!res.data.error){
+              //success
+              let {folder_id} = res.data.data;
+              me.pageConfig.isUpload = true;
+              Vue.nextTick(() => {
+                evtBus.$emit('upload-files', files, me.pageConfig.currentTabName,folder_id)
+              })
+              return true;
+            }else{
+              //get treedata failed
+              me.$message.error('エラーが発生しました！'+res.data.error.message);
+              console.log('upload -> res.data.error', res.data.error);
+              me.error();
+            }
+          })
+          .catch(err => {
+            me.$message.error('通信エラーが発生しました！');
+            console.log("err: ", err);
+            me.error();
+          });
       },
       uploadFile(uploadForm) {
         let me = this;
@@ -587,9 +767,9 @@
       },
       deleteFiles(items) {
         console.log('​deleteFiles -> items', items);
-        evtBus.apigClient.invokeApi({},'ver1.0.0/files/delete','POST',{headers:evtBus.headers},{items:items})
+        evtBus.apigClient.invokeApi({},'files/delete','POST',{headers:evtBus.headers},{items:items})
           .then(res => {
-            if(!res.error){
+            if(!res.data.error){
               //success
               if(res.data.result_flg==0){
                 //delete success
@@ -609,8 +789,8 @@
               }
             }else{
               //failed
-              this.$message.error('エラーが発生しました！'+res.error.message);
-              console.log('​deleteFiles -> res.error', res.error);
+              this.$message.error('エラーが発生しました！'+res.data.error.message);
+              console.log('​deleteFiles -> res.data.error', res.data.error);
             }
           })
           .catch(err => {
@@ -680,14 +860,14 @@
         };
         evtBus.apigClient.invokeApi({},'signout','POST',{headers:evtBus.headers},{items:items})
           .then(res => {
-            if(!res.error){
+            if(!res.data.error){
               //success
               this.clearAllCookies();
               this.$router.push('/login');
             }else{
               //logout failed
-              this.$message.error('エラーが発生しました！'+res.error.message);
-              console.log('logout -> res.error', res.error);
+              this.$message.error('エラーが発生しました！'+res.data.error.message);
+              console.log('logout -> res.data.error', res.data.error);
             }
           })
           .catch(err => {

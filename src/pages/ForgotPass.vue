@@ -25,6 +25,7 @@
 
 <script>
   import evtBus from '@/assets/evtBus';
+  import {newApigClient} from '@/assets/util'
   import loading from '@/components/Loading.vue'
   export default {
     data() {
@@ -35,6 +36,8 @@
       }
     },
     mounted() {
+      if(!evtBus.apigClient)
+        evtBus.apigClient=newApigClient();
       // if(getCookie('user_id')){
       // 	this.$router.push('/home')
       // }
@@ -48,21 +51,21 @@
             let items={
               user_id:me.resetPassForm.user_id
             };
-            evtBus.apigClient.invokeApi({},'ver1.0.0/changepass','POST',{},{items:items})
+            evtBus.apigClient.invokeApi({},'changepass','POST',{},{items:items})
               .then(res => {
-                if(!res.error){
+                if(!res.data.error){
                   //success TODO
                   me.$message.success('パスワードリセットしました！');
                   setTimeout(() => {
                     me.$router.push('/login').bind(me);
                   }, 2000);
-                }else if(res.error.code==204){
+                }else if(res.data.error.code==204){
                   //incorrect user&pass
                   me.$message.error('入力されたアカウントは存在しません！');
-                  console.log('forgetPass -> res.error', res.error);
+                  console.log('forgetPass -> res.data.error', res.data.error);
                   return false;
                 }else{
-                  me.$message.error('エラーが発生しました！'+res.error.message);
+                  me.$message.error('エラーが発生しました！'+res.data.error.message);
                   setTimeout(() => {
                     me.$router.push('/error').bind(me);
                   }, 2000);

@@ -55,9 +55,9 @@ export default {
         download_file_nm:doc_nm
       }
       //TODO
-      // evtBus.apigClient.invokeApi({},'ver1.0.0/tree','POST',{headers:evtBus.headers},{items:items})
+      // evtBus.apigClient.invokeApi({},'tree','POST',{headers:evtBus.headers},{items:items})
       //   .then(res => {
-      //     if(!res.error){
+      //     if(!res.data.error){
       //       //success
       //       let temp = JSON.parse(JSON.stringify(res.data.treeData));
       //       me.genNodeKey(temp);
@@ -65,8 +65,8 @@ export default {
       //       return true;
       //     }else{
       //       //get treedata failed
-      //       this.$message.error('エラーが発生しました！'+res.error.message);
-      //       console.log('​queryAside -> res.error', res.error);
+      //       this.$message.error('エラーが発生しました！'+res.data.error.message);
+      //       console.log('​queryAside -> res.data.error', res.data.error);
       //       this.error();
       //     }
       //   })

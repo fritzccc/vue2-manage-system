@@ -159,10 +159,12 @@
           ""
       }
     },
-    created(){
+    mounted(){
       //TODO
-      evtBus.$on('upload-files',(files,currentTabName)=>{
+      evtBus.$on('upload-files',(files,currentTabName,folder_id)=>{
         this.uploadForm.files=files;
+        
+        console.log('​mounted -> upload', );
         for (let i = 0; i < files.length; i++) {
           let filesize = (files[i].size / (1024 * 1024)).toFixed(1);
           filesize = (filesize == '0.0') ? '0.1' : filesize;
@@ -173,6 +175,7 @@
             free_format: '',
             file_entry_user: '',
             file_entry_date: moment().format("YYYY-MM-DD"),
+            folder_id:folder_id,
             owner_cd:this.currentTree.owner_cd,
             estate_no:this.currentTree.estate_no,
             tenant_cd:this.currentTree.tenant_cd,
