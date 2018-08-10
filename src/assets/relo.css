@@ -1,7 +1,6 @@
 [v-cloak] {
   display: none;
 }
-
 .modal,
 .modal-background {
   z-index: 4;
@@ -535,4 +534,9 @@ html,body,#app{
   margin: 50px auto;
   padding: 20px;
   border: 1px solid rgba(99, 99, 99, .3);
+}
+.el-upload-dragger{
+  width: 240px;
+  height: 75px;
+  background-color:#f0f0f0;
 }

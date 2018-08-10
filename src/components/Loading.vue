@@ -22,11 +22,11 @@
     float: left;
     position: absolute;
     left: 50%;
-    z-index: 5;
+    z-index: 9999;
   }
 
   .sk-folding-cube {
-    z-index: 5;
+    z-index: 9999;
     margin: -120px auto;
     width: 60px;
     height: 60px;

@@ -88,9 +88,9 @@ const webpackConfig = merge(baseWebpackConfig, {
       minChunks (module) {
         // any required modules inside node_modules are extracted to vendor
         return (
-          module.resource &&
-          /\.js$/.test(module.resource) &&
-          module.resource.indexOf(
+          module.resources &&
+          /\.js$/.test(module.resources) &&
+          module.resources.indexOf(
             path.join(__dirname, '../node_modules')
           ) === 0
         )

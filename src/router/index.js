@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import {post,fetch,patch,put} from '@/assets/http'
 import {getCookie, setCookie, delCookie,clearAllCookies} from '@/assets/util'
 Vue.use(Router)
 
@@ -21,13 +20,16 @@ const routes = [{
   },{
     path: '/main',
     name: 'Main',
-    meta:{requireAuth: true },
+    meta:{
+      requireAuth: true,
+      keepAlive: false
+    },
     component: resolve => require(['../pages/Main.vue'], resolve)
   },{
     path: '/error',
     name: 'Error',
     component: resolve => require(['../pages/Error.vue'], resolve)
-  }, ]
+  }]
 
 const router = new Router({
   routes
@@ -38,9 +40,9 @@ router.beforeEach((to, from, next) => {
     console.log('from', from);
     if(getCookie('status')==0){
       next({
-        path: from.fullPath
+        path: '/changepass'
       });
-    }else if(getCookie('session')){
+    }else if(getCookie('user_id')){
       next();
     }else{
       clearAllCookies();
@@ -51,7 +53,7 @@ router.beforeEach((to, from, next) => {
   }else if(to.fullPath=="/error"){
     next();
   }else{
-    if(getCookie('session') && !getCookie('status')){
+    if(getCookie('user_id') && getCookie('status')!=0){
       next({
         path: '/main'
       });

@@ -7,8 +7,8 @@ module.exports = {
   devtool: 'eval',
   output: {
     // IDE Optimization
-    devtoolModuleFilenameTemplate: '[absolute-resource-path]',
-    devtoolFallbackModuleFilenameTemplate: '[absolute-resource-path]?[hash]'
+    devtoolModuleFilenameTemplate: '[absolute-resources-path]',
+    devtoolFallbackModuleFilenameTemplate: '[absolute-resources-path]?[hash]'
   },
   // target: 'node',
   module: {

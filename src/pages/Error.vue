@@ -1,6 +1,6 @@
 <template>
   <div class="error-page">
-    <img src="../assets/pain.png" height="200px" width="200px">
+    <!-- <img src="../assets/pain.png" height="200px" width="200px"> -->
     <!-- <i class="far fa-meh"></i> -->
     <h2>申し訳ございません！</h2>
     <h4>システム管理者に連絡してください</h4>
@@ -33,7 +33,6 @@
 
 
 <script>
-  import loading from '@/components/Loading.vue'
   export default {
     data() {
       return {
