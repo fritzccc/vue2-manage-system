@@ -11,7 +11,10 @@
           <!-- Content ... -->
           <el-form v-for="(file,index) in uploadForm.files" :key="index" :model="uploadForm.form[index]" :rules="uploadFormRules" ref="uploadForm"
             label-width="115px"  class="demo-ruleForm">
-            <h3 style="margin-top:20px;">第{{parseInt(index)+1}}件</h3>
+            <div v-if="index==0" class="upload-info">
+              <span><i class="el-icon-warning"></i>アップロードには時間がかかる場合がございます。</span>
+            </div>
+            <h3 style="margin-top:10px;">第{{parseInt(index)+1}}件</h3>
             <el-form-item label="ファイル名" prop="fileinfo">
               <!-- <el-input disabled v-model="uploadForm.form[index].fileinfo"></el-input> -->
               <span>{{uploadForm.form[index].filename}} ({{uploadForm.form[index].file_size}}MB)</span>
@@ -43,14 +46,13 @@
             <el-form-item label="物件名" prop="estate_nm">
               <el-input disabled v-model="uploadForm.form[index].estate_nm"></el-input>
             </el-form-item>
-            <el-form-item label="フリー" prop="free_format">
-              <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" v-model="uploadForm.form[index].free_format" placeholder="フリー"></el-input>
+            <el-form-item label="書類名補足" prop="free_format">
+              <el-input maxlength=20 v-model="uploadForm.form[index].free_format" placeholder="最大20文字"></el-input>
             </el-form-item>
             <el-form-item v-if="index==0 && uploadForm.files.length>1">
               <el-checkbox v-model="uploadForm.checked" label="2つ目以降も同じ内容をセット" name="type" @change="copySettings"></el-checkbox>
             </el-form-item>
             <hr>
-            <br>
           </el-form>
         </section>
         <footer class="modal-card-foot">
@@ -64,6 +66,17 @@
 
 
 <style scoped>
+  .upload-info{
+    margin-top: 10px;
+    /* margin-left:25px;  */
+  }
+  .upload-info>p{
+    color: rgb(93, 152, 207);
+    margin: 5px 0px;
+  }
+  .upload-info>span{
+    color: rgb(93, 152, 207);
+  }
   .el-form-item{
     margin-bottom:10px;
   }
@@ -72,6 +85,7 @@
   }
   h3{
     margin-top: 0;
+    margin-bottom: 10px;
   }
 </style>
 
@@ -217,12 +231,11 @@
             isNew:true,
           }
           this.uploadForm.form.push(form);
-          Vue.nextTick(()=>{
-            evtBus.$off('files-dropped')
-          });
         }
       })
-      
+      Vue.nextTick(()=>{
+        evtBus.$off('files-dropped')
+      });
       console.log('upload -> mounted', );
     },
   }

@@ -6,7 +6,7 @@
       <header class="modal-card-head">
         <img src="../../static/logo.png" width="140px" height="35px" style="margin-right:10px;">
         <p class="modal-card-title">{{previewDatas[0].doc_nm | no_ext}}</p>
-        <el-button type="primary" @click="download(0)">ダウンロード</el-button>
+        <el-button v-if="authPtn.file_dl==1" type="primary" @click="download(0)">個別ダウンロード</el-button>
         <el-button type="danger" icon="el-icon-close" circle @click="close"></el-button>
       </header>
       <section class="modal-card-body">
@@ -26,13 +26,9 @@
                 <b>コメント：{{previewData.comment.length | comment}}</b>
               </h3>
               <div>
-                <el-form :model="newComment" ref="newComment" label-width="100px" class="demo-ruleForm">
-                  <el-form-item label="コメント" prop="comment"
-                    :rules="{
-                      required: true, message: 'コメントを入力してください', trigger: 'blur'
-                    }"
-                  >
-                    <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" v-model="newComment.comment"></el-input>
+                <el-form :model="newComment" :rules="rules" ref="newComment" label-width="100px" class="demo-ruleForm">
+                  <el-form-item label="コメント" prop="comment">
+                    <el-input type="textarea" placeholder="最大500文字" :autosize="{ minRows: 2, maxRows: 4}" :maxlength="maxlength" v-model="newComment.comment"></el-input>
                   </el-form-item>
                   <el-form-item>
                     <el-button plain type="primary" @click="addComment(index)">コメント追加</el-button>
@@ -81,19 +77,19 @@
       <header class="modal-card-head">
         <img src="../../static/logo.png" width="140px" height="35px" style="margin-right:10px;">
         <p class="modal-card-title">プレビュー（計{{total}}件）</p>
-        <el-button v-if="authPtn.file_bulk_dl==1" :disabled="previewIndex==-1" type="primary" @click="download">ダウンロード</el-button>
+        <el-button v-if="authPtn.file_dl==1 && previewIndex!=-1" type="primary" @click="download">個別ダウンロード</el-button>
+        <el-button v-if="authPtn.file_bulk_dl==1 && previewIndex==-1" type="primary" @click="multiDownload">一括ダウンロード</el-button>
         <el-button type="danger" icon="el-icon-close" circle @click="close"></el-button>
       </header>
       <section class="modal-card-body">
         <!-- Preview File  -->
         <div v-for="(previewData,index) in previewDatas" :key=index style="border-bottom:2px solid #d4dde4;">
           <el-row>
-            <el-button type="text" @click="previewIndex = index" style="padding:0;">
-              <h3>
+              <h3 style="display:inline-block;margin-right:15px;">
                 <b>第{{index+1}}件：{{previewData.doc_nm | no_ext}}</b>
               </h3>
-            </el-button>
-            <el-button v-if="previewIndex==index" type="primary" plain @click="backToPreview">プレビューに戻る</el-button>
+            <el-button v-if="previewIndex!=index" type="primary" size="small" plain @click="change(index)">個別プレビュー</el-button>
+            <el-button v-if="previewIndex==index" type="primary" size="small" plain @click="backToPreview">一括プレビューに戻る</el-button>
           </el-row>
 
           <el-row v-show="previewIndex==-1 || previewIndex==index">
@@ -105,13 +101,10 @@
                 <b>コメント：{{previewData.comment.length | comment}}</b>
               </h3>
               <div v-if="previewIndex==index">
-                <el-form :model="newComment" ref="newComment" label-width="100px" class="demo-ruleForm">
+                <el-form :model="newComment" :rules="rules" ref="newComment" label-width="100px" class="demo-ruleForm">
                   <el-form-item label="コメント" prop="comment"
-                    :rules="{
-                      required: true, message: 'コメントを入力してください', trigger: 'blur'
-                    }"
-                  >
-                    <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" v-model="newComment.comment"></el-input>
+                    >
+                    <el-input type="textarea" placeholder="最大500文字" :autosize="{ minRows: 2, maxRows: 4}" :maxlength="maxlength" v-model="newComment.comment"></el-input>
                   </el-form-item>
                   <el-form-item>
                     <el-button plain type="primary" @click="addComment(index)">コメント追加</el-button>
@@ -206,7 +199,17 @@
   import evtBus from '@/assets/evtBus'
   export default {
     data() {
+      let space_test=/^\s+$/;
+      let validateComment=(rules,value,callback)=>{
+        if(value=='' || space_test.test(value)){
+          callback(new Error('コメントを入力してください'));
+        }else{
+          callback();
+        }
+      }
       return {
+        maxlength:500,
+        previewFileId:[],
         previewIndex: -1,
         previewDatas: [],
         user_id:this.getCookie('user_id'),
@@ -217,10 +220,21 @@
           comment: '',
           delPop:false,
         },
+        rules:{
+          comment:[{
+            required: true,
+            validator:validateComment,
+            trigger:'blur'
+          }],
+        }
       }
     },
     props:['authPtn'],
     methods: {
+      change(index){
+        this.previewIndex=index;
+        this.newComment.comment='';
+      },
       backToPreview(){
         this.previewIndex=-1;
         this.newComment.comment= '';
@@ -234,29 +248,34 @@
         let items={
           file_id:me.previewDatas[idx].file_id
         }
-        evtBus.apigClient.reloApiVer100FilesDownloadPost({},{items:items},evtBus.headers)
-          .then(res => {
-            if(!res.data.error){
-              //success
-              let {downloadurl} = res.data.data;
-              window.location.href = downloadurl;
-              return true
-            }else{
-              //failed
-              me.$refs['newComment'][0].resetFields();
-              me.$message.error('エラーが発生しました！'+res.data.error.message);
-              console.log('​deleteFiles -> res.data.error', res.data.error);
-              me.$emit('error');              
-            }
-          })
-          .catch(err => {
-            me.$message.error('通信エラーが発生しました！');
-            console.log("err: ", err);
-            if(!err.expired){
-              me.$refs['newComment'][0].resetFields();
-              me.$emit('error');
-            }
-          });
+        me.refreshApigClient().then(()=>{
+          evtBus.apigClient.reloApiVer100FilesDownloadPost({},{items:items},evtBus.headers)
+            .then(res => {
+              if(!res.data.error){
+                //success
+                let {downloadurl} = res.data.data;
+                window.location.href = downloadurl;
+                return true
+              }else{
+                //failed
+                me.$refs['newComment'][0].resetFields();
+                me.$message.error('エラーが発生しました！'+res.data.error.message);
+                console.log('​deleteFiles -> res.data.error', res.data.error);
+                me.$emit('error');              
+              }
+            })
+            .catch(err => {
+              me.$message.error('通信エラーが発生しました！');
+              console.log("err: ", err);
+              if(!err.expired){
+                me.$refs['newComment'][0].resetFields();
+                me.$emit('error');
+              }
+            });
+        })
+      },
+      multiDownload(){
+        this.$emit('multi-download',this.previewFileId);
       },
       addComment(index) {
         let me = this;
@@ -264,44 +283,46 @@
           if (valid) {
             me.newComment.file_id=me.previewDatas[index].file_id;
             me.newComment.user_id=me.getCookie('user_id');
+            me.newComment.comment= me.newComment.comment.replace(/^\s+|\s+$/g, "");
             let items=me.newComment;
-            evtBus.apigClient.reloApiVer100FilesCommentsPost({},{items:items},evtBus.headers)
-              .then(res => {
-                if(!res.data.error){
-                  //success
-                  if(res.data.data.result_flg==0){
-                    //add comment success
-                    let temp = JSON.parse(JSON.stringify(me.newComment));
-                    temp.comment_id = res.data.data.comment_id;
-                    me.previewDatas[index].comment.unshift(temp);
-                    //TODO if need to refresh the table tooltip comment
-                    // me.$emit('addComment',newComment);
-                    me.$refs['newComment'][0].resetFields();
-                    me.$message.success('コメント追加しました！');
-                    return true;
+            me.refreshApigClient().then(()=>{
+              evtBus.apigClient.reloApiVer100FilesCommentsPost({},{items:items},evtBus.headers)
+                .then(res => {
+                  if(!res.data.error){
+                    //success
+                    if(res.data.data.result_flg==0){
+                      //add comment success
+                      let temp = JSON.parse(JSON.stringify(me.newComment));
+                      temp.comment_id = res.data.data.comment_id;
+                      me.previewDatas[index].comment.unshift(temp);
+                      //TODO if need to refresh the table tooltip comment
+                      // me.$emit('addComment',newComment);
+                      me.$refs['newComment'][0].resetFields();
+                      me.$message.success('コメント追加しました！');
+                      return true;
+                    }else{
+                      //add comment failed
+                      me.$message.error('コメント追加は失敗しました！もう一度試してください！');
+                      me.$refs['newComment'][0].resetFields();
+                      return false;
+                    }
                   }else{
-                    //add comment failed
-                    me.$message.error('コメント追加は失敗しました！もう一度試してください！');
+                    //failed
                     me.$refs['newComment'][0].resetFields();
-                    return false;
+                    me.$message.error('エラーが発生しました！'+res.data.error.message);
+                    console.log('​deleteFiles -> res.data.error', res.data.error);
+                    me.$emit('error');
                   }
-                }else{
-                  //failed
+                })
+                .catch(err => {
                   me.$refs['newComment'][0].resetFields();
-                  me.$message.error('エラーが発生しました！'+res.data.error.message);
-                  console.log('​deleteFiles -> res.data.error', res.data.error);
-                  me.$emit('error');
-                }
-              })
-              .catch(err => {
-                me.$refs['newComment'][0].resetFields();
-                console.log("err: ", err);
-                if(!err.expired){
-                  me.$message.error('通信エラーが発生しました！');
-                  me.$emit('error');
-                }
-                
-              });
+                  console.log("err: ", err);
+                  if(!err.expired){
+                    me.$message.error('通信エラーが発生しました！');
+                    me.$emit('error');
+                  }
+                });
+            })
           } else {
             console.log('error submit!!');
             return false;
@@ -312,35 +333,37 @@
         let me = this;
         let items=JSON.parse(JSON.stringify(this.previewDatas[index].comment[idx]));
         items.file_id=this.previewDatas[index].file_id;
-        evtBus.apigClient.reloApiVer100FilesCommentsDeletePost({},{items:items},evtBus.headers)
-          .then(res => {
-            console.log('​delComment -> res', res);
-            if(!res.data.error){
-              //success
-              if(res.data.data.result_flg==0){
-                //del comment success
-                me.previewDatas[index].comment.splice(idx, 1);
-                //TODO if need to refresh the table tooltip comment
-                // me.$emit('delComment',newComment);
-                me.$message.success('コメント削除しました！');
-                return true;
+        me.refreshApigClient().then(()=>{
+          evtBus.apigClient.reloApiVer100FilesCommentsDeletePost({},{items:items},evtBus.headers)
+            .then(res => {
+              console.log('​delComment -> res', res);
+              if(!res.data.error){
+                //success
+                if(res.data.data.result_flg==0){
+                  //del comment success
+                  me.previewDatas[index].comment.splice(idx, 1);
+                  //TODO if need to refresh the table tooltip comment
+                  // me.$emit('delComment',newComment);
+                  me.$message.success('コメント削除しました！');
+                  return true;
+                }else{
+                  //del comment failed
+                  me.$message.error('コメント削除は失敗しました！もう一度試してください！');
+                  me.$refs['newComment'][0].resetFields();
+                  return false;
+                }
               }else{
-                //del comment failed
-                me.$message.error('コメント削除は失敗しました！もう一度試してください！');
-                me.$refs['newComment'][0].resetFields();
-                return false;
+                //failed
+                me.$message.error('エラーが発生しました！'+res.data.error.message);
+                console.log('​deleteFiles -> res.data.error', res.data.error);
               }
-            }else{
-              //failed
-              me.$message.error('エラーが発生しました！'+res.data.error.message);
-              console.log('​deleteFiles -> res.data.error', res.data.error);
-            }
-          })
-          .catch(err => {
-            me.$message.error('通信エラーが発生しました！');
-            console.log("err: ", err);
-          });
+            })
+            .catch(err => {
+              me.$message.error('通信エラーが発生しました！');
+              console.log("err: ", err);
+            });
         // this.$emit('del-comment', this.previewFileId[index].file_id,idx);
+        })
       }
     },
     mounted() {
@@ -348,46 +371,58 @@
       evtBus.$on('preview', items => {
         me.$emit('start-loading');
         me.previewFileId=items;
-        evtBus.apigClient.reloApiVer100FilesPreviewPost({},{items:items},evtBus.headers)
-          .then(res => {
-            if(!res.data.error){
-              //success
-              me.$emit('end-loading');
-              let temp=JSON.parse(JSON.stringify(res.data.data));
-              //add delPop prop
-              temp.forEach((ele)=>{
-                ele.comment.forEach(data => {
-                  data.delPop=false;
+        me.refreshApigClient().then(()=>{
+          evtBus.apigClient.reloApiVer100FilesPreviewPost({},{items:items},evtBus.headers)
+            .then(res => {
+              if(!res.data.error){
+                //success
+                me.$emit('end-loading');
+                let temp=JSON.parse(JSON.stringify(res.data.data));
+                //add delPop prop
+                temp.forEach((ele)=>{
+                  ele.comment.forEach(data => {
+                    data.delPop=false;
+                  });
+                  if(ele.comment.length>1){
+                    ele.comment.sort((a,b)=>{
+                      if((a.user_id==me.user_id && b.user_id==me.user_id) || (a.user_id!=me.user_id && b.user_id!=me.user_id)){
+                        return b.comment_id - a.comment_id
+                      }else if((a.user_id==me.user_id && b.user_id!=me.user_id) || (a.user_id!=me.user_id && b.user_id==me.user_id)){
+                        return a.user_id!=me.user_id;    
+                      }
+                    });
+                  }
                 });
-                ele.comment.sort((c)=>c.user_id!=me.user_id);
-              });
-              me.previewDatas=temp;
-              evtBus.$off('preview')
-              return true;
-            }else if(res.data.error.code==204){
-              //incorrect preview
-              me.$message.error('対象のレコードが存在しません');
-              console.log('preview created -> res.data.error', res.data.error);
-              me.$emit('end-loading');              
-              this.$emit('close',true);
-            }else{
-              //get treedata failed
-              me.$message.error('エラーが発生しました！'+res.data.error.message);
-              console.log('preview created -> res.data.error', res.data.error);
+                me.previewDatas=temp;
+                evtBus.$off('preview')
+                return true;
+              }else if(res.data.error.code==204){
+                //incorrect preview
+                me.$message.error('対象のレコードが存在しません');
+                evtBus.$off('preview');
+                console.log('preview created -> res.data.error', res.data.error);
+                me.$emit('end-loading');              
+                this.$emit('close',true);
+              }else{
+                //get treedata failed
+                me.$message.error('エラーが発生しました！'+res.data.error.message);
+                evtBus.$off('preview');
+                console.log('preview created -> res.data.error', res.data.error);
+                me.$emit('end-loading');
+                me.$emit('error');
+              }
+            })
+            .catch(err => {
               me.$emit('end-loading');
-              me.$emit('error');
-            }
-          })
-          .catch(err => {
-            me.$emit('end-loading');
-            console.log("preview load err: ", err);
-            if(!err.expired){
-              me.$message.error('通信エラーが発生しました！');
-              me.$emit('close');
-            // me.$emit('error');
-            }
-          });
-          console.log("test:", items);
+              console.log("preview load err: ", err);
+              evtBus.$off('preview');
+              if(!err.expired){
+                me.$message.error('通信エラーが発生しました！');
+                me.$emit('close');
+              // me.$emit('error');
+              }
+            });
+        })
       })
       
     },

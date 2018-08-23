@@ -1,6 +1,7 @@
 import Vue from 'vue'
-import {upload_bucket_name,download_bucket_name} from './config'
+import {upload_bucket_name,download_bucket_name,expireDays} from './config'
 const evtBus=new Vue();
+evtBus.expireDays = expireDays;
 evtBus.upload_bucket_name=upload_bucket_name;
 evtBus.download_bucket_name=download_bucket_name;
 evtBus.defaultConfig = {

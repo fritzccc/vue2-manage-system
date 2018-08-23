@@ -1,5 +1,5 @@
 import AWS from 'aws-sdk'
-import {IdentityPoolId} from './config'
+import {IdentityPoolId,expireDays} from './config'
 
 //set AWS config
 AWS.config.region='ap-northeast-1';
@@ -32,15 +32,19 @@ export function setAWSCookies(expiredays){
 export function getAWSCookies(){
   let accessKeyId = getCookie('accessKeyId');
   let secretAccessKey = getCookie('secretAccessKey');
-  let sessionToken = getCookie('sessionToken');
+  let sessionToken = unescape(getCookie('sessionToken'));
   let region = getCookie('region');
+  // let identityId = unescape(getCookie('identityId'));
+  // let token = getCookie('token');
   if(accessKeyId && secretAccessKey && sessionToken && region){
     return{
       check:true,
       accessKeyId:accessKeyId,
       secretAccessKey:secretAccessKey,
       sessionToken:sessionToken,
-      region:region
+      region:region,
+      // identityId:identityId,
+      // token:token
     }
   }else{
     return {
@@ -61,14 +65,14 @@ export function getCookie(name) {
   //set cookie
   export function setCookie (c_name, value, expiredays) {
     var exdate = new Date();
-    exdate.setDate(exdate.getDate() + expiredays);
+    exdate.setTime(exdate.getTime() + expiredays);
     document.cookie = c_name + "=" + escape(value) + ((expiredays == null) ? "" : ";expires=" + exdate.toGMTString());
   };
   
   //delete cookie
   export function delCookie (name) {
     var exp = new Date();
-    exp.setTime(exp.getTime() - 1);
+    exp.setDate(exp.getDate() - 1);
     var cval = getCookie(name);
     if (cval != null)
     document.cookie = name + "=" + cval + ";expires=" + exp.toGMTString();

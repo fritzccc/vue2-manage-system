@@ -6,7 +6,7 @@
       :rules="[{
         required: true, message: 'ユーザーIDを入力してください', trigger: 'blur'
       }]">
-        <el-input v-model.number="resetPassForm.user_id" @keyup.enter.native="resetPass('resetPassForm')" clearable></el-input>
+        <el-input class="input-form" v-model="resetPassForm.user_id" @keyup.enter.native="resetPass('resetPassForm')" clearable></el-input>
       </el-form-item>
       <el-form-item>
         <el-button plain size="small" type="primary" @click="resetPass('resetPassForm')">リセット</el-button>
@@ -18,6 +18,9 @@
 <style scoped>
   h3 {
     text-align: center;
+  }
+  .input-form{
+    width: 90%;
   }
 
 </style>

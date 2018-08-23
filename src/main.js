@@ -5,18 +5,60 @@ import App from './App'
 import router from './router'
 import ElementUI from 'element-ui'
 import locale from 'element-ui/lib/locale/lang/ja'
-import {getCookie, setCookie, delCookie,setAWSCookies,getAWSCookies,clearAllCookies} from './assets/util'
+import {
+  AWS,
+  getCookie,
+  setCookie,
+  delCookie,
+  setAWSCookies,
+  getAWSCookies,
+  clearAllCookies
+} from './assets/util'
 import moment from 'moment'
+import evtBus from '@/assets/evtBus';
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
+import {
+  faComment,
+  faFileExcel,
+  faFileWord,
+  faFilePowerpoint,
+  faFilePdf,
+  faFileImage,
+  faFileAlt,
+  faFileCode,
+  faFileArchive,
+  faFileVideo,
+  faFileAudio,
+} from '@fortawesome/free-regular-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import 'babel-polyfill'
 // import 'element-ui/lib/theme-chalk/index.css'
 import 'normalize.css'
 import '../theme/index.css'
 import './assets/relo.css'
+
+library.add(
+  faSignOutAlt,
+  faComment,
+  faFileExcel,
+  faFileWord,
+  faFilePowerpoint,
+  faFilePdf,
+  faFileImage,
+  faFileAlt,
+  faFileCode,
+  faFileArchive,
+  faFileVideo,
+  faFileAudio,
+)
+
+Vue.component('fa-icon', FontAwesomeIcon)
+
 Vue.config.productionTip = false
 Vue.use(ElementUI,{locale});
 Vue.filter('no_ext',(doc_nm)=>{
-  if (!doc_nm)
-    return '';
+  if (!doc_nm)  return '';
   return doc_nm.replace(/\.\w+$/,'');
 })
 
@@ -35,26 +77,81 @@ Vue.prototype.setCookie=setCookie;
 Vue.prototype.delCookie=delCookie;
 Vue.prototype.setAWSCookies=setAWSCookies;
 Vue.prototype.getAWSCookies=getAWSCookies;
-// Vue.prototype.sessionApigClient=sessionApigClient;
 Vue.prototype.clearAllCookies=clearAllCookies;
+Vue.prototype.clearCachedId=()=>{
+  AWS.config.credentials.clearCachedId();
+}
+Vue.prototype.refreshApigClient=(param)=>{
+  // console.log('​Vue.prototype.refreshApigClient');
+  // if(!AWS.config.credentials.params.Logins){
+  //   AWS.config.credentials.params.Logins={
+  //     'cognito-identity.amazonaws.com' : getCookie('token')
+  //   };
+  // };
+  // return AWS.config.credentials.getPromise()
+  //   .then(()=>{
+  //     setAWSCookies();
+  //     evtBus.apigClient=apigClientFactory.newClient({
+  //       accessKey: AWS.config.credentials.accessKeyId,
+  //       secretKey: AWS.config.credentials.secretAccessKey,
+  //       sessionToken: AWS.config.credentials.sessionToken,
+  //       region: AWS.config.region
+  //     });
+  //     return Promise.resolve(param)
+  //   })
+  //   .catch(err=>{
+  //     console.log('Get credentials err:',err)
+  //     router.push({
+  //       path: '/error',
+  //       name: 'Error', 
+  //       params: { 
+  //         errmsg:err
+  //       }
+  //     })
+  //   })
+  return Promise.resolve(param)
+};
 
 axios.defaults.timeout=10000;
 axios.defaults.retry = 1;
 axios.defaults.retryDelay = 500;
 
+
 axios.interceptors.response.use(res=>{
   return res
 }, err=> {
-  if(err.message.indexOf('expired')>-1){
-    ElementUI.Message.error('セッション切れました、再ログインしてください');
-    router.push({
-      path: '/login'
-    })
-    err.expired=true;
-    return Promise.reject(err);
+  let {response,request,config,message}=err;
+  if(response){
+    console.log('​interceptors->response.data', response.data);
+    console.log('​interceptors->response.status', response.status);
+    console.log('​interceptors->response.headers', response.headers);
+
+    //session err
+    if(response.data.message){
+      if(response.data.message.indexOf('expired')>-1){
+        ElementUI.Message.error('セッション切れました、再ログインしてください');
+        router.push({
+          path: '/login'
+        });
+        err.expired=true;
+      }else{
+        router.push({
+          path: '/error',
+          name: 'Error', 
+          params: { 
+            errmsg:response.data.message
+          }
+        });
+      }
+      return Promise.reject(err);
+    }
+  }else if(request){
+    console.log('​interceptors->request', request);
+    console.log('​interceptors->message', message);
+  }else{
+    console.log('​interceptors->message', message);
   }
 
-  let config = err.config;
   if(!config || !config.retry) 
     return Promise.reject(err);
 

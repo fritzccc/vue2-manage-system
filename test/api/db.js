@@ -6,19 +6,18 @@ function genTableData () {
     data:{items:[]}
   };
   for (let i = 0; i < 2333; i++) {
+    let doc_nm=faker.system.commonFileName()
     data.data.items.push({
       control:['大阪','名古屋','東京'][faker.random.number(2)],
       file_entry_date: moment(faker.date.past()).format('YYYY-MM-DD'),
-      doc_nm: faker.system.commonFileName(),
+      doc_nm: doc_nm,
       file_size:(Math.random()*20).toFixed(1),
       file_id:Math.random(),
       file_entry_user: faker.name.findName(),
+      file_ext:doc_nm.split('.').pop(),
       business_kbn:['jutaku','seiyaku','kouji','kanri','tsuika'][faker.random.number(4)],
-      comment:[{
-          user_nm:faker.name.findName(),
-          update_date:moment(faker.date.past()).format('YYYY-MM-DD'),
-          text:faker.lorem.paragraph()
-      }],
+      comment:faker.lorem.sentence(),
+      comment_count:faker.random.number(1),
       free_format:faker.lorem.text(),
       sales_nm: faker.name.findName(),
       manage_nm: faker.name.findName(),
@@ -31,9 +30,11 @@ function genTableData () {
 }
 
 function genDownloadList(){
-  let data = [];
+  let data = {
+    data:[]
+  };
   for (let i = 0; i < faker.random.number(15); i++) {
-    data.push({
+    data.data.push({
       download_file_nm:faker.system.commonFileName()
     });
   }
@@ -42,7 +43,7 @@ function genDownloadList(){
 
 function genComment(){
   let comment=[];
-  for (let i = 0; i < faker.random.number(10); i++) {
+  for (let i = 0; i < faker.random.number(3); i++) {
     comment.push({
       comment_id:moment(faker.date.past()).format('YYYYMMDDhhmmss'),
       user_id:faker.random.uuid(),
@@ -74,6 +75,7 @@ function genFilesPreview(){
       file_id:faker.random.uuid(),
       doc_nm:faker.system.commonFileName(),
       url:'https://httpbin.org/',
+      // comment:[]
       comment:genComment()
     });
   }
@@ -136,7 +138,7 @@ const filesLoad={
         auth_flg:'1'
       },{
         auth_kbn:'ope_log_csv',
-        auth_flg:'0'
+        auth_flg:'1'
       }],
       business:[{
         label:'受託',
@@ -331,11 +333,11 @@ const tempUrl={
   data:[
     {
       "upload_file_name": "A000000_yyyymm00000_T000000_0.1573802684031791_受託１_180809193711_1.txt",
-      "url": "https://s3-relo-dev-tempupload.s3.ap-northeast-1.amazonaws.com/0612.txt?AWSAccessKeyId=AKIAIYJGR7WU73LXVX5A&Content-Type=application%2Foctet-stream&Expires=1533609477&Signature=Uzw3vUjZUVaOZjsItj7wfhqYJnU%3D"
+      "url": "https://s3-relo-local-tempupload.s3.ap-northeast-1.amazonaws.com/0612.txt?AWSAccessKeyId=AKIAIYJGR7WU73LXVX5A&Content-Type=application%2Foctet-stream&Expires=1533609477&Signature=Uzw3vUjZUVaOZjsItj7wfhqYJnU%3D"
     },
     {
       "upload_file_name": "A000000_yyyymm00000_T000000_0.1573802684031791_受託１_180809193711_2.txt",
-      "url": "https://s3-relo-dev-tempupload.s3.ap-northeast-1.amazonaws.com/0613.txt?AWSAccessKeyId=AKIAIYJGR7WU73LXVX5A&Content-Type=application%2Foctet-stream&Expires=1533609477&Signature=NU7hyxHpesGQmuz1j6Q0sbdMYIg%3D"
+      "url": "https://s3-relo-local-tempupload.s3.ap-northeast-1.amazonaws.com/0613.txt?AWSAccessKeyId=AKIAIYJGR7WU73LXVX5A&Content-Type=application%2Foctet-stream&Expires=1533609477&Signature=NU7hyxHpesGQmuz1j6Q0sbdMYIg%3D"
     }
   ]
 }

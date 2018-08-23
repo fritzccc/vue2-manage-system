@@ -15481,7 +15481,7 @@
     box-sizing: border-box;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: normal;
+    white-space: nowrap;
     word-break: break-all;
     line-height: 23px;
     padding-left: 10px;
@@ -29186,7 +29186,7 @@
       cursor: not-allowed; }
   .el-tree-node__expand-icon {
     cursor: pointer;
-    color: #c0c4cc;
+    color: rgb(33, 33, 33);
     font-size: 12px;
     -webkit-transform: rotate(0deg);
     transform: rotate(0deg);

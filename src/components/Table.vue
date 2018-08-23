@@ -5,9 +5,9 @@
     <el-button v-if="authPtn.file_bulk_dl==1" size="small" type="primary" @click="multiDownload" plain :disabled="cantDwld" style="margin-left: 3px">一括DL</el-button>
     <el-button v-if="authPtn.file_delete==1" size="small" type="primary" @click="multiDelete" plain :disabled="cantDel" style="margin-left: 3px">削除</el-button>
     <el-pagination
-      v-if="totalRecords>0"
+      v-if="tableFlag"
       background 
-      style="display:inline-block;margin-left:20px;"
+      style="display:inline-block;margin-left:20px;padding:0px;"
       layout="total, sizes, prev, pager, next, jumper"
       @size-change="sizeChange"
       @current-change="currentChange"
@@ -19,7 +19,8 @@
     </el-pagination>
     <el-table 
       ref="table"
-      :row-class-name="tableRowClass" 
+      :row-class-name="tableRowClass"
+      :row-key="getRowKey"
       :data="showTableData"
       :max-height="maxHeight"
       :default-sort="{prop: 'file_entry_date', order: 'descending'}"
@@ -28,7 +29,7 @@
       @sort-change="handleSortChange"
       reserve-selection
       style="width: 100%;margin-top:5px;">
-      <el-table-column type="selection" width=35>
+      <el-table-column type="selection" width=40>
       </el-table-column>
       <el-table-column align="center"  prop="comment" width=45 fixed>
         <template slot-scope="scope">
@@ -40,48 +41,55 @@
               <i class="far fa-comment" style="font-size: 20px;"></i>
             </div>
           </el-popover>-->
-          <el-popover	v-if="scope.row.comment_count>=0" trigger="hover" placement="right-end" :open-delay=500>
-            <div :class="{'hover-text-after':(scope.row.comment.length>=100)}" class="hover-text">
-              <strong>計{{scope.row.comment_count}}件:</strong> {{ scope.row.comment }}
+          <el-popover	v-if="scope.row.comment_count>0" trigger="hover" placement="right-end" :open-delay=500>
+            <div class="hover-text" :class="{'hover-text-after':(scope.row.comment.length>=100)}">
+              <span><strong>計{{scope.row.comment_count}}件:</strong></span> {{ scope.row.comment }}
             </div>
-            <div slot="reference" class="name-wrapper">
-              <i class="far fa-comment" style="font-size: 20px;"></i>
+            <div slot="reference" style="color:#102e54;" class="name-wrapper">
+              <fa-icon :icon="['far', 'comment']" size="lg"></fa-icon>
             </div>
           </el-popover>
         </template>
       </el-table-column>
-      <el-table-column sortable="custom" prop="doc_nm" label="書類名" min-width=280 fixed>
+      <el-table-column sortable="custom" prop="doc_nm" label="書類名" min-width=270 fixed>
         <template slot-scope="scope">
-          <el-button type="text" size="medium" @click="previewFile(scope.row)">
-            <i v-if="['xls','xlsx'].indexOf(scope.row.filetype)>-1" class="far fa-file-excel" style="font-size: 16px;"></i>
-            <i v-if="scope.row.filetype=='pdf'" class="far fa-file-pdf" style="font-size: 16px;"></i>
-            <i v-if="['doc','docx'].indexOf(scope.row.filetype)>-1" class="far fa-file-word" style="font-size: 16px;"></i>
-            <i v-if="['jpg','png','bmp','jpeg'].indexOf(scope.row.filetype)>-1" class="far fa-images" style="font-size: 16px;"></i>
+            <fa-icon  v-if="['xls','xlsx','xlsm'].indexOf(scope.row.file_ext)>-1" :icon="['far', 'file-excel']" size="lg"></fa-icon>
+            <fa-icon  v-else-if="['doc','docx'].indexOf(scope.row.file_ext)>-1" :icon="['far', 'file-word']" size="lg"></fa-icon>
+            <fa-icon  v-else-if="['ppt','pptx'].indexOf(scope.row.file_ext)>-1" :icon="['far', 'file-powerpoint']" size="lg"></fa-icon>
+            <fa-icon  v-else-if="['pdf'].indexOf(scope.row.file_ext)>-1" :icon="['far', 'file-pdf']" size="lg"></fa-icon>
+            <fa-icon  v-else-if="['ai','jpg','png','bmp','jpeg','gif','eps','heic','ps','psd','svg','tif','tiff','dcm','dicm','dicom','svs','tga'].indexOf(scope.row.file_ext)>-1" :icon="['far', 'file-image']" size="lg"></fa-icon>
+            <fa-icon  v-else-if="['flv','vob','swf','3g2','3gp','avi','m2v','m2ts','m4v','mkv','mov','mp4','mpeg','mpg','ogg','mts','qt','wmv'].indexOf(scope.row.file_ext)>-1" :icon="['far', 'file-video']" size="lg"></fa-icon>
+            <fa-icon  v-else-if="['mp3','ogg','wav','flac','ape','aac'].indexOf(scope.row.file_ext)>-1" :icon="['far', 'file-audio']" size="lg"></fa-icon>
+            <fa-icon  v-else-if="['py','html','htm','java','rb','js','css','yml','json'].indexOf(scope.row.file_ext)>-1" :icon="['far', 'file-code']" size="lg"></fa-icon>
+            <fa-icon  v-else-if="['zip','rar','7z','iso','gz','tar','bz2'].indexOf(scope.row.file_ext)>-1" :icon="['far', 'file-archive']" size="lg"></fa-icon>
+            <fa-icon  v-else :icon="['far', 'file-alt']" size="lg"></fa-icon>
             <!-- more ext v-if -->
-            {{scope.row.doc_nm | no_ext}} 
-          </el-button>
+            <!-- {{scope.row.doc_nm | no_ext}}  -->
+          <span class="doc-name" @click="previewFile(scope.row)">
+            {{scope.row.doc_nm}} 
+          </span>
         </template>
       </el-table-column>
-      <el-table-column sortable="custom" prop="file_size" label="サイズ" min-width=90>
+      <el-table-column sortable="custom" show-overflow-tooltip prop="free_format" label="書類名補足" min-width=180>
+      </el-table-column>
+      <el-table-column sortable="custom" prop="file_size" label="サイズ" min-width=100>
         <template slot-scope="scope">
           {{scope.row.file_size}}MB
         </template>
       </el-table-column>
-      <el-table-column sortable="custom" show-overflow-tooltip prop="free_format" label="フリー" min-width=180>
+      <el-table-column sortable="custom" prop="file_entry_date" label="登録日" min-width=100>
       </el-table-column>
-      <el-table-column sortable="custom" prop="file_entry_date" label="登録日" min-width=120>
+      <el-table-column sortable="custom" prop="file_entry_user" label="登録者" min-width=120>
       </el-table-column>
-      <el-table-column sortable="custom" prop="file_entry_user" label="登録者" min-width=100>
+      <el-table-column sortable="custom" prop="sales_nm" label="営業担当" min-width=120>
       </el-table-column>
-      <el-table-column sortable="custom" prop="sales_nm" label="営業担当" min-width=110>
+      <el-table-column sortable="custom" prop="manage_nm" label="管理担当" min-width=120>
       </el-table-column>
-      <el-table-column sortable="custom" prop="manage_nm" label="管理担当" min-width=110>
+      <el-table-column prop="owner_cd" label="オーナー" min-width=120>
       </el-table-column>
-      <el-table-column prop="owner_cd" label="オーナー" min-width=110>
+      <el-table-column prop="estate_no" label="物件No" min-width=120>
       </el-table-column>
-      <el-table-column prop="estate_no" label="物件NO." min-width=150>
-      </el-table-column>
-      <el-table-column prop="estate_nm" label="物件名" min-width=150>
+      <el-table-column prop="estate_nm" label="物件名" min-width=210>
       </el-table-column>
     </el-table>
   </div>
@@ -90,6 +98,14 @@
 <style scoped>
   strong{
     color:#102E54;
+  }
+  .doc-name{
+    line-height: 30px;
+    font-weight: 500;
+    color: #102E54;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 2px;
   }
 </style>
 
@@ -104,12 +120,15 @@
         slicedTableData:[],
         showTableData:[],
         selectedItems:[],
-        maxHeight:window.innerHeight-260,
+        maxHeight:window.innerHeight-210,
         windowWidth:window.innerWidth
       }
     },
-    props: ['tableData','authPtn','loading'],
+    props: ['tableData','authPtn','loading','tableFlag'],
     methods: {
+      getRowKey(row){
+        return row.file_id;
+      },
       handleSortChange(stat){
         this.$emit('sort-change',stat);
       },
@@ -178,7 +197,7 @@
     },
     mounted(){
       window.onresize = () => {
-        this.maxHeight = window.innerHeight - 240;
+        this.maxHeight = window.innerHeight - 210;
         this.windowWidth=window.innerWidth;
       };
     },
@@ -198,7 +217,8 @@
       //   return (offset + this.perPage >= this.tableData.length) ? this.tableData.slice(offset, this.tableData.length) : this.tableData.slice(offset, offset + this.perPage);
       // },
       cantDel(){
-        return (this.selectedItems.length)? !(this.selectedItems.length>0 && this.selectedItems.length<=10):true;
+        // return (this.selectedItems.length)? !(this.selectedItems.length>0 && this.selectedItems.length<=10):true;
+        return (this.selectedItems.length)? !(this.selectedItems.length>0):true;
       },
       cantPrev(){
         return (this.selectedItems.length)? !(this.selectedItems.length>0 && this.selectedItems.length<=10):true;

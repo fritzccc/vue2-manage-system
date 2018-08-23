@@ -34,6 +34,7 @@
   overflow: auto;
   position: relative;
   width: 100%;
+  overflow-y:scroll;
 }
 
 @media screen and (min-width: 769px),
@@ -48,7 +49,7 @@ print {
   display: flex;
   flex-direction: column;
   max-height: calc(100vh - 40px);
-  overflow: hidden;
+  overflow: auto;
 }
 
 .modal-card-head,
@@ -363,6 +364,11 @@ ul {
 .hover-text{
   font-size: 13px;
   max-width: 330px;
+  -ms-word-break: break-all;
+  word-break: break-all;
+  word-break: break-word;
+  word-wrap:break-word;
+  text-align:left;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 4;
@@ -424,6 +430,10 @@ ul {
 }
 
 .message-body {
+  -ms-word-break: break-all;
+  word-break: break-all;
+  word-break: break-word;
+  word-wrap:break-word;
   border-color: #dbdbdb;
   border-radius: 4px;
   border-style: solid;
@@ -529,14 +539,29 @@ html,body,#app{
   height: 100%;
 }
 
-.login-form {
-  width: 500px;
-  margin: 50px auto;
-  padding: 20px;
-  border: 1px solid rgba(99, 99, 99, .3);
-}
 .el-upload-dragger{
   width: 240px;
   height: 75px;
   background-color:#f0f0f0;
+}
+.el-tree-node__content > .el-tree-node__expand-icon{
+  padding-right: 3px;
+}
+
+.el-icon-caret-right:before{
+  font-size: 16px;
+  font-weight:700;
+}
+.el-table__fixed{
+  border-right:1px solid #c7c8cc;
+}
+.login-form {
+  width: 500px;
+  margin: 50px auto;
+  padding: 20px;
+  padding-bottom:0px; 
+  border: 1px solid #ccc;
+}
+.input-form{
+  width: 90%;
 }

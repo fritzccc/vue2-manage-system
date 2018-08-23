@@ -4,7 +4,8 @@
     <!-- <i class="far fa-meh"></i> -->
     <h2>申し訳ございません！</h2>
     <h4>システム管理者に連絡してください</h4>
-    <span><span class="warning">{{count}}</span>秒後<a a href="javascript:void(0);" @click="backToLogin" class="warning">ログイン画面</a>へ遷移します</span>
+    <p v-if="errmsg">エラー：{{errmsg}}</p>
+    <span><a a href="javascript:void(0);" @click="backToLogin" class="warning">ログイン画面</a>へ遷移します</span>
   </div>
 </template>
 <style scoped>
@@ -36,16 +37,18 @@
   export default {
     data() {
       return {
+        errmsg:'',
         count:10,
         interval:0
       }
     },
     mounted() {
-      this.interval = window.setInterval(() => {
-        if (--this.count <= 0) {
-          this.backToLogin();
-        }
-      }, 1000);
+      this.errmsg = this.$route.params.errmsg;
+      // this.interval = window.setInterval(() => {
+      //   if (--this.count <= 0) {
+      //     this.backToLogin();
+      //   }
+      // }, 1000);
     },
     methods:{
       backToLogin(){

@@ -15,7 +15,7 @@
               <el-radio-button label="東京">東京</el-radio-button>
               <el-radio-button label="大阪">大阪</el-radio-button>
               <el-radio-button label="名古屋">名古屋</el-radio-button>
-              <el-radio-button label="0">指定なし</el-radio-button>
+              <el-radio-button label="">指定なし</el-radio-button>
             </el-radio-group>
 
             <!-- <el-radio-group v-model="reqData.queryFormTop.openStatus" size="small" style="margin-right:5px;">
@@ -23,7 +23,7 @@
                 <el-radio-button :label="2">公開中</el-radio-button>
                 <el-radio-button :label="0">指定なし</el-radio-button>
               </el-radio-group> -->
-            <el-radio-group id="queryFormTop_date_kbn" v-model="reqData.queryFormTop.date_kbn" size="small" style="margin-right:5px;">
+            <el-radio-group id="queryFormTop_date_kbn" v-model="reqData.queryFormTop.date_kbn" size="small" @change="changeDateKbn" style="margin-right:5px;">
               <el-radio-button :label="1">登録日</el-radio-button>
               <el-radio-button :label="0">指定なし</el-radio-button>
             </el-radio-group>
@@ -42,7 +42,7 @@
               end-placeholder="To">
             </el-date-picker>
             <el-button v-if="respData.auth_ptn.ope_log_csv==1"
-              :disabled="!reqData.queryFormTop.dateRange"
+              :disabled="ope_log_csvBtn"
               type="primary" 
               @click="getOpeLog" 
               size="small" 
@@ -50,40 +50,40 @@
             <el-button v-if="respData.auth_ptn.result_dl==1" type="primary" @click="queryTop('csv')" size="small" plain style="margin-left:5px;">CSV出力</el-button>
 
           </el-col>
-          <el-col :sm="7" :md="5" :lg="3" :xl="2" style="text-align:right">
+          <el-col :sm="7" :md="5" :lg="4" :xl="2" style="text-align:right">
             <span style="padding-right:5px;font-size:13px;">{{pageConfig.user.user_nm}} さん</span>
             <el-button @click="logout" type="primary" size="mini" circle>
-              <i class="fas fa-sign-out-alt"></i>
+              <fa-icon icon="sign-out-alt"></fa-icon>
             </el-button>
           </el-col>
         </el-row>
         <el-row>
           <el-col :sm="3" :md="3" :lg="3" :xl="3" style="padding-right:5px;">
-            <el-input v-model="doc_nm_delay" placeholder="書類名"></el-input>
+            <el-input @keyup.enter.native="queryTop('search')" v-model="reqData.queryFormTop.doc_nm" placeholder="書類名"></el-input>
           </el-col>
           <el-col :sm="3" :md="3" :lg="5" :xl="5" style="padding-right:5px;">
-            <el-input v-model="free_format_delay" placeholder="フリー"></el-input>
+            <el-input @keyup.enter.native="queryTop('search')" v-model="reqData.queryFormTop.free_format" placeholder="書類名補足"></el-input>
           </el-col>
           <el-col :sm="9" :md="9" :lg="7" :xl="7">
             <el-row>
               <el-col :span="8" style="padding-right:5px;">
-                <el-input v-model="file_entry_user_delay" placeholder="登録者"></el-input>
+                <el-input @keyup.enter.native="queryTop('search')" v-model="reqData.queryFormTop.file_entry_user" placeholder="登録者"></el-input>
               </el-col>
               <el-col :span="8" style="padding-right:5px;">
-                <el-input v-model="sales_nm_delay" placeholder="営業担当"></el-input>
+                <el-input @keyup.enter.native="queryTop('search')" v-model="reqData.queryFormTop.sales_nm" placeholder="営業担当"></el-input>
               </el-col>
               <el-col :span="8" style="padding-right:5px;">
-                <el-input v-model="manage_nm_delay" placeholder="管理担当"></el-input>
+                <el-input @keyup.enter.native="queryTop('search')" v-model="reqData.queryFormTop.manage_nm" placeholder="管理担当"></el-input>
               </el-col>
             </el-row>
           </el-col>
           <el-col :sm="3" :md="3" :lg="3" :xl="3" style="padding-right:5px;">
-            <el-input v-model="reqData.queryFormTop.comment" placeholder="コメント"></el-input>
+            <el-input @keyup.enter.native="queryTop('search')" v-model="reqData.queryFormTop.comment" placeholder="コメント"></el-input>
           </el-col>
           <el-col :sm="12" :md="6" :lg="5" :xl="4">
             <el-button type="primary" size="small" @click="queryTop('search')" style="margin-left:5px;"
             :disabled="queryTopSearchBtn">検索</el-button>
-            <el-button type="primary" size="small" plain @click="resetTop" style="margin-left:5px;">リセット</el-button>
+            <el-button type="primary" size="small" plain @click="resetTop(true)" style="margin-left:5px;">リセット</el-button>
           </el-col>
         </el-row>
       </el-main>
@@ -100,7 +100,7 @@
             </el-row>
             <el-row class="query-aside-input">
               <el-form-item prop="sEstate">
-                <el-input @keyup.enter.native="queryAside" v-model="reqData.queryFormAside.sEstate" placeholder="物件CD、物件名"></el-input>
+                <el-input @keyup.enter.native="queryAside" v-model="reqData.queryFormAside.sEstate" placeholder="物件No、物件名"></el-input>
               </el-form-item>
             </el-row>
             <el-row class="query-aside-input">
@@ -111,13 +111,14 @@
             <el-row>
               <el-form-item>
                 <el-button type="primary" size="small" @click="queryAside" style="margin-left: 3px">検索</el-button>
-                <el-button type="primary" size="small" @click="resetAside" plain style="margin-left: 3px">リセット</el-button>
+                <el-button type="primary" size="small" @click="resetAside(true)" plain style="margin-left: 3px">リセット</el-button>
               </el-form-item>
             </el-row>
           </el-form>
         </div>
         <el-tree ref="tree" 
-          class="bg-color"
+          v-loading="pageConfig.queryAsideLoading"
+          class="bg-color tree-scroll"
           :expand-on-click-node="false"
           :data="respData.treeData" 
           accordion highlight-current
@@ -139,9 +140,9 @@
           </span>
         </el-tree>
       </el-aside>
-      <label class="dragbar" :style="{
-          left:pageConfig.asideWidth+'px'
-          }" @mousedown="mouseDown">
+      <label class="dragbar" 
+        :style="{left:pageConfig.asideWidth+'px'}" 
+        @mousedown="mouseDown">
       </label>
       <el-container class="bg-color bg-shadow" style="margin-top: 0px;margin-bottom: 0px;margin-right:0px;">
         <el-main style="height: auto;">
@@ -159,6 +160,7 @@
             <main-table v-else 
               :table-data="tableData" 
               :auth-ptn="respData.auth_ptn"
+              :table-flag="tableFlag"
               :key="pageConfig.currentTabName"
               :loading="pageConfig.tableLoading"
               @multi-download="multiDownload" 
@@ -185,6 +187,7 @@
       </upload>
       <preview v-if="pageConfig.isPreview"
         :auth-ptn="respData.auth_ptn"
+        @multi-download="multiDownload"
         @start-loading="previewLoad('start')"
         @end-loading="previewLoad('end')"
         @add-comment="addComment" 
@@ -198,6 +201,11 @@
 </template>
 
 <style scoped>
+  .tree-scroll{
+    /* max-height: 750px;
+    overflow-y: auto; */
+    overflow-x: hidden;
+  }
   .dz-default{
     opacity: 0;
     border: 1px solid #102E54;
@@ -251,7 +259,6 @@
 
 <script>
   import Vue from 'vue'
-  import _ from 'lodash'
   import mainTable from '@/components/Table.vue'
   import downloadList from '@/components/DownloadList.vue'
   import upload from '@/components/Upload.vue'
@@ -267,8 +274,8 @@
         pageConfig:{
           asideWidth:260,
           dragbarHeight: window.innerHeight-120,
-          user:{},
           dzMsg:'ファイルアップロード',
+          queryAsideLoading:false,
           isLoading:false,
           tableLoading:false,
           isDzActive:false,
@@ -279,6 +286,7 @@
           cantDwld:true,
           cantDel:true,
           currentTabName:'',
+          user:{},
           pickerOptions: {
             shortcuts: [{
               text: '最近１週',
@@ -306,7 +314,7 @@
         },
         reqData:{
           queryFormTop: {
-            control: 0,
+            control: "",
             public_kbn: 0,
             doc_nm: "",
             free_format: "",
@@ -331,7 +339,20 @@
             tenant_cd:'',
             tenant_nm:'',
           },
-          auth_ptn:{},
+          auth_ptn:{
+            bulk_preview:0,
+            comment_reg:0,
+            file_bulk_dl:0,
+            file_delete:0,
+            file_dl:0,
+            file_search:0,
+            file_upload:0,
+            master_reg:0,
+            ope_log_csv:0,
+            open_set:0,
+            preview:0,
+            result_dl:0,
+          },
           business_kbn:[],
           tableData: [],
           downloadList:[],
@@ -381,25 +402,7 @@
         if(!me.pageConfig.isDzActive) me.pageConfig.isDzActive=true;
       };
       me.$refs.select_frame.ondrop = me.dzFileDropped;
-
-      if(!evtBus.apigClient){
-        let {check,accessKeyId,secretAccessKey,sessionToken,region}=me.getAWSCookies();
-        if(check){
-          //logged in
-          // evtBus.apigClient=me.sessionApigClient(accessKeyId,secretAccessKey,sessionToken,region);
-          evtBus.apigClient=apigClientFactory.newClient({
-            accessKey: accessKeyId,
-            secretKey: secretAccessKey,
-            sessionToken: sessionToken,
-            region: region
-          });
-        }else{
-          //login status error
-          //TODO
-          console.log('​mounted -> login status error');
-          me.error();
-        }
-      }
+      
       //set headers
       evtBus.headers={
         headers:{
@@ -408,52 +411,66 @@
         }
       };
       
-      console.log('headers -> ', evtBus.headers);
       //get user info
       me.pageConfig.user.user_id=me.getCookie('user_id');
       me.pageConfig.user.user_nm=unescape(me.getCookie('user_nm'));
       me.pageConfig.user.company_nm=unescape(me.getCookie('company_nm'));
       me.pageConfig.user.auth_ptn=me.getCookie('auth_ptn');
       me.pageConfig.user.mail=me.getCookie('mail');
-      me.pageConfig.user.control=me.getCookie('control');
+      me.pageConfig.user.control=unescape(me.getCookie('control'));
       me.pageConfig.user.status=me.getCookie('status');
+      me.reqData.queryFormTop.control=me.pageConfig.user.control;
       
       //load business_kbn tab
       let items={
         auth_ptn:me.getCookie('auth_ptn')
       };
-      evtBus.apigClient.reloApiVer100FilesLoadPost({},{items:items},evtBus.headers)
-        .then(res => {
-          if(!res.data.error){
-            //success
-            let {auth,business} = JSON.parse(JSON.stringify(res.data.data.items));
-            me.respData.business_kbn = business;
-            console.log('mounted -> set!');
-            auth.forEach(data=>{
-              me.respData.auth_ptn[data.auth_kbn]=data.auth_flg;
-            });
-            console.log('​main page mounted');
-            return true;
-          }else{
-            //get treedata failed
-            me.$message.error('エラーが発生しました！'+res.data.error.message);
-            console.log('​queryAside -> res.data.error', res.data.error);
-          }
-        })
-        .catch(err => {
-          console.log("err: ", err);
-          if(!err.expired){
-            me.$message.error('通信エラーが発生しました！');
-          }
-        });
+
+      me.refreshApigClient().then(()=>{
+        evtBus.apigClient.reloApiVer100FilesLoadPost({},{items:items},evtBus.headers)
+          .then(res => {
+            if(!res.data.error){
+              //success
+              let {auth,business} = JSON.parse(JSON.stringify(res.data.data.items));
+              me.respData.business_kbn = business;
+              auth.forEach(data=>{
+                me.respData.auth_ptn[data.auth_kbn]=data.auth_flg;
+              });
+              console.log('​Main mounted');
+              return true;
+            }else{
+              //get treedata failed
+              me.$message.error('エラーが発生しました！'+res.data.error.message);
+              console.log('​queryAside -> res.data.error', res.data.error);
+              me.error();
+            }
+          })
+          .catch(err => {
+            console.log("err: ", err);
+            if(!err.expired){
+              me.$message.error('通信エラーが発生しました！');
+              me.error();
+            }
+          });
+      })
     },
     methods: {
+      changeDateKbn(val){
+        if(!val){
+          this.reqData.queryFormTop.dateRange=null;
+        }
+      },
       previewLoad(status){
         // this.pageConfig.isLoading = status=='start';
-        if(status=='start')
+        if(status=='start'){
           this.$loading({lock: true});
-        else
+          axios.defaults.timeout=20000;
+          axios.defaults.retry=0;
+        }else{
           this.$loading({lock: true}).close()
+          axios.defaults.timeout=10000;
+          axios.defaults.retry=1;
+        }
       },
       dzFileDropped(e){
         let me = this;
@@ -465,6 +482,10 @@
           me.$message.warning('このアカウントにはアップロードする権限はありません！')
           return false;
         }
+        if(!me.respData.currentTree.estate_no){
+          me.$message.warning('アップロードには物件 or 入居者を選択する必要があります');
+          return false;
+        }
         let {files} = e.dataTransfer;
         console.log('onDrop -> files', files);
         if (files.length < 1){
@@ -474,99 +495,104 @@
           me.$message.warning('アプロードするには、まずツリーにデータを選択してください！');
           return false;
         }
-        // me.pageConfig.isLoading=true;
-        this.$loading({lock: true});
         for (let i = 0; i < files.length; i++) {
           if (files[i].type == "") {
             me.$message.warning('このファイル形式又はフォルダのアップロードは制限されています！');
             return false;
           }
         }
+        // me.pageConfig.isLoading=true;
+        this.$loading({lock: true});
         //get folder_id
         let items = me.respData.currentTree;
-        console.log("test:",me.respData.currentTree);
-        evtBus.apigClient.reloApiVer100FilesFolderPost({},{items:items},evtBus.headers)
-          .then(res => {
-            if(!res.data.error){
-              //successog("fol:",res.data.data);
-              console.log("fol:",res.data.data);
-              // let {folder_id} = res.data.data;
-              let folder_id = res.data.data;
-              // me.pageConfig.isLoading=false;
+        me.refreshApigClient().then(()=>{
+          evtBus.apigClient.reloApiVer100FilesFolderPost({},{items:items},evtBus.headers)
+            .then(res => {
               this.$loading({lock: true}).close();
-              me.pageConfig.isUpload = true;
-              Vue.nextTick(() => {
-                evtBus.$emit('files-dropped', files, me.pageConfig.currentTabName,folder_id)
-              })
-              return true;
-            }else{
-              //get treedata failed
-              me.$message.error('エラーが発生しました！'+res.data.error.message);
-              console.log('upload -> res.data.error', res.data.error);
-              me.error();
-            }
-          })
-          .catch(err => {
-            me.$message.error('通信エラーが発生しました！');
-            console.log("err: ", err);
-            if(!err.expired)
-              me.error();
-          });
-          console.log("folder up items:", items);
+              if(!res.data.error){
+                //successog("fol:",res.data.data);
+                console.log("fol:",res.data.data);
+                // let {folder_id} = res.data.data;
+                let folder_id = res.data.data;
+                // me.pageConfig.isLoading=false;
+                me.pageConfig.isUpload = true;
+                Vue.nextTick(() => {
+                  evtBus.$emit('files-dropped', files, me.pageConfig.currentTabName,folder_id)
+                })
+                return true;
+              }else{
+                //get treedata failed
+                me.$message.error('エラーが発生しました！'+res.data.error.message);
+                console.log('upload -> res.data.error', res.data.error);
+                me.error();
+              }
+            })
+            .catch(err => {
+              me.$loading({lock: true}).close();
+              me.$message.error('通信エラーが発生しました！');
+              console.log("err: ", err);
+              if(!err.expired)
+                me.error();
+            });
+        })
       },
       multiDownload(items){
         let me = this;
-        evtBus.apigClient.reloApiVer100FilesDownloadzipPost({},{items:items},evtBus.headers)
-          .then(res => {
-            if(!res.data.error){
-              //success
-              me.$message.success('ファイル一覧の一括ダウンロードをしました。ダウンロードリストをご確認ください');
-              return true;
-            }else{
-              //get treedata failed
-              this.$message.error('エラーが発生しました！'+res.data.error.message);
-              console.log('preview created -> res.data.error', res.data.error);
-              this.$emit('error');
-            }
-          })
-          .catch(err => {
-            console.log("preview created err: ", err);
-            if(!err.expired){
-              this.$message.error('通信エラーが発生しました！');
-              this.error()
-            }
-          });
+        me.refreshApigClient().then(()=>{
+          evtBus.apigClient.reloApiVer100FilesDownloadzipPost({},{items:items},evtBus.headers)
+            .then(res => {
+              if(!res.data.error){
+                //success
+                me.$message.success('ファイル一覧の一括ダウンロードをしました。ダウンロードリストをご確認ください');
+                return true;
+              }else{
+                //get treedata failed
+                this.$message.error('エラーが発生しました！'+res.data.error.message);
+                console.log('preview created -> res.data.error', res.data.error);
+                this.$emit('error');
+              }
+            })
+            .catch(err => {
+              console.log("preview created err: ", err);
+              if(!err.expired){
+                this.$message.error('通信エラーが発生しました！');
+                this.error()
+              }
+            });
+        })
       },
       getOpeLog(){
         let me = this;
-        console.log("items:",me.reqData.queryFormTop);
         let items={
           operation_logdate_from:me.reqData.queryFormTop.dateRange[0],
           operation_logdate_to:me.reqData.queryFormTop.dateRange[1]
         };
-        evtBus.apigClient.reloApiVer100CsvLogsPost({},{items:items},evtBus.headers)
-          .then(res => {
-            if(!res.data.error){
-              //success
-              me.$message.success('操作ログをダウンロードしました。ダウンロードリストよりご確認ください');
-              return true;
-            }else if(res.data.error.code==204){
-              me.$message.error('対象のデータが存在しません');
-              return false;
-            }else{
-              //get treedata failed
-              me.$message.error('エラーが発生しました！'+res.data.error.message);
-              console.log('getOpeLog -> res.data.error', res.data.error);
-              me.error();
-            }
-          })
-          .catch(err => {
-            console.log("err: ", err);
-            if(!err.expired){
-              this.$message.error('通信エラーが発生しました！');
-              this.error();
-            }
-          });
+
+        me.refreshApigClient().then(()=>{
+          evtBus.apigClient.reloApiVer100CsvLogsPost({},{items:items},evtBus.headers)
+            .then(res => {
+              if(!res.data.error){
+                //success
+                me.$message.success('操作ログをダウンロードしました。ダウンロードリストよりご確認ください');
+                return true;
+              }else if(res.data.error.code==204){
+                me.$message.error('対象のデータが存在しません');
+                return false;
+              }else{
+                //get treedata failed
+                me.$message.error('エラーが発生しました！'+res.data.error.message);
+                console.log('getOpeLog -> res.data.error', res.data.error);
+                me.error();
+              }
+            })
+            .catch(err => {
+              console.log("err: ", err);
+              if(!err.expired){
+                this.$message.error('通信エラーが発生しました！');
+                this.error();
+              }
+            });
+        })
       },
       sortChange(stat){
         let me = this;
@@ -611,7 +637,13 @@
         }
       },
       setCurrentTree(id){
-        console.log('​setCurrentTree -> id', id);
+        this.respData.currentTree={
+          owner_cd:'',
+          estate_no:'',
+          estate_nm:'',
+          tenant_cd:'',
+          tenant_nm:'',
+        };
         let [owner,estate,tenant]=id.split('_');
         let tree=this.respData.treeData;
         this.respData.currentTree.owner_cd=tree[owner].label.split(' ')[0];
@@ -631,6 +663,8 @@
         this.queryTop();
       },
       mouseDown(e) {
+        e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);
+        e.preventDefault ? e.preventDefault() : (e.returnValue = false);
         let me = this;
         let x = e.clientX;
         let pos = JSON.parse(JSON.stringify(me.pageConfig.asideWidth));
@@ -642,9 +676,6 @@
           document.onmousemove = null;
           document.onmouseup = null;
         };
-        if (e.preventDefault) {
-          e.preventDefault();
-        }
         return false;
       },
       genNodeKey(data,id_bef) {
@@ -668,6 +699,8 @@
           me.$message.warning("検索条件を入力してください")
           return false;
         }
+        me.pageConfig.queryAsideLoading=true;
+        this.respData.treeData=[];
         let items = {
           owner_cd:'',
           owner_nm:'',
@@ -679,35 +712,37 @@
         num.test(sOwner) ? items.owner_cd=sOwner : items.owner_nm=sOwner;
         num.test(sEstate) ? items.estate_no=sEstate : items.estate_nm=sEstate;
         num.test(sTenant) ? items.tenant_cd=sTenant : items.tenant_nm=sTenant;
-        evtBus.apigClient.reloApiVer100TreePost({},{items:items},evtBus.headers)
-          .then(res => {
-            console.log('​queryAside -> res', res);
-            if(!res.data.error){
-              //success
-              let temp = JSON.parse(JSON.stringify(res.data.data));
-              me.genNodeKey(temp);
-              me.respData.treeData = temp;
-              return true;
-            }else if(res.data.error.code==204){
-              //get treedata failed
-              this.$message.error('対象のデータが存在しません');
-              console.log('​queryAside -> res.data.error', res.data.error);
-              return false;
-            }else{
-              //get treedata failed
-              this.$message.error('エラーが発生しました！'+res.data.error.message);
-              console.log('​queryAside -> res.data.error', res.data.error);
-              this.error();
-            }
-          })
-          .catch(err => {
-            console.log("err: ", err);
-            if(!err.expired){
-              this.$message.error('通信エラーが発生しました！');
-              this.error();
-            }
-          });
-        console.log("items:",items);
+        me.refreshApigClient().then(()=>{
+          evtBus.apigClient.reloApiVer100TreePost({},{items:items},evtBus.headers)
+            .then(res => {
+              me.pageConfig.queryAsideLoading=false;
+              if(!res.data.error){
+                //success
+                let temp = JSON.parse(JSON.stringify(res.data.data));
+                me.genNodeKey(temp);
+                me.respData.treeData = temp;
+                return true;
+              }else if(res.data.error.code==204){
+                //get treedata failed
+                this.$message.error('対象のデータが存在しません');
+                console.log('​queryAside -> res.data.error', res.data.error);
+                return false;
+              }else{
+                //get treedata failed
+                this.$message.error('エラーが発生しました！'+res.data.error.message);
+                console.log('​queryAside -> res.data.error', res.data.error);
+                this.error();
+              }
+            })
+            .catch(err => {
+              me.pageConfig.queryAsideLoading=false;
+              console.log("err: ", err);
+              if(!err.expired){
+                this.$message.error('通信エラーが発生しました！');
+                this.error();
+              }
+            });
+        })
       },
       queryTop(from) {
         let me = this;
@@ -716,44 +751,114 @@
           //CSV出力ボタン
           Object.assign(items,me.reqData.queryFormTop);
           let {date_kbn,dateRange}=me.reqData.queryFormTop;
-//          let date_flag=(date_kbn!=0 && dateRange.length>0);
-//          items.from_date=date_flag ? items.dateRange[0] : '';
-//          items.to_date=date_flag ? items.dateRange[1] : '';
+          // let date_flag=(date_kbn!=0 && dateRange.length>0);
+          // items.from_date=date_flag ? items.dateRange[0] : '';
+          // items.to_date=date_flag ? items.dateRange[1] : '';
           items.from_date=items.dateRange==undefined ? '' : items.dateRange[0];
           items.to_date=items.dateRange==undefined ? '' : items.dateRange[1];
           items.bucket_nm=evtBus.download_bucket_name;
         }else{
           //検索ボタン or NodeClick
+          //20180810 2246 TO CONFIRM
+          if(me.pageConfig.currentTabName=='downloadList')
+            me.pageConfig.currentTabName='';
+          me.respData.tableData=[];
           me.pageConfig.tableLoading=true;
           let temp=JSON.parse(JSON.stringify(me.reqData.queryFormTop));
           let date_kbn = me.reqData.queryFormTop.date_kbn==1
           temp.from_date= (temp.dateRange && date_kbn) ? temp.dateRange[0]:'';
           temp.to_date= (temp.dateRange && date_kbn) ? temp.dateRange[1]:'';
           Object.assign(items,temp);
-          let{doc_nm,free_format,manage_nm,sales_nm,comment,file_entry_user} = items
-          if((from=='search') && (!doc_nm&&!free_format&&!manage_nm&&!sales_nm&&!comment&&!file_entry_user)){
+          console.log('​queryTop -> items', items);
+          let{control,to_date,doc_nm,free_format,manage_nm,sales_nm,comment,file_entry_user} = items
+          if((from=='search') && !(control||to_date||doc_nm||free_format||manage_nm||sales_nm||comment||file_entry_user)){
             me.$message.warning('検索条件を入力してください');
             me.pageConfig.tableLoading = false;
             return false;
           }
         }
         if (from=='csv') {
-          console.log("items");
-          evtBus.apigClient.reloApiVer100CsvFilesPost({},{items:items},evtBus.headers)
+          me.refreshApigClient().then(()=>{
+            evtBus.apigClient.reloApiVer100CsvFilesPost({},{items:items},evtBus.headers)
+              .then(res => {
+                if(!res.data.error){
+                  //success
+                  this.$message.success('CSV出力が完了しました。ダウンロードリストよりご確認ください');
+                  return true;
+                }else if(res.data.error.code==204){
+                  //get treedata failed
+                  this.$message.error('対象のデータが存在しません');
+                  console.log('​queryTop -> res.data.error', res.data.error);
+                  return false;
+                }else{
+                  //get tableData failed
+                  me.$message.error('エラーが発生しました！'+res.data.error.message);
+                  console.log('queryTop csv -> res.data.error', res.data.error);
+                  me.error();
+                }
+              })
+              .catch(err => {
+                console.log("err: ", err);
+                if(!err.expired){
+                  me.$message.error('通信エラーが発生しました！');
+                  me.error();
+                }
+              });
+          })
+        } else {
+          me.refreshApigClient().then(()=>{
+            evtBus.apigClient.reloApiVer100FilesListPost({},{items:items},evtBus.headers)
+            .then(res => {
+                me.pageConfig.tableLoading=false;
+                if(!res.data.error){
+                  //success
+                  me.respData.tableData = res.data.data.items;
+                  return true;
+                }else if(res.data.error.code==204){
+                  //get treedata failed
+                  if(!this.respData.currentTree.owner_cd)
+                    this.$message.error('対象のデータが存在しません');
+                  console.log('​queryAside -> res.data.error', res.data.error);
+                  return false;
+                }else{
+                  //get tableData failed
+                  me.$message.error('エラーが発生しました！'+res.data.error.message);
+                  console.log('queryTop -> res.data.error', res.data.error);
+                  me.error();
+                }
+              })
+              .catch(err => {
+                me.pageConfig.tableLoading=false;
+                console.log("err: ", err);
+                if(!err.expired){
+                  me.$message.error('通信エラーが発生しました！',err.toString());
+                  me.error();
+                }
+              });
+          })
+        }
+      },
+      getDownloadList(tab){
+        let me = this;
+        if(tab!="downloadList") return false;
+        let items={
+          s3_download_bucket_nm:evtBus.download_bucket_name,
+          user_id:me.getCookie('user_id')
+        }
+        me.refreshApigClient().then(()=>{
+          evtBus.apigClient.reloApiVer100DownloadsListPost({},{items:items},evtBus.headers)
             .then(res => {
               if(!res.data.error){
                 //success
-                this.$message.success('CSV出力が完了しました。ダウンロードリストよりご確認ください');
+                console.log('​getDownloadList -> ', res);
+                let {data} = JSON.parse(JSON.stringify(res.data));
+                me.respData.downloadList = data;
+                me.$message.success('更新しました');
                 return true;
-              }else if(res.data.error.code==204){
-                //get treedata failed
-                this.$message.error('対象のデータが存在しません');
-                console.log('​queryAside -> res.data.error', res.data.error);
-                return false;
               }else{
                 //get tableData failed
                 me.$message.error('エラーが発生しました！'+res.data.error.message);
-                console.log('queryTop csv -> res.data.error', res.data.error);
+                console.log('getDownloadList -> res.data.error', res.data.error);
                 me.error();
               }
             })
@@ -764,72 +869,78 @@
                 me.error();
               }
             });
-        } else {
-          evtBus.apigClient.reloApiVer100FilesListPost({},{items:items},evtBus.headers)
-          .then(res => {
-              me.pageConfig.tableLoading=false;
-              if(!res.data.error){
-                //success
-                me.respData.tableData = res.data.data.items;
-                return true;
-              }else if(res.data.error.code==204){
-                //get treedata failed
-                this.$message.error('対象のデータが存在しません');
-                console.log('​queryAside -> res.data.error', res.data.error);
-                return false;
-              }else{
-                //get tableData failed
-                me.$message.error('エラーが発生しました！'+res.data.error.message);
-                console.log('queryTop -> res.data.error', res.data.error);
-                me.error();
-              }
-            })
-            .catch(err => {
-              me.pageConfig.tableLoading=false;
-              console.log("err: ", err);
-              if(!err.expired){
-                me.$message.error('通信エラーが発生しました！',err.toString());
-                me.error();
-              }
-            });
-        }
-      },
-      getDownloadList(tab){
-        console.log('​getDownloadList -> ', );
-        let me = this;
-        if(tab!="downloadList") return false;
-        let items={
-          s3_download_bucket_nm:evtBus.download_bucket_name,
-          user_id:me.getCookie('user_id')
-        }
-        evtBus.apigClient.reloApiVer100DownloadsListPost({},{items:items},evtBus.headers)
-          .then(res => {
-            if(!res.data.error){
-              //success
-              
-              console.log('​getDownloadList -> ', res);
-              let {data} = JSON.parse(JSON.stringify(res));
-              me.respData.downloadList = data;
-              return true;
-            }else{
-              //get tableData failed
-              me.$message.error('エラーが発生しました！'+res.data.error.message);
-              console.log('queryTop -> res.data.error', res.data.error);
-              me.error();
-            }
-          })
-          .catch(err => {
-            console.log("err: ", err);
-            if(!err.expired){
-              me.$message.error('通信エラーが発生しました！');
-              me.error();
-            }
-          });
+        })
           console.log("items:", items);
       },
       onDrag(e) {
         e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);
         e.preventDefault ? e.preventDefault() : (e.returnValue = false);
+      },
+      getUploadInfo(items,folder_id){
+        console.log('​uploadFiles -> tomcat');
+        return evtBus.apigClient.reloApiVer100FilesInfoPost({},{items:items},evtBus.headers)
+          .then(res => {
+            if(!res.data.error){
+              //lambda API
+              let lambdaItems=[];
+              for (let i = 0; i < items.length; i++) {
+                lambdaItems.push({
+                  upload_file_name:items[i].file_nm,
+                  s3_upload_bucket_nm:evtBus.upload_bucket_name,
+                  folder_id:folder_id
+                })
+              }
+              return Promise.resolve(lambdaItems);
+            }else{
+              return Promise.reject({err:res.data.error});
+            }
+          })
+      },
+      getUploadTempUrl(items){
+        console.log('​uploadFiles -> lambda');
+        return evtBus.apigClient.reloApiVer100FilesUploadTempurlPost({},{items:items},evtBus.headers)
+          .then(res=>{
+            if(!res.data.error){
+              return Promise.resolve({
+                data:res.data.data,
+                items:items
+              })
+            }else{
+              return Promise.reject({err:res.data.error})
+            }
+          })
+      },
+      getUploadResult(res,files){
+        console.log('​uploadFiles -> S3');
+        let config = {
+          headers: {
+            'Content-Type': 'application/octet-stream'
+          }
+        }
+        //lambda success
+        //本番
+        this.$message({
+          type:'success',
+          dangerouslyUseHTMLString: true,
+          message:'アップロードを受付ました。<br>完了したファイルは再度検索すると画面に反映されます。',
+          duration:5000,
+        });
+        let {data,items} = res;
+        for (let j = 0; j < data.length; j++) {
+          let index;
+          for (let k = 0; k < items.length; k++) {
+            if(data[j].upload_file_name==items[k].upload_file_name){
+              index = k;
+              break;
+            }
+          }
+          axios.put(data[j].url,files[index],config)
+            .catch(err=>{
+              console.log('​upload failed -> ', files[index]);
+            })
+        }
+        this.pageConfig.isUploading=false;
+        this.pageConfig.isDzActive=false;
       },
       uploadFiles(data) {
         let me = this;
@@ -840,147 +951,172 @@
         let {folder_id}=forms[0];
         console.log('​uploadFiles -> folder_id', folder_id);
         let items = JSON.parse(JSON.stringify(forms));
-        console.log('​uploadFiles -> tomcat');
-        evtBus.apigClient.reloApiVer100FilesInfoPost({},{items:items},evtBus.headers)
-          .then(res => {
-            if(!res.data.error){
-              //Insert DB success 
-              //lambda API
-              let lambdaItems=[];
-              for (let i = 0; i < items.length; i++) {
-                lambdaItems.push({
-                  upload_file_name:items[i].file_nm,
-                  s3_upload_bucket_nm:evtBus.upload_bucket_name,
-                  folder_id:folder_id
-                })
-              }
-              console.log('​uploadFiles -> lambda');
-              evtBus.apigClient.reloApiVer100FilesUploadTempurlPost({},{items:lambdaItems},evtBus.headers)
-                .then(res=>{
-                  if(!res.data.error){
-                    let config = {
-                      headers: {
-                        'Content-Type': 'application/octet-stream'
-                      }
-                    }
-                    //lambda success
-                    //AWS S3 upload
-                    // for mock
-                    // for (let j = 0; j < files.length; j++) {
-                    //   let formData=new FormData();
-                    //   formData.append('upload', files[j]);
-                    //   console.log(formData.get('upload'));
-                    //   axios.put('https://httpbin.org/put',formData,config)
-                    //     .then(res=>{
-                    //       console.log('​uploadFiles -> res', res);
-                    //     })
-                    // }
-                    //本番
-                    console.log('​uploadFiles -> S3');
-                    for (let j = 0; j < res.data.data.length; j++) {
-                      let index;
-                      for (let k = 0; k < lambdaItems.length; k++) {
-                        if(res.data.data[j].upload_file_name==lambdaItems[k].upload_file_name){
-                          index = k;
-                          break;
-                        }
-                      }
-                      let lambdaRes=res;
-                      axios.put(res.data.data[j].url,files[index],config)
-                        .then(res=>{
-                          this.$notify.success({
-                            title: '正常にアップロードしました',
-                            message: lambdaRes.data.data[j].upload_file_name,
-                            position: 'bottom-left'
-                          });
-                        })
-                        .catch(err=>{
-                          console.log('​uploadFiles -> err', err);
-                          this.$notify.error({
-                            title: 'アップロード失敗しました',
-                            message: lambdaRes.data.data[j].upload_file_name,
-                            position: 'bottom-left'
-                          });
-                        })
-                    }
-                    me.pageConfig.isUploading=false;
-                    me.pageConfig.isDzActive=false;
-                  }else{
-                    me.pageConfig.isUploading=false;
-                    me.pageConfig.isDzActive=false;
-                    me.$message.error('エラーが発生しました！'+res.data.error.message);
-                    console.log('lambda API err -> res.data.error', res.data.error);
-                    me.error();
-                  }
-                })
-                .catch(err=>{
-                  me.pageConfig.isUploading=false;
-                  me.pageConfig.isDzActive=false;
-                  console.log("lambda API err: ", err);
-                  if(!err.expired){
-                    me.$message.error('通信エラーが発生しました！');
-                    me.error();
-                  }
-                })
-              return true;
-            }else{
-              //get treedata failed
-              me.pageConfig.isUploading=false;
-              me.pageConfig.isDzActive=false;
-              me.$message.error('エラーが発生しました！'+res.data.error.message);
-              console.log('upload -> res.data.error', res.data.error);
-              me.error();
-            }
+        me.refreshApigClient()
+          .then(()=>{
+            return me.getUploadInfo(items,folder_id)
           })
-          .catch(err => {
+          .then((temp)=>{
+            return me.refreshApigClient(temp)
+          })
+          .then(res1=>{
+            return me.getUploadTempUrl(res1)
+          })
+          .then(res2=>{
+            me.getUploadResult(res2,files)
+          })
+          .catch(err=>{
             me.pageConfig.isUploading=false;
             me.pageConfig.isDzActive=false;
-            console.log("Insert DB err: ", err);
+            console.log("upload err: ", err);
+            console.log("upload err -> ", err.err);
+            
             if(!err.expired){
               me.$message.error('通信エラーが発生しました！');
               me.error();
             }
           });
+
+
+        // // if(!me.refreshApigClient()) return false;  
+        // evtBus.apigClient.reloApiVer100FilesInfoPost({},{items:items},evtBus.headers)
+        //   .then(res => {
+        //     if(!res.data.error){
+        //       //Insert DB success 
+        //       //lambda API
+        //       let lambdaItems=[];
+        //       for (let i = 0; i < items.length; i++) {
+        //         lambdaItems.push({
+        //           upload_file_name:items[i].file_nm,
+        //           s3_upload_bucket_nm:evtBus.upload_bucket_name,
+        //           folder_id:folder_id
+        //         })
+        //       }
+        //       console.log('​uploadFiles -> lambda');
+        //       // if(!me.refreshApigClient()) return false;  
+        //       evtBus.apigClient.reloApiVer100FilesUploadTempurlPost({},{items:lambdaItems},evtBus.headers)
+        //         .then(res=>{
+        //           if(!res.data.error){
+        //             let config = {
+        //               headers: {
+        //                 'Content-Type': 'application/octet-stream'
+        //               }
+        //             }
+        //             //lambda success
+        //             //AWS S3 upload
+        //             // for mock
+        //             // for (let j = 0; j < files.length; j++) {
+        //             //   let formData=new FormData();
+        //             //   formData.append('upload', files[j]);
+        //             //   console.log(formData.get('upload'));
+        //             //   axios.put('https://httpbin.org/put',formData,config)
+        //             //     .then(res=>{
+        //             //       console.log('​uploadFiles -> res', res);
+        //             //     })
+        //             // }
+        //             //本番
+        //             console.log('​uploadFiles -> S3');
+        //             this.$message({
+        //               type:'success',
+        //               dangerouslyUseHTMLString: true,
+        //               message:'アップロードを受付ました。<br>完了したファイルは再度検索すると画面に反映されます。',
+        //               duration:5000,
+        //             });
+        //             for (let j = 0; j < res.data.data.length; j++) {
+        //               let index;
+        //               for (let k = 0; k < lambdaItems.length; k++) {
+        //                 if(res.data.data[j].upload_file_name==lambdaItems[k].upload_file_name){
+        //                   index = k;
+        //                   break;
+        //                 }
+        //               }
+        //               let lambdaRes=res;
+        //               axios.put(res.data.data[j].url,files[index],config)
+        //                 .then(res=>{})
+        //                 .catch(err=>{
+        //                   console.log('​upload failed -> ', forms[index].filename);
+        //                 })
+        //             }
+        //             me.pageConfig.isUploading=false;
+        //             me.pageConfig.isDzActive=false;
+        //           }else{
+        //             me.pageConfig.isUploading=false;
+        //             me.pageConfig.isDzActive=false;
+        //             me.$message.error('エラーが発生しました！'+res.data.error.message);
+        //             console.log('lambda API err -> res.data.error', res.data.error);
+        //             me.error();
+        //           }
+        //         })
+        //         .catch(err=>{
+        //           me.pageConfig.isUploading=false;
+        //           me.pageConfig.isDzActive=false;
+        //           console.log("lambda API err: ", err);
+        //           if(!err.expired){
+        //             me.$message.error('通信エラーが発生しました！');
+        //             me.error();
+        //           }
+        //         })
+        //       return true;
+        //     }else{
+        //       //get treedata failed
+        //       me.pageConfig.isUploading=false;
+        //       me.pageConfig.isDzActive=false;
+        //       me.$message.error('エラーが発生しました！'+res.data.error.message);
+        //       console.log('upload -> res.data.error', res.data.error);
+        //       me.error();
+        //     }
+        //   })
+        //   .catch(err => {
+        //     me.pageConfig.isUploading=false;
+        //     me.pageConfig.isDzActive=false;
+        //     console.log("Insert DB err: ", err);
+        //     if(!err.expired){
+        //       me.$message.error('通信エラーが発生しました！');
+        //       me.error();
+        //     }
+        //   });
     },
     previewFiles() {
       this.pageConfig.isPreview = true;
     },
     deleteFiles(items) {
       console.log('​deleteFiles -> items', items);
-      evtBus.apigClient.reloApiVer100FilesDeletePost({},{items:items},evtBus.headers)
-        .then(res => {
-          if(!res.data.error){
-            //success
-            if(res.data.data.result_flg==0){
-              //delete success
-              items.forEach(item => {
-                this.respData.tableData.forEach((data, index) => {
-                  if (data.file_id==item.file_id) {
-                    this.respData.tableData.splice(index, 1);
-                  }
+      this.refreshApigClient().then(()=>{
+        evtBus.apigClient.reloApiVer100FilesDeletePost({},{items:items},evtBus.headers)
+          .then(res => {
+            if(!res.data.error){
+              //success
+              if(res.data.data.result_flg==0){
+                //delete success
+                items.forEach(item => {
+                  this.respData.tableData.forEach((data, index) => {
+                    if (data.file_id==item.file_id) {
+                      this.respData.tableData.splice(index, 1);
+                    }
+                  });
                 });
-              });
-              this.$message.success('削除されました！');
-              return true;
+                this.$message.success('削除されました！');
+                return true;
+              }else{
+                //delete failed
+                this.$message.error('ファイル削除は失敗しました！もう一度試してください！');
+                return false;
+              }
             }else{
-              //delete failed
-              this.$message.error('ファイル削除は失敗しました！もう一度試してください！');
-              return false;
+              //failed
+              this.$message.error('エラーが発生しました！'+res.data.error.message);
+              console.log('​deleteFiles -> res.data.error', res.data.error);
+              this.error();
             }
-          }else{
-            //failed
-            this.$message.error('エラーが発生しました！'+res.data.error.message);
-            console.log('​deleteFiles -> res.data.error', res.data.error);
-            this.error();
-          }
-        })
-        .catch(err => {
-          console.log("err: ", err);
-          if(!err.expired){
-            this.$message.error('通信エラーが発生しました！');
-            this.error();
-          }
-        });
+          })
+          .catch(err => {
+            console.log("err: ", err);
+            if(!err.expired){
+              this.$message.error('通信エラーが発生しました！');
+              this.error();
+            }
+          });
+
+      })      
       },
       addComment(previewData, newComment) {
         previewData.comment.unshift(JSON.parse(JSON.stringify(newComment)));
@@ -996,17 +1132,20 @@
         // previewData.comment.splice(index,1);
       },
       close() {
+        this.pageConfig.tableLoading = false;
+        this.pageConfig.queryAsideLoading = false;
         this.pageConfig.isUpload = false;
         this.pageConfig.isPreview = false;
         this.pageConfig.isLoading = false;
       },
-      resetAside() {
+      resetAside(next) {
+        this.respData.tableData=[];
+        this.respData.treeData = [];
         this.reqData.queryFormAside={
           sOwner:'',
           sEstate:'',
           sTenant:''
         };
-        this.respData.treeData = [];
         this.respData.currentTree={
           owner_cd:'',
           estate_no:'',
@@ -1014,11 +1153,17 @@
           tenant_cd:'',
           tenant_nm:'',
         };
-        this.respData.tableData=[];
+        if(next){
+          let{to_date,doc_nm,free_format,manage_nm,sales_nm,comment,file_entry_user,dateRange,date_kbn} = this.reqData.queryFormTop;
+          if(to_date||doc_nm||free_format||manage_nm||sales_nm||comment||file_entry_user||(dateRange && date_kbn)){
+            this.queryTop();
+          }
+        }
       },
-      resetTop(){
+      resetTop(next){
+        this.respData.tableData=[];
         this.reqData.queryFormTop={
-          control: 0,
+          control: this.pageConfig.user.control,
           public_kbn: 0,
           doc_nm: "",
           free_format: "",
@@ -1029,92 +1174,110 @@
           dateRange:[],
           date_kbn:0
         }
+        if(next){
+          if(this.respData.currentTree.owner_cd){
+            this.queryTop();
+          }
+        }
       },
       error(){
         this.clearAllCookies();
+        this.clearCachedId();
         setTimeout(() => {
-          this.resetAside();
-          this.resetTop();
+          this.resetAside(false);
+          this.resetTop(false);
+          this.$loading({lock: true});
+          this.$loading({lock: true}).close();
           this.pageConfig.isUpload=false;
           this.pageConfig.isPreview=false;
           this.$router.push('/error');
-        }, 2000);
+        }, 1000);
       },
       logout() {
         let items={
           user_id:this.getCookie('user_id'),
           identityId:unescape(this.getCookie('identityId'))
         };
-        console.log('​logout -> items', items);
-        evtBus.apigClient.reloApiVer100SignoutPost({},{items:items},evtBus.headers)
-          .then(res => {
-            if(!res.data.error){
-              //success
-              this.clearAllCookies();
-              this.$router.push('/login');
-            }else{
-              //logout failed
-              this.$message.error('エラーが発生しました！'+res.data.error.message);
-              console.log('logout -> res.data.error', res.data.error);
-            }
-          })
-          .catch(err => {
-            if(!err.expired){
-              this.$message.error('通信エラーが発生しました！');
-              console.log("err: ", err);
-            }
-          });
-        //TODO demo
-        console.log("");
+        this.refreshApigClient().then(()=>{
+          evtBus.apigClient.reloApiVer100SignoutPost({},{items:items},evtBus.headers)
+            .then(res => {
+              if(!res.data.error){
+                //success
+                this.clearAllCookies();
+                this.clearCachedId();
+                this.$router.push('/login');
+              }else{
+                //logout failed
+                this.$message.error('エラーが発生しました！'+res.data.error.message);
+                console.log('logout -> res.data.error', res.data.error);
+              }
+            })
+            .catch(err => {
+              if(!err.expired){
+                this.$message.error('通信エラーが発生しました！');
+                console.log("err: ", err);
+              }
+            });
+        })
         this.clearAllCookies();
-        this.resetAside();
-        this.resetTop();
+        this.clearCachedId();
+        this.resetAside(false);
+        this.resetTop(false);
         this.pageConfig.isUpload=false;
         this.pageConfig.isPreview=false;
         this.$router.push('/login');
       }
     },
     computed: {
-      doc_nm_delay:{
-        get() {
-          return this.reqData.queryFormTop.doc_nm;
-        },
-        set: _.debounce(function(newVal){
-          this.reqData.queryFormTop.doc_nm = newVal;
-        }, 500)
+      ope_log_csvBtn(){
+        let flg=!this.reqData.queryFormTop.dateRange;
+        if(!flg){
+          if(!this.reqData.queryFormTop.dateRange.length){
+            flg=true;
+          }
+        }
+        return flg;
       },
-      free_format_delay:{
-        get() {
-          return this.reqData.queryFormTop.free_format;
-        },
-        set: _.debounce(function(newVal){
-          this.reqData.queryFormTop.free_format = newVal;
-        }, 500)
-      },
-      file_entry_user_delay:{
-        get() {
-          return this.reqData.queryFormTop.file_entry_user;
-        },
-        set: _.debounce(function(newVal){
-          this.reqData.queryFormTop.file_entry_user = newVal;
-        }, 500)
-      },
-      sales_nm_delay:{
-        get() {
-          return this.reqData.queryFormTop.sales_nm;
-        },
-        set: _.debounce(function(newVal){
-          this.reqData.queryFormTop.sales_nm = newVal;
-        }, 500)
-      },
-      manage_nm_delay:{
-        get() {
-          return this.reqData.queryFormTop.manage_nm;
-        },
-        set: _.debounce(function(newVal){
-          this.reqData.queryFormTop.manage_nm = newVal;
-        }, 500)
-      },
+      // doc_nm_delay:{
+      //   get() {
+      //     return this.reqData.queryFormTop.doc_nm;
+      //   },
+      //   set: _.debounce(function(newVal){
+      //     this.reqData.queryFormTop.doc_nm = newVal;
+      //   }, 500)
+      // },
+      // free_format_delay:{
+      //   get() {
+      //     return this.reqData.queryFormTop.free_format;
+      //   },
+      //   set: _.debounce(function(newVal){
+      //     this.reqData.queryFormTop.free_format = newVal;
+      //   }, 500)
+      // },
+      // file_entry_user_delay:{
+      //   get() {
+      //     return this.reqData.queryFormTop.file_entry_user;
+      //   },
+      //   set: _.debounce(function(newVal){
+      //     this.reqData.queryFormTop.file_entry_user = newVal;
+      //   }, 500)
+      // },
+      // sales_nm_delay:{
+      //   get() {
+      //     return this.reqData.queryFormTop.sales_nm;
+      //   },
+      //   set: _.debounce(function(newVal){
+      //     this.reqData.queryFormTop.sales_nm = newVal;
+      //   }, 500)
+      // },
+      // manage_nm_delay:{
+      //   get() {
+      //     return this.reqData.queryFormTop.manage_nm;
+      //   },
+      //   set: _.debounce(function(newVal){
+      //     this.reqData.queryFormTop.manage_nm = newVal;
+      //   }, 500)
+      // },
       queryTopSearchBtn(){
         // let flag = true;
         // if(this.respData.currentTree.owner_cd=='' || this.respData.currentTree.owner_cd==undefined){
@@ -1128,23 +1291,29 @@
       tableData() {
         return this.respData.tableData.filter(data => {
           let tab = (this.pageConfig.currentTabName == '') ? true : data.business_kbn == this.pageConfig.currentTabName;
-          let {control,public_kbn,doc_nm,free_format,file_entry_user,sales_nm,manage_nm,comment,dateRange,date_kbn}=this.reqData.queryFormTop;
-          control=control==0 ? true : data.control==control;
-          public_kbn=public_kbn==0 ? true : data.public_kbn==public_kbn;
-          doc_nm=doc_nm=='' ? true : data.doc_nm.indexOf(doc_nm)>-1;
-          free_format=free_format=='' ? true : data.free_format.indexOf(free_format)>-1;
-          file_entry_user=file_entry_user=='' ? true : data.file_entry_user.indexOf(file_entry_user)>-1;
-          sales_nm=sales_nm=='' ? true : data.sales_nm.indexOf(sales_nm)>-1;
-          manage_nm=manage_nm=='' ? true : data.manage_nm.indexOf(manage_nm)>-1;
-          let date=true;
-          if(date_kbn!=0 && dateRange!=null){
-            let start=moment(dateRange[0]).subtract(1,'day');
-            let end=moment(dateRange[1]).subtract(-1,'day');
-            date=moment(data.file_entry_date).isBetween(start,end);
-          }
-          return (tab&&control&&public_kbn&&doc_nm&&free_format&&file_entry_user&&sales_nm&&manage_nm&&date)
+          // let {control,public_kbn,doc_nm,free_format,file_entry_user,sales_nm,manage_nm,comment,dateRange,date_kbn}=this.reqData.queryFormTop;
+          // control=control==0 ? true : data.control==control;
+          // public_kbn=public_kbn==0 ? true : data.public_kbn==public_kbn;
+          // doc_nm=doc_nm=='' ? true : data.doc_nm.indexOf(doc_nm)>-1;
+          // free_format=free_format=='' ? true : data.free_format.indexOf(free_format)>-1;
+          // file_entry_user=file_entry_user=='' ? true : data.file_entry_user.indexOf(file_entry_user)>-1;
+          // sales_nm=sales_nm=='' ? true : data.sales_nm.indexOf(sales_nm)>-1;
+          // manage_nm=manage_nm=='' ? true : data.manage_nm.indexOf(manage_nm)>-1;
+          // let date=true;
+          // if(date_kbn!=0 && dateRange!=null ){
+          //   if(dateRange.length){
+          //     let start=moment(dateRange[0]).subtract(1,'day');
+          //     let end=moment(dateRange[1]).subtract(-1,'day');
+          //     date=moment(data.file_entry_date).isBetween(start,end);
+          //   }
+          // }
+          // return (tab&&control&&public_kbn&&doc_nm&&free_format&&file_entry_user&&sales_nm&&manage_nm&&date)
+          return tab;
         });
       },
+      tableFlag(){
+        return (this.respData.currentTree.owner_cd || this.respData.tableData.length>0);
+      }
     }
   };
 </script>

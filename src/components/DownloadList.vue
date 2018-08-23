@@ -50,31 +50,31 @@ export default {
       let me = this;
       let items = {
         bucket_nm:evtBus.download_bucket_name,
-        user_id:me.getCookie('user_id'),
-        download_file_nm:doc_nm
+        download_file_nm:[me.getCookie('user_id'),doc_nm].join('/')
       }
-
-      evtBus.apigClient.reloApiVer100DownloadsTempurlPost({},{items:items},evtBus.headers)
-        .then(res => {
-          if(!res.data.error){
-            //success
-            let {downloadurl} = res.data.data;
-            window.location.href = downloadurl;
-            return true;
-          }else{
-            //get treedata failed
-            this.$message.error('エラーが発生しました！'+res.data.error.message);
-            console.log('getDownloadUrl -> ', res.data.error);
-            me.$emit('error')
-          }
-        })
-        .catch(err => {
-          console.log("err: ", err);
-          if(!err.expired){
-            this.$message.error('通信エラーが発生しました！');
-            me.$emit('error');
-          }
-        });
+      me.refreshApigClient().then(()=>{
+        evtBus.apigClient.reloApiVer100DownloadsTempurlPost({},{items:items},evtBus.headers)
+          .then(res => {
+            if(!res.data.error){
+              //success
+              let {downloadurl} = res.data.data;
+              window.location.href = downloadurl;
+              return true;
+            }else{
+              //get treedata failed
+              this.$message.error('エラーが発生しました！'+res.data.error.message);
+              console.log('getDownloadUrl -> ', res.data.error);
+              me.$emit('error')
+            }
+          })
+          .catch(err => {
+            console.log("err: ", err);
+            if(!err.expired){
+              this.$message.error('通信エラーが発生しました！');
+              me.$emit('error');
+            }
+          });
+      })
     },
     getDownloadList(){
       let me = this;
