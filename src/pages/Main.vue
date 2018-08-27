@@ -2,7 +2,6 @@
   <div class="bg-main">
     <el-container class="bg-color" style="margin:0 0 5px 0;">
       <el-aside style="width:260px;">
-        <!-- DropZone -->
         <div  v-loading="pageConfig.isUploading" ref="select_frame" class="dz-default" :class='{"dz-active" : pageConfig.isDzActive}'>
           <div class="dz-msg">{{pageConfig.dzMsg}}</div>
         </div>
@@ -18,11 +17,6 @@
               <el-radio-button label="">指定なし</el-radio-button>
             </el-radio-group>
 
-            <!-- <el-radio-group v-model="reqData.queryFormTop.openStatus" size="small" style="margin-right:5px;">
-                <el-radio-button :label="1">非公開</el-radio-button>
-                <el-radio-button :label="2">公開中</el-radio-button>
-                <el-radio-button :label="0">指定なし</el-radio-button>
-              </el-radio-group> -->
             <el-radio-group id="queryFormTop_date_kbn" v-model="reqData.queryFormTop.date_kbn" size="small" @change="changeDateKbn" style="margin-right:5px;">
               <el-radio-button :label="1">登録日</el-radio-button>
               <el-radio-button :label="0">指定なし</el-radio-button>
@@ -149,7 +143,7 @@
           <el-radio-group v-model="pageConfig.currentTabName" @change="getDownloadList" style="margin: 5px 0;">
             <el-radio-button v-for="option in respData.business_kbn" :label="option.value" :key="option.id">{{option.label}}</el-radio-button>
             <el-radio-button label="">指定なし</el-radio-button>
-            <el-radio-button label="downloadList">ダウンロードリスト</el-radio-button>
+            <el-radio-button v-if="respData.auth_ptn.result_dl==1 || respData.auth_ptn.file_bulk_dl==1" label="downloadList">ダウンロードリスト</el-radio-button>
           </el-radio-group>
           <transition name="component-fade" mode="out-in">
             <download-list v-if="pageConfig.currentTabName=='downloadList'" 
@@ -202,8 +196,6 @@
 
 <style scoped>
   .tree-scroll{
-    /* max-height: 750px;
-    overflow-y: auto; */
     overflow-x: hidden;
   }
   .dz-default{
@@ -269,7 +261,6 @@
   export default {
     name: "Main",
     data() {
-      //demo
       return {
         pageConfig:{
           asideWidth:260,
@@ -287,6 +278,16 @@
           cantDel:true,
           currentTabName:'',
           user:{},
+          acceptableFiletype:[
+            "pdf",
+            "odp","ppt","pptx",
+            "flv","f4v","swf",
+            "obj","stl","fbx","3ds","dae","ply",
+            "as","as3","asm","bat","c","cc","cmake","cpp","cs","css","csv","cxx","diff","doc","docx","erb","gdoc","groovy","gsheet","h","haml","hh","htm","html","java","js","less","m","make","md","ml","mm","msg","ods","odt","pdf","php","pl","properties","py","rb","rtf","sass","scala","scm","script","sh","sml","sql","txt","vi","vim","wpd","xls","xlsm","xlsx","xml","xsd","xsl","yaml",
+            "ai","bmp","gif","eps","heic","jpeg","jpg","png","ps","psd","svg","tif","tiff","dcm","dicm","dicom","svs","tga",
+            "aac","aifc","aiff","amr","au","flac","m4a","mp3","ogg","ra","wav","wma",
+            "3g2","3gp","avi","m2v","m2ts","m4v","mkv","mov","mp4","mpeg","mpg","ogg","mts","qt","wmv"
+          ],
           pickerOptions: {
             shortcuts: [{
               text: '最近１週',
@@ -364,17 +365,9 @@
       downloadList,
       upload,
       preview,
-      // loading,
     },
     mounted() {
       let me = this;
-      //bind drag event for FF,Chrm,IE
-      // document.addEventListener("dragstart", e => {
-      //   e.dataTransfer.setData('text/plain', null);
-      // }, false);
-      // document.addEventListener("dragenter", me.onDrag, false);
-      // document.addEventListener("dragover", me.onDrag, false);
-      // document.addEventListener("drop", me.onDrop, false);
       
       document.onkeyup = (e)=>{
         if (e.keyCode==27){
@@ -436,7 +429,6 @@
               auth.forEach(data=>{
                 me.respData.auth_ptn[data.auth_kbn]=data.auth_flg;
               });
-              console.log('​Main mounted');
               return true;
             }else{
               //get treedata failed
@@ -461,7 +453,6 @@
         }
       },
       previewLoad(status){
-        // this.pageConfig.isLoading = status=='start';
         if(status=='start'){
           this.$loading({lock: true});
           axios.defaults.timeout=20000;
@@ -479,7 +470,7 @@
         e.preventDefault ? e.preventDefault() : (e.returnValue = false);
         if (me.pageConfig.isUpload) return false;
         if (me.respData.auth_ptn.file_upload!=1){
-          me.$message.warning('このアカウントにはアップロードする権限はありません！')
+          me.$message.warning('このアカウントにはアップロードする権限はありません')
           return false;
         }
         if(!me.respData.currentTree.estate_no){
@@ -487,21 +478,27 @@
           return false;
         }
         let {files} = e.dataTransfer;
-        console.log('onDrop -> files', files);
         if (files.length < 1){
           return false;
-        }        
+        }
         if (me.respData.currentTree.owner_cd==""){
-          me.$message.warning('アプロードするには、まずツリーにデータを選択してください！');
+          me.$message.warning('アップロードをするには、まずツリーにてデータを選択してください');
           return false;
         }
+        let totalSize = 0;
         for (let i = 0; i < files.length; i++) {
-          if (files[i].type == "") {
-            me.$message.warning('このファイル形式又はフォルダのアップロードは制限されています！');
+          let type = files[i].name.split('.').pop();
+          if (me.pageConfig.acceptableFiletype.indexOf(type)==-1){
+            me.$message.warning('この拡張子のファイル又はフォルダはアップロードできません');
             return false;
           }
+          totalSize += files[i].size;
         }
-        // me.pageConfig.isLoading=true;
+        if(totalSize>1024*1024*50){
+          me.$message.warning('アップロードするファイル全体の容量を50MB以内にしてください');
+          return false;
+        }
+
         this.$loading({lock: true});
         //get folder_id
         let items = me.respData.currentTree;
@@ -510,11 +507,7 @@
             .then(res => {
               this.$loading({lock: true}).close();
               if(!res.data.error){
-                //successog("fol:",res.data.data);
-                console.log("fol:",res.data.data);
-                // let {folder_id} = res.data.data;
                 let folder_id = res.data.data;
-                // me.pageConfig.isLoading=false;
                 me.pageConfig.isUpload = true;
                 Vue.nextTick(() => {
                   evtBus.$emit('files-dropped', files, me.pageConfig.currentTabName,folder_id)
@@ -751,15 +744,11 @@
           //CSV出力ボタン
           Object.assign(items,me.reqData.queryFormTop);
           let {date_kbn,dateRange}=me.reqData.queryFormTop;
-          // let date_flag=(date_kbn!=0 && dateRange.length>0);
-          // items.from_date=date_flag ? items.dateRange[0] : '';
-          // items.to_date=date_flag ? items.dateRange[1] : '';
           items.from_date=items.dateRange==undefined ? '' : items.dateRange[0];
           items.to_date=items.dateRange==undefined ? '' : items.dateRange[1];
           items.bucket_nm=evtBus.download_bucket_name;
         }else{
           //検索ボタン or NodeClick
-          //20180810 2246 TO CONFIRM
           if(me.pageConfig.currentTabName=='downloadList')
             me.pageConfig.currentTabName='';
           me.respData.tableData=[];
@@ -769,7 +758,6 @@
           temp.from_date= (temp.dateRange && date_kbn) ? temp.dateRange[0]:'';
           temp.to_date= (temp.dateRange && date_kbn) ? temp.dateRange[1]:'';
           Object.assign(items,temp);
-          console.log('​queryTop -> items', items);
           let{control,to_date,doc_nm,free_format,manage_nm,sales_nm,comment,file_entry_user} = items
           if((from=='search') && !(control||to_date||doc_nm||free_format||manage_nm||sales_nm||comment||file_entry_user)){
             me.$message.warning('検索条件を入力してください');
@@ -850,10 +838,9 @@
             .then(res => {
               if(!res.data.error){
                 //success
-                console.log('​getDownloadList -> ', res);
                 let {data} = JSON.parse(JSON.stringify(res.data));
                 me.respData.downloadList = data;
-                me.$message.success('更新しました');
+                me.$message.success('ダウンロードリストを更新しました');
                 return true;
               }else{
                 //get tableData failed
@@ -870,18 +857,15 @@
               }
             });
         })
-          console.log("items:", items);
       },
       onDrag(e) {
         e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);
         e.preventDefault ? e.preventDefault() : (e.returnValue = false);
       },
       getUploadInfo(items,folder_id){
-        console.log('​uploadFiles -> tomcat');
         return evtBus.apigClient.reloApiVer100FilesInfoPost({},{items:items},evtBus.headers)
           .then(res => {
             if(!res.data.error){
-              //lambda API
               let lambdaItems=[];
               for (let i = 0; i < items.length; i++) {
                 lambdaItems.push({
@@ -897,7 +881,6 @@
           })
       },
       getUploadTempUrl(items){
-        console.log('​uploadFiles -> lambda');
         return evtBus.apigClient.reloApiVer100FilesUploadTempurlPost({},{items:items},evtBus.headers)
           .then(res=>{
             if(!res.data.error){
@@ -911,21 +894,21 @@
           })
       },
       getUploadResult(res,files){
-        console.log('​uploadFiles -> S3');
         let config = {
           headers: {
             'Content-Type': 'application/octet-stream'
           }
         }
-        //lambda success
-        //本番
         this.$message({
           type:'success',
           dangerouslyUseHTMLString: true,
-          message:'アップロードを受付ました。<br>完了したファイルは再度検索すると画面に反映されます。',
+          message:'アップロードを受け付けました。<br>完了したファイルは再度検索すると画面に反映されます。',
           duration:5000,
         });
+
         let {data,items} = res;
+        let file_success = 0;
+        let file_fail = 0;
         for (let j = 0; j < data.length; j++) {
           let index;
           for (let k = 0; k < items.length; k++) {
@@ -935,21 +918,40 @@
             }
           }
           axios.put(data[j].url,files[index],config)
+            .then(()=>{
+              file_success++;
+              if((file_success+file_fail)==data.length){
+                this.$notify.info({
+                  title: file_success+'件アップロードが完了しました',
+                  message:file_fail+'件失敗しました',
+                  position: 'bottom-left',
+                });
+                this.pageConfig.isUploading=false;
+                this.pageConfig.isDzActive=false;
+              }
+            })
             .catch(err=>{
+              file_fail++;
+              if((file_success+file_fail)==data.length){
+                this.$notify.info({
+                  title: file_success+'件アップロードが完了しました',
+                  message:file_fail+'件失敗しました',
+                  position: 'bottom-left',
+                });
+                this.pageConfig.isUploading=false;
+                this.pageConfig.isDzActive=false;
+              }
               console.log('​upload failed -> ', files[index]);
             })
         }
-        this.pageConfig.isUploading=false;
-        this.pageConfig.isDzActive=false;
+
       },
       uploadFiles(data) {
         let me = this;
-        //loading0810
         me.pageConfig.isDzActive=true;
         me.pageConfig.isUploading=true;
         let {forms,files} = data;
         let {folder_id}=forms[0];
-        console.log('​uploadFiles -> folder_id', folder_id);
         let items = JSON.parse(JSON.stringify(forms));
         me.refreshApigClient()
           .then(()=>{
@@ -975,161 +977,57 @@
               me.error();
             }
           });
-
-
-        // // if(!me.refreshApigClient()) return false;  
-        // evtBus.apigClient.reloApiVer100FilesInfoPost({},{items:items},evtBus.headers)
-        //   .then(res => {
-        //     if(!res.data.error){
-        //       //Insert DB success 
-        //       //lambda API
-        //       let lambdaItems=[];
-        //       for (let i = 0; i < items.length; i++) {
-        //         lambdaItems.push({
-        //           upload_file_name:items[i].file_nm,
-        //           s3_upload_bucket_nm:evtBus.upload_bucket_name,
-        //           folder_id:folder_id
-        //         })
-        //       }
-        //       console.log('​uploadFiles -> lambda');
-        //       // if(!me.refreshApigClient()) return false;  
-        //       evtBus.apigClient.reloApiVer100FilesUploadTempurlPost({},{items:lambdaItems},evtBus.headers)
-        //         .then(res=>{
-        //           if(!res.data.error){
-        //             let config = {
-        //               headers: {
-        //                 'Content-Type': 'application/octet-stream'
-        //               }
-        //             }
-        //             //lambda success
-        //             //AWS S3 upload
-        //             // for mock
-        //             // for (let j = 0; j < files.length; j++) {
-        //             //   let formData=new FormData();
-        //             //   formData.append('upload', files[j]);
-        //             //   console.log(formData.get('upload'));
-        //             //   axios.put('https://httpbin.org/put',formData,config)
-        //             //     .then(res=>{
-        //             //       console.log('​uploadFiles -> res', res);
-        //             //     })
-        //             // }
-        //             //本番
-        //             console.log('​uploadFiles -> S3');
-        //             this.$message({
-        //               type:'success',
-        //               dangerouslyUseHTMLString: true,
-        //               message:'アップロードを受付ました。<br>完了したファイルは再度検索すると画面に反映されます。',
-        //               duration:5000,
-        //             });
-        //             for (let j = 0; j < res.data.data.length; j++) {
-        //               let index;
-        //               for (let k = 0; k < lambdaItems.length; k++) {
-        //                 if(res.data.data[j].upload_file_name==lambdaItems[k].upload_file_name){
-        //                   index = k;
-        //                   break;
-        //                 }
-        //               }
-        //               let lambdaRes=res;
-        //               axios.put(res.data.data[j].url,files[index],config)
-        //                 .then(res=>{})
-        //                 .catch(err=>{
-        //                   console.log('​upload failed -> ', forms[index].filename);
-        //                 })
-        //             }
-        //             me.pageConfig.isUploading=false;
-        //             me.pageConfig.isDzActive=false;
-        //           }else{
-        //             me.pageConfig.isUploading=false;
-        //             me.pageConfig.isDzActive=false;
-        //             me.$message.error('エラーが発生しました！'+res.data.error.message);
-        //             console.log('lambda API err -> res.data.error', res.data.error);
-        //             me.error();
-        //           }
-        //         })
-        //         .catch(err=>{
-        //           me.pageConfig.isUploading=false;
-        //           me.pageConfig.isDzActive=false;
-        //           console.log("lambda API err: ", err);
-        //           if(!err.expired){
-        //             me.$message.error('通信エラーが発生しました！');
-        //             me.error();
-        //           }
-        //         })
-        //       return true;
-        //     }else{
-        //       //get treedata failed
-        //       me.pageConfig.isUploading=false;
-        //       me.pageConfig.isDzActive=false;
-        //       me.$message.error('エラーが発生しました！'+res.data.error.message);
-        //       console.log('upload -> res.data.error', res.data.error);
-        //       me.error();
-        //     }
-        //   })
-        //   .catch(err => {
-        //     me.pageConfig.isUploading=false;
-        //     me.pageConfig.isDzActive=false;
-        //     console.log("Insert DB err: ", err);
-        //     if(!err.expired){
-        //       me.$message.error('通信エラーが発生しました！');
-        //       me.error();
-        //     }
-        //   });
-    },
-    previewFiles() {
-      this.pageConfig.isPreview = true;
-    },
-    deleteFiles(items) {
-      console.log('​deleteFiles -> items', items);
-      this.refreshApigClient().then(()=>{
-        evtBus.apigClient.reloApiVer100FilesDeletePost({},{items:items},evtBus.headers)
-          .then(res => {
-            if(!res.data.error){
-              //success
-              if(res.data.data.result_flg==0){
-                //delete success
-                items.forEach(item => {
-                  this.respData.tableData.forEach((data, index) => {
-                    if (data.file_id==item.file_id) {
-                      this.respData.tableData.splice(index, 1);
-                    }
+      },
+      previewFiles() {
+        this.pageConfig.isPreview = true;
+      },
+      deleteFiles(items) {
+        this.refreshApigClient().then(()=>{
+          evtBus.apigClient.reloApiVer100FilesDeletePost({},{items:items},evtBus.headers)
+            .then(res => {
+              if(!res.data.error){
+                //success
+                if(res.data.data.result_flg==0){
+                  //delete success
+                  items.forEach(item => {
+                    this.respData.tableData.forEach((data, index) => {
+                      if (data.file_id==item.file_id) {
+                        this.respData.tableData.splice(index, 1);
+                      }
+                    });
                   });
-                });
-                this.$message.success('削除されました！');
-                return true;
+                  this.$message.success('削除されました');
+                  return true;
+                }else{
+                  //delete failed
+                  this.$message.error('ファイル削除は失敗しました！もう一度試してください！');
+                  return false;
+                }
               }else{
-                //delete failed
-                this.$message.error('ファイル削除は失敗しました！もう一度試してください！');
-                return false;
+                //failed
+                this.$message.error('エラーが発生しました！'+res.data.error.message);
+                console.log('​deleteFiles -> res.data.error', res.data.error);
+                this.error();
               }
-            }else{
-              //failed
-              this.$message.error('エラーが発生しました！'+res.data.error.message);
-              console.log('​deleteFiles -> res.data.error', res.data.error);
-              this.error();
-            }
-          })
-          .catch(err => {
-            console.log("err: ", err);
-            if(!err.expired){
-              this.$message.error('通信エラーが発生しました！');
-              this.error();
-            }
-          });
-
-      })      
+            })
+            .catch(err => {
+              console.log("err: ", err);
+              if(!err.expired){
+                this.$message.error('通信エラーが発生しました！');
+                this.error();
+              }
+            });
+        })      
       },
       addComment(previewData, newComment) {
         previewData.comment.unshift(JSON.parse(JSON.stringify(newComment)));
-        // AJAX
       },
       delComment(previewData, index) {
-        // console.log('index: ', index);
         this.respData.tableData.forEach(data => {
           if (data.key === previewData.key) {
             data.comment.splice(index, 1);
           }
         })
-        // previewData.comment.splice(index,1);
       },
       close() {
         this.pageConfig.tableLoading = false;
@@ -1238,76 +1136,12 @@
         }
         return flg;
       },
-      // doc_nm_delay:{
-      //   get() {
-      //     return this.reqData.queryFormTop.doc_nm;
-      //   },
-      //   set: _.debounce(function(newVal){
-      //     this.reqData.queryFormTop.doc_nm = newVal;
-      //   }, 500)
-      // },
-      // free_format_delay:{
-      //   get() {
-      //     return this.reqData.queryFormTop.free_format;
-      //   },
-      //   set: _.debounce(function(newVal){
-      //     this.reqData.queryFormTop.free_format = newVal;
-      //   }, 500)
-      // },
-      // file_entry_user_delay:{
-      //   get() {
-      //     return this.reqData.queryFormTop.file_entry_user;
-      //   },
-      //   set: _.debounce(function(newVal){
-      //     this.reqData.queryFormTop.file_entry_user = newVal;
-      //   }, 500)
-      // },
-      // sales_nm_delay:{
-      //   get() {
-      //     return this.reqData.queryFormTop.sales_nm;
-      //   },
-      //   set: _.debounce(function(newVal){
-      //     this.reqData.queryFormTop.sales_nm = newVal;
-      //   }, 500)
-      // },
-      // manage_nm_delay:{
-      //   get() {
-      //     return this.reqData.queryFormTop.manage_nm;
-      //   },
-      //   set: _.debounce(function(newVal){
-      //     this.reqData.queryFormTop.manage_nm = newVal;
-      //   }, 500)
-      // },
       queryTopSearchBtn(){
-        // let flag = true;
-        // if(this.respData.currentTree.owner_cd=='' || this.respData.currentTree.owner_cd==undefined){
-        //   flag=false;
-        // }else if(this.reqData.queryFormTop.comment!=''){
-        //   flag=false;
-        // }
-        // return flag;
         return false;
       },
       tableData() {
         return this.respData.tableData.filter(data => {
           let tab = (this.pageConfig.currentTabName == '') ? true : data.business_kbn == this.pageConfig.currentTabName;
-          // let {control,public_kbn,doc_nm,free_format,file_entry_user,sales_nm,manage_nm,comment,dateRange,date_kbn}=this.reqData.queryFormTop;
-          // control=control==0 ? true : data.control==control;
-          // public_kbn=public_kbn==0 ? true : data.public_kbn==public_kbn;
-          // doc_nm=doc_nm=='' ? true : data.doc_nm.indexOf(doc_nm)>-1;
-          // free_format=free_format=='' ? true : data.free_format.indexOf(free_format)>-1;
-          // file_entry_user=file_entry_user=='' ? true : data.file_entry_user.indexOf(file_entry_user)>-1;
-          // sales_nm=sales_nm=='' ? true : data.sales_nm.indexOf(sales_nm)>-1;
-          // manage_nm=manage_nm=='' ? true : data.manage_nm.indexOf(manage_nm)>-1;
-          // let date=true;
-          // if(date_kbn!=0 && dateRange!=null ){
-          //   if(dateRange.length){
-          //     let start=moment(dateRange[0]).subtract(1,'day');
-          //     let end=moment(dateRange[1]).subtract(-1,'day');
-          //     date=moment(data.file_entry_date).isBetween(start,end);
-          //   }
-          // }
-          // return (tab&&control&&public_kbn&&doc_nm&&free_format&&file_entry_user&&sales_nm&&manage_nm&&date)
           return tab;
         });
       },

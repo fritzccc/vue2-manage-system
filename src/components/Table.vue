@@ -1,7 +1,6 @@
 <template>
   <div>
     <el-button v-if="authPtn.bulk_preview==1" size="small" type="primary" @click="multiPreview" plain :disabled="cantPrev" style="margin-left: 3px">一括PV</el-button>
-    <!-- <el-button type="primary" plain style="margin-left: 3px">公開/非公開</el-button> -->
     <el-button v-if="authPtn.file_bulk_dl==1" size="small" type="primary" @click="multiDownload" plain :disabled="cantDwld" style="margin-left: 3px">一括DL</el-button>
     <el-button v-if="authPtn.file_delete==1" size="small" type="primary" @click="multiDelete" plain :disabled="cantDel" style="margin-left: 3px">削除</el-button>
     <el-pagination
@@ -33,14 +32,6 @@
       </el-table-column>
       <el-table-column align="center"  prop="comment" width=45 fixed>
         <template slot-scope="scope">
-<!--          <el-popover	v-if="scope.row.comment.length>0" trigger="hover" placement="right-end" :open-delay=500>
-            <div :class="{'hover-text-after':(scope.row.comment[0].text.length>=100)}" class="hover-text">
-              <strong>計{{scope.row.comment.length}}件:</strong> {{ scope.row.comment[0].text }}
-            </div>
-            <div slot="reference" class="name-wrapper">
-              <i class="far fa-comment" style="font-size: 20px;"></i>
-            </div>
-          </el-popover>-->
           <el-popover	v-if="scope.row.comment_count>0" trigger="hover" placement="right-end" :open-delay=500>
             <div class="hover-text" :class="{'hover-text-after':(scope.row.comment.length>=100)}">
               <span><strong>計{{scope.row.comment_count}}件:</strong></span> {{ scope.row.comment }}
@@ -53,18 +44,16 @@
       </el-table-column>
       <el-table-column sortable="custom" prop="doc_nm" label="書類名" min-width=270 fixed>
         <template slot-scope="scope">
-            <fa-icon  v-if="['xls','xlsx','xlsm'].indexOf(scope.row.file_ext)>-1" :icon="['far', 'file-excel']" size="lg"></fa-icon>
-            <fa-icon  v-else-if="['doc','docx'].indexOf(scope.row.file_ext)>-1" :icon="['far', 'file-word']" size="lg"></fa-icon>
-            <fa-icon  v-else-if="['ppt','pptx'].indexOf(scope.row.file_ext)>-1" :icon="['far', 'file-powerpoint']" size="lg"></fa-icon>
-            <fa-icon  v-else-if="['pdf'].indexOf(scope.row.file_ext)>-1" :icon="['far', 'file-pdf']" size="lg"></fa-icon>
-            <fa-icon  v-else-if="['ai','jpg','png','bmp','jpeg','gif','eps','heic','ps','psd','svg','tif','tiff','dcm','dicm','dicom','svs','tga'].indexOf(scope.row.file_ext)>-1" :icon="['far', 'file-image']" size="lg"></fa-icon>
-            <fa-icon  v-else-if="['flv','vob','swf','3g2','3gp','avi','m2v','m2ts','m4v','mkv','mov','mp4','mpeg','mpg','ogg','mts','qt','wmv'].indexOf(scope.row.file_ext)>-1" :icon="['far', 'file-video']" size="lg"></fa-icon>
-            <fa-icon  v-else-if="['mp3','ogg','wav','flac','ape','aac'].indexOf(scope.row.file_ext)>-1" :icon="['far', 'file-audio']" size="lg"></fa-icon>
-            <fa-icon  v-else-if="['py','html','htm','java','rb','js','css','yml','json'].indexOf(scope.row.file_ext)>-1" :icon="['far', 'file-code']" size="lg"></fa-icon>
-            <fa-icon  v-else-if="['zip','rar','7z','iso','gz','tar','bz2'].indexOf(scope.row.file_ext)>-1" :icon="['far', 'file-archive']" size="lg"></fa-icon>
-            <fa-icon  v-else :icon="['far', 'file-alt']" size="lg"></fa-icon>
+            <fa-icon v-if="fileTypes.excel.indexOf(scope.row.file_ext)>-1" :icon="['far', 'file-excel']" size="lg"></fa-icon>
+            <fa-icon v-else-if="fileTypes.word.indexOf(scope.row.file_ext)>-1" :icon="['far', 'file-word']" size="lg"></fa-icon>
+            <fa-icon v-else-if="fileTypes.ppt.indexOf(scope.row.file_ext)>-1" :icon="['far', 'file-powerpoint']" size="lg"></fa-icon>
+            <fa-icon v-else-if="fileTypes.pdf.indexOf(scope.row.file_ext)>-1" :icon="['far', 'file-pdf']" size="lg"></fa-icon>
+            <fa-icon v-else-if="fileTypes.image.indexOf(scope.row.file_ext)>-1" :icon="['far', 'file-image']" size="lg"></fa-icon>
+            <fa-icon v-else-if="fileTypes.video.indexOf(scope.row.file_ext)>-1" :icon="['far', 'file-video']" size="lg"></fa-icon>
+            <fa-icon v-else-if="fileTypes.audio.indexOf(scope.row.file_ext)>-1" :icon="['far', 'file-audio']" size="lg"></fa-icon>
+            <fa-icon v-else-if="fileTypes.code.indexOf(scope.row.file_ext)>-1" :icon="['far', 'file-code']" size="lg"></fa-icon>
+            <fa-icon v-else :icon="['far', 'file-alt']" size="lg"></fa-icon>
             <!-- more ext v-if -->
-            <!-- {{scope.row.doc_nm | no_ext}}  -->
           <span class="doc-name" @click="previewFile(scope.row)">
             {{scope.row.doc_nm}} 
           </span>
@@ -121,7 +110,17 @@
         showTableData:[],
         selectedItems:[],
         maxHeight:window.innerHeight-210,
-        windowWidth:window.innerWidth
+        windowWidth:window.innerWidth,
+        fileTypes:{
+          pdf:["pdf"],
+          ppt:["odp","ppt","pptx"],
+          word:["doc","docx","gdoc","rtf"],
+          excel:["gsheet","xls","xlsm","xlsx"],
+          audio:["aac","aifc","aiff","amr","au","flac","m4a","mp3","ogg","ra","wav","wma"],
+          video:["flv","f4v","swf","3g2","3gp","avi","m2v","m2ts","m4v","mkv","mov","mp4","mpeg","mpg","ogg","mts","qt","wmv"],
+          image:["ai","bmp","gif","eps","heic","jpeg","jpg","png","ps","psd","svg","tif","tiff","dcm","dicm","dicom","svs","tga"],
+          code:["as","as3","asm","bat","c","cc","cmake","cpp","cs","css","csv","cxx","diff","erb","groovy","h","haml","hh","htm","html","java","js","less","m","make",,"ml","mm","msg","ods","odt","php","pl","properties","py","rb","sass","scala","scm","script","sh","sml","sql","vi","vim","wpd","xml","xsd","xsl","yaml"]
+        }
       }
     },
     props: ['tableData','authPtn','loading','tableFlag'],
@@ -186,13 +185,7 @@
           type: 'warning'
         }).then(() => {
           this.$emit('delete',this.selectedFileId);
-        }).catch(() => {
-          //canceled
-          // this.$message({
-          //   type: 'info',
-          //   message: 'Delete canceled'
-          // });
-        });
+        })
       }
     },
     mounted(){
@@ -212,12 +205,8 @@
       totalRecords () {
         return this.tableData.length;
       },
-      // showTableData(){
-      //   let offset = (this.currentPage-1)*this.perPage;
-      //   return (offset + this.perPage >= this.tableData.length) ? this.tableData.slice(offset, this.tableData.length) : this.tableData.slice(offset, offset + this.perPage);
-      // },
+
       cantDel(){
-        // return (this.selectedItems.length)? !(this.selectedItems.length>0 && this.selectedItems.length<=10):true;
         return (this.selectedItems.length)? !(this.selectedItems.length>0):true;
       },
       cantPrev(){
@@ -231,7 +220,6 @@
         this.selectedItems.forEach(item=>{
           items.push({file_id:item.file_id});
         });
-        console.log("items:",items);
         return items;
       }
     },

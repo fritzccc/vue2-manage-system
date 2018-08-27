@@ -70,11 +70,13 @@ function genFilesPreview(){
   let items={
     data:[]
   };
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 7; i++) {
     items.data.push({
       file_id:faker.random.uuid(),
       doc_nm:faker.system.commonFileName(),
       url:'https://httpbin.org/',
+      // free_format:faker.lorem.words(),
+      free_format:'日本語二十文字テスト日本語二十文字テスト',
       // comment:[]
       comment:genComment()
     });
@@ -333,11 +335,11 @@ const tempUrl={
   data:[
     {
       "upload_file_name": "A000000_yyyymm00000_T000000_0.1573802684031791_受託１_180809193711_1.txt",
-      "url": "https://s3-relo-local-tempupload.s3.ap-northeast-1.amazonaws.com/0612.txt?AWSAccessKeyId=AKIAIYJGR7WU73LXVX5A&Content-Type=application%2Foctet-stream&Expires=1533609477&Signature=Uzw3vUjZUVaOZjsItj7wfhqYJnU%3D"
+      "url": "https://httpbin.org/put"
     },
     {
       "upload_file_name": "A000000_yyyymm00000_T000000_0.1573802684031791_受託１_180809193711_2.txt",
-      "url": "https://s3-relo-local-tempupload.s3.ap-northeast-1.amazonaws.com/0613.txt?AWSAccessKeyId=AKIAIYJGR7WU73LXVX5A&Content-Type=application%2Foctet-stream&Expires=1533609477&Signature=NU7hyxHpesGQmuz1j6Q0sbdMYIg%3D"
+      "url": "https://httpbin.org/put"
     }
   ]
 }

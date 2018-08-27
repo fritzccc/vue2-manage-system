@@ -5,20 +5,20 @@
       <div v-if="previewDatas.length==1" class="modal-card" style="width: 1500px;">
       <header class="modal-card-head">
         <img src="../../static/logo.png" width="140px" height="35px" style="margin-right:10px;">
-        <p class="modal-card-title">{{previewDatas[0].doc_nm | no_ext}}</p>
+        <p class="modal-card-title">{{previewDatas[0].doc_nm}}</p>
         <el-button v-if="authPtn.file_dl==1" type="primary" @click="download(0)">個別ダウンロード</el-button>
         <el-button type="danger" icon="el-icon-close" circle @click="close"></el-button>
       </header>
       <section class="modal-card-body">
         <div v-for="(previewData,index) in previewDatas" :key=index style="border-bottom:2px solid #d4dde4;">
           <el-row>
-              <h3>
-                <b>{{previewData.doc_nm | no_ext}}</b>
+              <h3 class="preview-title">
+                <b>{{previewData.doc_nm}}</b>
               </h3>
           </el-row>
+          <span class="preview-free-format">{{previewData.free_format}}</span>
           <el-row>
             <el-col :span="16">
-              <!-- demo -->
               <iframe :src="previewData.url" class="preview" allowfullscreen></iframe>
             </el-col>
             <el-col :span="7" :offset="1">
@@ -85,13 +85,13 @@
         <!-- Preview File  -->
         <div v-for="(previewData,index) in previewDatas" :key=index style="border-bottom:2px solid #d4dde4;">
           <el-row>
-              <h3 style="display:inline-block;margin-right:15px;">
-                <b>第{{index+1}}件：{{previewData.doc_nm | no_ext}}</b>
-              </h3>
+            <h3 class="preview-title">
+              <b>第{{index+1}}件：{{previewData.doc_nm}}</b>
+            </h3>
             <el-button v-if="previewIndex!=index" type="primary" size="small" plain @click="change(index)">個別プレビュー</el-button>
             <el-button v-if="previewIndex==index" type="primary" size="small" plain @click="backToPreview">一括プレビューに戻る</el-button>
           </el-row>
-
+          <span class="preview-free-format">{{previewData.free_format}}</span>
           <el-row v-show="previewIndex==-1 || previewIndex==index">
             <el-col :span="16">
               <iframe :src="previewData.url" class="default" :class="{preview:previewIndex==index}" allowfullscreen></iframe>
@@ -189,6 +189,16 @@
     padding: 40px 20px;
     box-sizing: border-box;
     margin-right: 20px;
+  }
+  .preview-title{
+    display: inline-block;
+    margin-right: 15px;
+    margin-bottom: 10px;
+  }
+  .preview-free-format{
+    display: inline-block;
+    margin-bottom:10px;
+    font-size: 13px;
   }
 
 </style>
@@ -324,7 +334,6 @@
                 });
             })
           } else {
-            console.log('error submit!!');
             return false;
           }
         });
@@ -336,7 +345,6 @@
         me.refreshApigClient().then(()=>{
           evtBus.apigClient.reloApiVer100FilesCommentsDeletePost({},{items:items},evtBus.headers)
             .then(res => {
-              console.log('​delComment -> res', res);
               if(!res.data.error){
                 //success
                 if(res.data.data.result_flg==0){

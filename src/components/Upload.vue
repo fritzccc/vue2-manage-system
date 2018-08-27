@@ -1,14 +1,12 @@
 <template>
   <div>
     <div class="modal is-active">
-      <!-- <div class="modal-background"></div> -->
       <div class="modal-card">
         <header class="modal-card-head">
           <p class="modal-card-title">アップロード{{total}}</p>
           <el-button type="danger" icon="el-icon-close" circle @click="close('uploadForm')"></el-button>
         </header>
         <section class="modal-card-body">
-          <!-- Content ... -->
           <el-form v-for="(file,index) in uploadForm.files" :key="index" :model="uploadForm.form[index]" :rules="uploadFormRules" ref="uploadForm"
             label-width="115px"  class="demo-ruleForm">
             <div v-if="index==0" class="upload-info">
@@ -16,7 +14,6 @@
             </div>
             <h3 style="margin-top:10px;">第{{parseInt(index)+1}}件</h3>
             <el-form-item label="ファイル名" prop="fileinfo">
-              <!-- <el-input disabled v-model="uploadForm.form[index].fileinfo"></el-input> -->
               <span>{{uploadForm.form[index].filename}} ({{uploadForm.form[index].file_size}}MB)</span>
             </el-form-item>
             <el-row class="warning-area">
@@ -68,7 +65,6 @@
 <style scoped>
   .upload-info{
     margin-top: 10px;
-    /* margin-left:25px;  */
   }
   .upload-info>p{
     color: rgb(93, 152, 207);
@@ -175,7 +171,6 @@
           me.resetForm(formName);
         } else {
           me.$message.warning('追加できませんでした！');
-          console.log('submit failed');
           return false;
         }
       },
@@ -203,12 +198,10 @@
       }
     },
     mounted(){
-      //TODO
       evtBus.$on('files-dropped',(files,currentTabName,folder_id)=>{
         let {owner_cd,estate_no,estate_nm,tenant_cd,tenant_nm}=this.currentTree;
         this.uploadForm.files=files;
         console.log("files:", files);
-        console.log('​mounted -> upload', );
         for (let i = 0; i < files.length; i++) {
           let filesize = (files[i].size / (1024 * 1024)).toFixed(1);
           filesize = (filesize == '0.0') ? '0.1' : filesize;
@@ -236,7 +229,6 @@
       Vue.nextTick(()=>{
         evtBus.$off('files-dropped')
       });
-      console.log('upload -> mounted', );
     },
   }
 

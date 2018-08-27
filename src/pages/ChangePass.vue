@@ -1,6 +1,6 @@
 <template>
   <div class="login-form">
-    <p v-if="firstLogin" style="color:red">ログインパスワードの変更してください</p>
+    <p v-if="firstLogin" style="color:red">ログインパスワードの変更をしてください</p>
     <h3>パスワード変更</h3>
     <el-form :model="changePassForm" status-icon :rules="changePassFormRules" ref="changePassForm" label-width="150px" class="demo-ruleForm">
       <el-form-item v-show="!firstLogin" label="ユーザーID" prop="user_id">
@@ -128,7 +128,6 @@
         let me = this;
         me.$refs[formName].validate((valid) => {
           if (valid) {
-            //TODO
             let items={
               user_id:me.changePassForm.user_id,
               password_old:sha256(me.changePassForm.oldPass),
@@ -139,7 +138,7 @@
               .then(res => {
                 if(!res.data.error){
                   //success
-                  me.$message.success('パスワード変更しました！');
+                  me.$message.success('パスワードを変更しました！');
                   me.$refs[formName].resetFields();
                   setTimeout(() => {
                     me.$router.push('/login');
@@ -161,7 +160,6 @@
                 console.log("err: ", err);
               });
           } else {
-            console.log('error submit!!');
             return false;
           }
         });

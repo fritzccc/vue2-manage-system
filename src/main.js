@@ -27,7 +27,6 @@ import {
   faFileImage,
   faFileAlt,
   faFileCode,
-  faFileArchive,
   faFileVideo,
   faFileAudio,
 } from '@fortawesome/free-regular-svg-icons'
@@ -48,7 +47,6 @@ library.add(
   faFileImage,
   faFileAlt,
   faFileCode,
-  faFileArchive,
   faFileVideo,
   faFileAudio,
 )
@@ -57,10 +55,6 @@ Vue.component('fa-icon', FontAwesomeIcon)
 
 Vue.config.productionTip = false
 Vue.use(ElementUI,{locale});
-Vue.filter('no_ext',(doc_nm)=>{
-  if (!doc_nm)  return '';
-  return doc_nm.replace(/\.\w+$/,'');
-})
 
 Vue.filter('comment',(length)=>{
   return length > 0 ? ("合計"+length+"件あります") : "まだありません";
@@ -78,37 +72,8 @@ Vue.prototype.delCookie=delCookie;
 Vue.prototype.setAWSCookies=setAWSCookies;
 Vue.prototype.getAWSCookies=getAWSCookies;
 Vue.prototype.clearAllCookies=clearAllCookies;
-Vue.prototype.clearCachedId=()=>{
-  AWS.config.credentials.clearCachedId();
-}
+Vue.prototype.clearCachedId=()=>{AWS.config.credentials.clearCachedId()};
 Vue.prototype.refreshApigClient=(param)=>{
-  // console.log('​Vue.prototype.refreshApigClient');
-  // if(!AWS.config.credentials.params.Logins){
-  //   AWS.config.credentials.params.Logins={
-  //     'cognito-identity.amazonaws.com' : getCookie('token')
-  //   };
-  // };
-  // return AWS.config.credentials.getPromise()
-  //   .then(()=>{
-  //     setAWSCookies();
-  //     evtBus.apigClient=apigClientFactory.newClient({
-  //       accessKey: AWS.config.credentials.accessKeyId,
-  //       secretKey: AWS.config.credentials.secretAccessKey,
-  //       sessionToken: AWS.config.credentials.sessionToken,
-  //       region: AWS.config.region
-  //     });
-  //     return Promise.resolve(param)
-  //   })
-  //   .catch(err=>{
-  //     console.log('Get credentials err:',err)
-  //     router.push({
-  //       path: '/error',
-  //       name: 'Error', 
-  //       params: { 
-  //         errmsg:err
-  //       }
-  //     })
-  //   })
   return Promise.resolve(param)
 };
 

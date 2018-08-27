@@ -62,23 +62,4 @@ router.beforeEach((to, from, next) => {
     }
   }
 });
-
-//TODO
-// router.beforeEach((to, from, next) => {
-//   if(to.meta.requireAuth) {
-//     fetch('m/is/login').then(resp => {
-//       if(resp.statusCode == 200) {
-//         next();
-//       } else {
-//         clearAllCookies()
-//         next({
-//           path: '/login'
-//         });
-//       }
-//     });
-//   } else {
-//     next();
-//   }
-// });
-
 export default router;

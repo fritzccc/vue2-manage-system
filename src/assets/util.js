@@ -1,5 +1,5 @@
-import AWS from 'aws-sdk'
-import {IdentityPoolId,expireDays} from './config'
+import AWS from 'aws-sdk/global'
+import {IdentityPoolId} from './config'
 
 //set AWS config
 AWS.config.region='ap-northeast-1';

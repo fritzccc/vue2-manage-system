@@ -25,7 +25,6 @@
 
 </style>
 
-
 <script>
   import evtBus from '@/assets/evtBus';
   export default {
@@ -46,22 +45,19 @@
         let me = this;
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            //headers => APIKey? TODO
             let items={
               user_id:me.resetPassForm.user_id
             };
             evtBus.apigClient.reloApiVer100ForgotpassPost({},{items:items})
               .then(res => {
                 if(!res.data.error){
-                  //success TODO
-                  me.$message.success('パスワードリセットしました！');
+                  me.$message.success('パスワードをリセットしました！');
                   setTimeout(() => {
                     me.$router.push('/login');
                   }, 2000);
                 }else if(res.data.error.code==204){
                   //incorrect user&pass
                   me.$message.error('入力されたアカウントは存在しません！');
-                  console.log('forgetPass -> res.data.error', res.data.error);
                   return false;
                 }else{
                   me.$message.error('エラーが発生しました！'+res.data.error.message);
@@ -75,7 +71,6 @@
                 console.log("err: ", err);
               });
           } else {
-            console.log('error submit!!');
             return false;
           }
         });

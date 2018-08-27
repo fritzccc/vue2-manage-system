@@ -1,7 +1,5 @@
 <template>
   <div class="error-page">
-    <!-- <img src="../assets/pain.png" height="200px" width="200px"> -->
-    <!-- <i class="far fa-meh"></i> -->
     <h2>申し訳ございません！</h2>
     <h4>システム管理者に連絡してください</h4>
     <p v-if="errmsg">エラー：{{errmsg}}</p>
@@ -44,11 +42,6 @@
     },
     mounted() {
       this.errmsg = this.$route.params.errmsg;
-      // this.interval = window.setInterval(() => {
-      //   if (--this.count <= 0) {
-      //     this.backToLogin();
-      //   }
-      // }, 1000);
     },
     methods:{
       backToLogin(){

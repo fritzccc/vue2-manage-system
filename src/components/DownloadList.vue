@@ -4,7 +4,6 @@
             <p class="panel-heading">ダウンロードリスト
               <el-button class="dl-refresh" :loading="btn_loading" circle plain icon="el-icon-refresh" @click="getDownloadList"></el-button>
             </p>
-
             <div class="panel-block" style="display: block;">
                 <p>ダウンロードファイルが出来るまで時間がかかる場合があります。</p>
                 <p><el-button class="dl-refresh mini" circle plain icon="el-icon-refresh"></el-button>でリストを更新してください。</p>
